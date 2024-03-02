@@ -4,19 +4,32 @@
 import {
 	ATN,
 	ATNDeserializer, DecisionState, DFA, FailedPredicateException,
-	RecognitionException, NoViableAltException, BailErrorStrategy,
+	RecognitionException, NoViableAltException,
 	Parser, ParserATNSimulator,
-	RuleContext, ParserRuleContext, PredictionMode, PredictionContextCache,
-	TerminalNode, RuleNode,
+	RuleContext, ParserRuleContext, PredictionContextCache,
+	TerminalNode,
 	Token, TokenStream,
-	Interval, IntervalSet
 } from 'antlr4';
 import GoParserListener from "./GoParserListener.js";
 // for running tests with parameters, TODO: discuss strategy for typed parameters in CI
 // eslint-disable-next-line no-unused-vars
-type int = number;
 
-import GoParserBase from './GoParserBase';
+abstract class GoParserBase extends Parser {
+	constructor(input: TokenStream) {
+		super(input);
+	}
+
+	/**
+	 * Return true if the current Token is a closing bracket (')' or '}')
+	 */
+	protected closingBracket(): boolean {
+		const stream = this._input as TokenStream; // Cast to the specific TokenStream type if needed
+        const prevTokenType = stream.LA(1);
+        
+        return prevTokenType === GoParser.R_CURLY || prevTokenType === GoParser.R_PAREN;
+    }
+}
+
 
 export default class GoParser extends GoParserBase {
 	public static readonly BREAK = 1;
@@ -3857,7 +3870,7 @@ export default class GoParser extends GoParserBase {
 		let _parentctx: ParserRuleContext = this._ctx;
 		let _parentState: number = this.state;
 		let localctx: ExpressionContext = new ExpressionContext(this, this._ctx, _parentState);
-		let _prevctx: ExpressionContext = localctx;
+		// let _prevctx: ExpressionContext = localctx;
 		let _startState: number = 152;
 		this.enterRecursionRule(localctx, 152, GoParser.RULE_expression, _p);
 		let _la: number;
@@ -3900,7 +3913,7 @@ export default class GoParser extends GoParserBase {
 					if (this._parseListeners != null) {
 						this.triggerExitRuleEvent();
 					}
-					_prevctx = localctx;
+					// _prevctx = localctx;
 					{
 					this.state = 808;
 					this._errHandler.sync(this);
@@ -4034,7 +4047,7 @@ export default class GoParser extends GoParserBase {
 		let _parentctx: ParserRuleContext = this._ctx;
 		let _parentState: number = this.state;
 		let localctx: PrimaryExprContext = new PrimaryExprContext(this, this._ctx, _parentState);
-		let _prevctx: PrimaryExprContext = localctx;
+		// let _prevctx: PrimaryExprContext = localctx;
 		let _startState: number = 154;
 		this.enterRecursionRule(localctx, 154, GoParser.RULE_primaryExpr, _p);
 		try {
@@ -4072,7 +4085,7 @@ export default class GoParser extends GoParserBase {
 					if (this._parseListeners != null) {
 						this.triggerExitRuleEvent();
 					}
-					_prevctx = localctx;
+					// _prevctx = localctx;
 					{
 					{
 					localctx = new PrimaryExprContext(this, _parentctx, _parentState);
