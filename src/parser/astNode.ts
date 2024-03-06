@@ -1,5 +1,5 @@
 export interface BaseNode {
-    type: string
+  type: string
 }
 
 export type AstNode = BaseNode | BaseNode[]
