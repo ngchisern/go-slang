@@ -40,6 +40,9 @@
 
 lexer grammar GoLexer;
 
+// Main Package
+MAIN_PACKAGE : 'main';
+
 // Keywords
 
 BREAK       : 'break' -> mode(NLSEMI);

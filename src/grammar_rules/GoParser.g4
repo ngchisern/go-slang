@@ -40,11 +40,11 @@ options {
 }
 
 sourceFile
-    : packageClause eos (importDecl eos)* ((functionDecl | methodDecl | declaration) eos)* EOF
+    : packageClause eos (importDecl eos)* ((functionDecl | declaration) eos)* EOF
     ;
 
 packageClause
-    : PACKAGE packageName = 'main'
+    : PACKAGE packageName = MAIN_PACKAGE
     ;
 
 importDecl

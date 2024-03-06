@@ -21,96 +21,95 @@ type int = number;
 import GoParserBase from './GoParserBase';
 
 export default class GoParser extends GoParserBase {
-	public static readonly MAIN_PACKAGE = 1;
-	public static readonly BREAK = 2;
-	public static readonly DEFAULT = 3;
-	public static readonly FUNC = 4;
-	public static readonly INTERFACE = 5;
-	public static readonly SELECT = 6;
-	public static readonly CASE = 7;
-	public static readonly DEFER = 8;
-	public static readonly GO = 9;
-	public static readonly MAP = 10;
-	public static readonly STRUCT = 11;
-	public static readonly CHAN = 12;
-	public static readonly ELSE = 13;
-	public static readonly GOTO = 14;
-	public static readonly PACKAGE = 15;
-	public static readonly SWITCH = 16;
-	public static readonly CONST = 17;
-	public static readonly FALLTHROUGH = 18;
-	public static readonly IF = 19;
-	public static readonly RANGE = 20;
-	public static readonly TYPE = 21;
-	public static readonly CONTINUE = 22;
-	public static readonly FOR = 23;
-	public static readonly IMPORT = 24;
-	public static readonly RETURN = 25;
-	public static readonly VAR = 26;
-	public static readonly NIL_LIT = 27;
-	public static readonly IDENTIFIER = 28;
-	public static readonly L_PAREN = 29;
-	public static readonly R_PAREN = 30;
-	public static readonly L_CURLY = 31;
-	public static readonly R_CURLY = 32;
-	public static readonly L_BRACKET = 33;
-	public static readonly R_BRACKET = 34;
-	public static readonly ASSIGN = 35;
-	public static readonly COMMA = 36;
-	public static readonly SEMI = 37;
-	public static readonly COLON = 38;
-	public static readonly DOT = 39;
-	public static readonly PLUS_PLUS = 40;
-	public static readonly MINUS_MINUS = 41;
-	public static readonly DECLARE_ASSIGN = 42;
-	public static readonly ELLIPSIS = 43;
-	public static readonly LOGICAL_OR = 44;
-	public static readonly LOGICAL_AND = 45;
-	public static readonly EQUALS = 46;
-	public static readonly NOT_EQUALS = 47;
-	public static readonly LESS = 48;
-	public static readonly LESS_OR_EQUALS = 49;
-	public static readonly GREATER = 50;
-	public static readonly GREATER_OR_EQUALS = 51;
-	public static readonly OR = 52;
-	public static readonly DIV = 53;
-	public static readonly MOD = 54;
-	public static readonly LSHIFT = 55;
-	public static readonly RSHIFT = 56;
-	public static readonly BIT_CLEAR = 57;
-	public static readonly UNDERLYING = 58;
-	public static readonly EXCLAMATION = 59;
-	public static readonly PLUS = 60;
-	public static readonly MINUS = 61;
-	public static readonly CARET = 62;
-	public static readonly STAR = 63;
-	public static readonly AMPERSAND = 64;
-	public static readonly RECEIVE = 65;
-	public static readonly DECIMAL_LIT = 66;
-	public static readonly BINARY_LIT = 67;
-	public static readonly OCTAL_LIT = 68;
-	public static readonly HEX_LIT = 69;
-	public static readonly FLOAT_LIT = 70;
-	public static readonly DECIMAL_FLOAT_LIT = 71;
-	public static readonly HEX_FLOAT_LIT = 72;
-	public static readonly IMAGINARY_LIT = 73;
-	public static readonly RUNE_LIT = 74;
-	public static readonly BYTE_VALUE = 75;
-	public static readonly OCTAL_BYTE_VALUE = 76;
-	public static readonly HEX_BYTE_VALUE = 77;
-	public static readonly LITTLE_U_VALUE = 78;
-	public static readonly BIG_U_VALUE = 79;
-	public static readonly RAW_STRING_LIT = 80;
-	public static readonly INTERPRETED_STRING_LIT = 81;
-	public static readonly WS = 82;
-	public static readonly COMMENT = 83;
-	public static readonly TERMINATOR = 84;
-	public static readonly LINE_COMMENT = 85;
-	public static readonly WS_NLSEMI = 86;
-	public static readonly COMMENT_NLSEMI = 87;
-	public static readonly LINE_COMMENT_NLSEMI = 88;
-	public static readonly EOS = 89;
-	public static readonly OTHER = 90;
+	public static readonly BREAK = 1;
+	public static readonly DEFAULT = 2;
+	public static readonly FUNC = 3;
+	public static readonly INTERFACE = 4;
+	public static readonly SELECT = 5;
+	public static readonly CASE = 6;
+	public static readonly DEFER = 7;
+	public static readonly GO = 8;
+	public static readonly MAP = 9;
+	public static readonly STRUCT = 10;
+	public static readonly CHAN = 11;
+	public static readonly ELSE = 12;
+	public static readonly GOTO = 13;
+	public static readonly PACKAGE = 14;
+	public static readonly SWITCH = 15;
+	public static readonly CONST = 16;
+	public static readonly FALLTHROUGH = 17;
+	public static readonly IF = 18;
+	public static readonly RANGE = 19;
+	public static readonly TYPE = 20;
+	public static readonly CONTINUE = 21;
+	public static readonly FOR = 22;
+	public static readonly IMPORT = 23;
+	public static readonly RETURN = 24;
+	public static readonly VAR = 25;
+	public static readonly NIL_LIT = 26;
+	public static readonly IDENTIFIER = 27;
+	public static readonly L_PAREN = 28;
+	public static readonly R_PAREN = 29;
+	public static readonly L_CURLY = 30;
+	public static readonly R_CURLY = 31;
+	public static readonly L_BRACKET = 32;
+	public static readonly R_BRACKET = 33;
+	public static readonly ASSIGN = 34;
+	public static readonly COMMA = 35;
+	public static readonly SEMI = 36;
+	public static readonly COLON = 37;
+	public static readonly DOT = 38;
+	public static readonly PLUS_PLUS = 39;
+	public static readonly MINUS_MINUS = 40;
+	public static readonly DECLARE_ASSIGN = 41;
+	public static readonly ELLIPSIS = 42;
+	public static readonly LOGICAL_OR = 43;
+	public static readonly LOGICAL_AND = 44;
+	public static readonly EQUALS = 45;
+	public static readonly NOT_EQUALS = 46;
+	public static readonly LESS = 47;
+	public static readonly LESS_OR_EQUALS = 48;
+	public static readonly GREATER = 49;
+	public static readonly GREATER_OR_EQUALS = 50;
+	public static readonly OR = 51;
+	public static readonly DIV = 52;
+	public static readonly MOD = 53;
+	public static readonly LSHIFT = 54;
+	public static readonly RSHIFT = 55;
+	public static readonly BIT_CLEAR = 56;
+	public static readonly UNDERLYING = 57;
+	public static readonly EXCLAMATION = 58;
+	public static readonly PLUS = 59;
+	public static readonly MINUS = 60;
+	public static readonly CARET = 61;
+	public static readonly STAR = 62;
+	public static readonly AMPERSAND = 63;
+	public static readonly RECEIVE = 64;
+	public static readonly DECIMAL_LIT = 65;
+	public static readonly BINARY_LIT = 66;
+	public static readonly OCTAL_LIT = 67;
+	public static readonly HEX_LIT = 68;
+	public static readonly FLOAT_LIT = 69;
+	public static readonly DECIMAL_FLOAT_LIT = 70;
+	public static readonly HEX_FLOAT_LIT = 71;
+	public static readonly IMAGINARY_LIT = 72;
+	public static readonly RUNE_LIT = 73;
+	public static readonly BYTE_VALUE = 74;
+	public static readonly OCTAL_BYTE_VALUE = 75;
+	public static readonly HEX_BYTE_VALUE = 76;
+	public static readonly LITTLE_U_VALUE = 77;
+	public static readonly BIG_U_VALUE = 78;
+	public static readonly RAW_STRING_LIT = 79;
+	public static readonly INTERPRETED_STRING_LIT = 80;
+	public static readonly WS = 81;
+	public static readonly COMMENT = 82;
+	public static readonly TERMINATOR = 83;
+	public static readonly LINE_COMMENT = 84;
+	public static readonly WS_NLSEMI = 85;
+	public static readonly COMMENT_NLSEMI = 86;
+	public static readonly LINE_COMMENT_NLSEMI = 87;
+	public static readonly EOS = 88;
+	public static readonly OTHER = 89;
 	public static readonly EOF = Token.EOF;
 	public static readonly RULE_sourceFile = 0;
 	public static readonly RULE_packageClause = 1;
@@ -186,8 +185,8 @@ export default class GoParser extends GoParserBase {
 	public static readonly RULE_arguments = 71;
 	public static readonly RULE_methodExpr = 72;
 	public static readonly RULE_eos = 73;
-	public static readonly literalNames: (string | null)[] = [ null, "'main'", 
-                                                            "'break'", "'default'", 
+	public static readonly literalNames: (string | null)[] = [ null, "'break'", 
+                                                            "'default'", 
                                                             "'func'", "'interface'", 
                                                             "'select'", 
                                                             "'case'", "'defer'", 
@@ -221,8 +220,8 @@ export default class GoParser extends GoParserBase {
                                                             "'+'", "'-'", 
                                                             "'^'", "'*'", 
                                                             "'&'", "'<-'" ];
-	public static readonly symbolicNames: (string | null)[] = [ null, "MAIN_PACKAGE", 
-                                                             "BREAK", "DEFAULT", 
+	public static readonly symbolicNames: (string | null)[] = [ null, "BREAK", 
+                                                             "DEFAULT", 
                                                              "FUNC", "INTERFACE", 
                                                              "SELECT", "CASE", 
                                                              "DEFER", "GO", 
@@ -332,7 +331,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 155;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while (_la===24) {
+			while (_la===23) {
 				{
 				{
 				this.state = 150;
@@ -348,20 +347,20 @@ export default class GoParser extends GoParserBase {
 			this.state = 166;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while ((((_la) & ~0x1F) === 0 && ((1 << _la) & 67239952) !== 0)) {
+			while ((((_la) & ~0x1F) === 0 && ((1 << _la) & 33619976) !== 0)) {
 				{
 				{
 				this.state = 160;
 				this._errHandler.sync(this);
 				switch (this._input.LA(1)) {
-				case 4:
+				case 3:
 					{
 					this.state = 158;
 					this.functionDecl();
 					}
 					break;
-				case 17:
-				case 26:
+				case 16:
+				case 25:
 					{
 					this.state = 159;
 					this.declaration();
@@ -406,7 +405,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 171;
 			this.match(GoParser.PACKAGE);
 			this.state = 172;
-			localctx._packageName = this.match(GoParser.MAIN_PACKAGE);
+			localctx._packageName = this.match(GoParser.IDENTIFIER);
 			}
 		}
 		catch (re) {
@@ -436,23 +435,23 @@ export default class GoParser extends GoParserBase {
 			this.state = 186;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 28:
-			case 39:
+			case 27:
+			case 38:
+			case 79:
 			case 80:
-			case 81:
 				{
 				this.state = 175;
 				this.importSpec();
 				}
 				break;
-			case 29:
+			case 28:
 				{
 				this.state = 176;
 				this.match(GoParser.L_PAREN);
 				this.state = 182;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				while (_la===28 || _la===39 || _la===80 || _la===81) {
+				while (_la===27 || _la===38 || _la===79 || _la===80) {
 					{
 					{
 					this.state = 177;
@@ -499,12 +498,12 @@ export default class GoParser extends GoParserBase {
 			this.state = 189;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===28 || _la===39) {
+			if (_la===27 || _la===38) {
 				{
 				this.state = 188;
 				localctx._alias = this._input.LT(1);
 				_la = this._input.LA(1);
-				if(!(_la===28 || _la===39)) {
+				if(!(_la===27 || _la===38)) {
 				    localctx._alias = this._errHandler.recoverInline(this);
 				}
 				else {
@@ -565,14 +564,14 @@ export default class GoParser extends GoParserBase {
 			this.state = 197;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 17:
+			case 16:
 				this.enterOuterAlt(localctx, 1);
 				{
 				this.state = 195;
 				this.constDecl();
 				}
 				break;
-			case 26:
+			case 25:
 				this.enterOuterAlt(localctx, 2);
 				{
 				this.state = 196;
@@ -610,20 +609,20 @@ export default class GoParser extends GoParserBase {
 			this.state = 211;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 28:
+			case 27:
 				{
 				this.state = 200;
 				this.constSpec();
 				}
 				break;
-			case 29:
+			case 28:
 				{
 				this.state = 201;
 				this.match(GoParser.L_PAREN);
 				this.state = 207;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				while (_la===28) {
+				while (_la===27) {
 					{
 					{
 					this.state = 202;
@@ -677,7 +676,7 @@ export default class GoParser extends GoParserBase {
 				this.state = 215;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 805310464) !== 0) || _la===65) {
+				if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 402655232) !== 0) || _la===64) {
 					{
 					this.state = 214;
 					this.type_();
@@ -810,7 +809,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 243;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while (_la===36) {
+			while (_la===35) {
 				{
 				{
 				this.state = 239;
@@ -881,7 +880,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 256;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while (_la===52) {
+			while (_la===51) {
 				{
 				{
 				this.state = 252;
@@ -921,7 +920,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 260;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===58) {
+			if (_la===57) {
 				{
 				this.state = 259;
 				this.match(GoParser.UNDERLYING);
@@ -961,7 +960,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 267;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===33) {
+			if (_la===32) {
 				{
 				this.state = 266;
 				this.typeParameters();
@@ -1009,20 +1008,20 @@ export default class GoParser extends GoParserBase {
 			this.state = 285;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 28:
+			case 27:
 				{
 				this.state = 274;
 				this.varSpec();
 				}
 				break;
-			case 29:
+			case 28:
 				{
 				this.state = 275;
 				this.match(GoParser.L_PAREN);
 				this.state = 281;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				while (_la===28) {
+				while (_la===27) {
 					{
 					{
 					this.state = 276;
@@ -1070,10 +1069,10 @@ export default class GoParser extends GoParserBase {
 			this.state = 295;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 12:
+			case 11:
+			case 27:
 			case 28:
-			case 29:
-			case 65:
+			case 64:
 				{
 				this.state = 288;
 				this.type_();
@@ -1091,7 +1090,7 @@ export default class GoParser extends GoParserBase {
 				}
 				}
 				break;
-			case 35:
+			case 34:
 				{
 				this.state = 293;
 				this.match(GoParser.ASSIGN);
@@ -1180,7 +1179,7 @@ export default class GoParser extends GoParserBase {
 						this.state = 304;
 						this._errHandler.sync(this);
 						_la = this._input.LA(1);
-						if (_la===37) {
+						if (_la===36) {
 							{
 							this.state = 303;
 							this.match(GoParser.SEMI);
@@ -1194,7 +1193,7 @@ export default class GoParser extends GoParserBase {
 						this.state = 307;
 						this._errHandler.sync(this);
 						_la = this._input.LA(1);
-						if (_la===89) {
+						if (_la===88) {
 							{
 							this.state = 306;
 							this.match(GoParser.EOS);
@@ -1250,20 +1249,21 @@ export default class GoParser extends GoParserBase {
 			this.state = 328;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 17:
-			case 26:
+			case 16:
+			case 25:
 				this.enterOuterAlt(localctx, 1);
 				{
 				this.state = 319;
 				this.declaration();
 				}
 				break;
-			case 4:
-			case 12:
+			case 3:
+			case 11:
+			case 26:
 			case 27:
 			case 28:
-			case 29:
-			case 33:
+			case 32:
+			case 58:
 			case 59:
 			case 60:
 			case 61:
@@ -1275,60 +1275,59 @@ export default class GoParser extends GoParserBase {
 			case 67:
 			case 68:
 			case 69:
-			case 70:
+			case 72:
 			case 73:
-			case 74:
+			case 79:
 			case 80:
-			case 81:
 				this.enterOuterAlt(localctx, 2);
 				{
 				this.state = 320;
 				this.simpleStmt();
 				}
 				break;
-			case 9:
+			case 8:
 				this.enterOuterAlt(localctx, 3);
 				{
 				this.state = 321;
 				this.goStmt();
 				}
 				break;
-			case 25:
+			case 24:
 				this.enterOuterAlt(localctx, 4);
 				{
 				this.state = 322;
 				this.returnStmt();
 				}
 				break;
-			case 31:
+			case 30:
 				this.enterOuterAlt(localctx, 5);
 				{
 				this.state = 323;
 				this.block();
 				}
 				break;
-			case 19:
+			case 18:
 				this.enterOuterAlt(localctx, 6);
 				{
 				this.state = 324;
 				this.ifStmt();
 				}
 				break;
-			case 6:
+			case 5:
 				this.enterOuterAlt(localctx, 7);
 				{
 				this.state = 325;
 				this.selectStmt();
 				}
 				break;
-			case 23:
+			case 22:
 				this.enterOuterAlt(localctx, 8);
 				{
 				this.state = 326;
 				this.forStmt();
 				}
 				break;
-			case 8:
+			case 7:
 				this.enterOuterAlt(localctx, 9);
 				{
 				this.state = 327;
@@ -1478,7 +1477,7 @@ export default class GoParser extends GoParserBase {
 			this.expression(0);
 			this.state = 344;
 			_la = this._input.LA(1);
-			if(!(_la===40 || _la===41)) {
+			if(!(_la===39 || _la===40)) {
 			this._errHandler.recoverInline(this);
 			}
 			else {
@@ -1695,13 +1694,13 @@ export default class GoParser extends GoParserBase {
 				this.state = 378;
 				this._errHandler.sync(this);
 				switch (this._input.LA(1)) {
-				case 19:
+				case 18:
 					{
 					this.state = 376;
 					this.ifStmt();
 					}
 					break;
-				case 31:
+				case 30:
 					{
 					this.state = 377;
 					this.block();
@@ -1740,16 +1739,16 @@ export default class GoParser extends GoParserBase {
 			this.state = 384;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 12:
+			case 11:
+			case 27:
 			case 28:
-			case 29:
-			case 65:
+			case 64:
 				{
 				this.state = 382;
 				this.type_();
 				}
 				break;
-			case 27:
+			case 26:
 				{
 				this.state = 383;
 				this.match(GoParser.NIL_LIT);
@@ -1770,16 +1769,16 @@ export default class GoParser extends GoParserBase {
 					this.state = 389;
 					this._errHandler.sync(this);
 					switch (this._input.LA(1)) {
-					case 12:
+					case 11:
+					case 27:
 					case 28:
-					case 29:
-					case 65:
+					case 64:
 						{
 						this.state = 387;
 						this.type_();
 						}
 						break;
-					case 27:
+					case 26:
 						{
 						this.state = 388;
 						this.match(GoParser.NIL_LIT);
@@ -1826,7 +1825,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 401;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while (_la===3 || _la===7) {
+			while (_la===2 || _la===6) {
 				{
 				{
 				this.state = 398;
@@ -1900,7 +1899,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 417;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 7:
+			case 6:
 				this.enterOuterAlt(localctx, 1);
 				{
 				this.state = 411;
@@ -1923,7 +1922,7 @@ export default class GoParser extends GoParserBase {
 				}
 				}
 				break;
-			case 3:
+			case 2:
 				this.enterOuterAlt(localctx, 2);
 				{
 				this.state = 416;
@@ -2011,7 +2010,7 @@ export default class GoParser extends GoParserBase {
 				this.state = 431;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if (((((_la - 4)) & ~0x1F) === 0 && ((1 << (_la - 4)) & 595591425) !== 0) || ((((_la - 59)) & ~0x1F) === 0 && ((1 << (_la - 59)) & 6344703) !== 0)) {
+				if (((((_la - 3)) & ~0x1F) === 0 && ((1 << (_la - 3)) & 595591425) !== 0) || ((((_la - 58)) & ~0x1F) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)) {
 					{
 					this.state = 430;
 					this.expression(0);
@@ -2031,7 +2030,7 @@ export default class GoParser extends GoParserBase {
 				this.state = 435;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if (((((_la - 4)) & ~0x1F) === 0 && ((1 << (_la - 4)) & 595656961) !== 0) || ((((_la - 59)) & ~0x1F) === 0 && ((1 << (_la - 59)) & 6344703) !== 0)) {
+				if (((((_la - 3)) & ~0x1F) === 0 && ((1 << (_la - 3)) & 595656961) !== 0) || ((((_la - 58)) & ~0x1F) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)) {
 					{
 					this.state = 434;
 					this.rangeClause();
@@ -2094,7 +2093,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 450;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (((((_la - 4)) & ~0x1F) === 0 && ((1 << (_la - 4)) & 595591425) !== 0) || ((((_la - 59)) & ~0x1F) === 0 && ((1 << (_la - 59)) & 6344703) !== 0)) {
+			if (((((_la - 3)) & ~0x1F) === 0 && ((1 << (_la - 3)) & 595591425) !== 0) || ((((_la - 58)) & ~0x1F) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)) {
 				{
 				this.state = 449;
 				localctx._postStmt = this.simpleStmt();
@@ -2199,7 +2198,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 475;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 28:
+			case 27:
 				this.enterOuterAlt(localctx, 1);
 				{
 				this.state = 466;
@@ -2216,15 +2215,15 @@ export default class GoParser extends GoParserBase {
 				}
 				}
 				break;
-			case 12:
-			case 65:
+			case 11:
+			case 64:
 				this.enterOuterAlt(localctx, 2);
 				{
 				this.state = 470;
 				this.typeLit();
 				}
 				break;
-			case 29:
+			case 28:
 				this.enterOuterAlt(localctx, 3);
 				{
 				this.state = 471;
@@ -2268,7 +2267,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 480;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===36) {
+			if (_la===35) {
 				{
 				this.state = 479;
 				this.match(GoParser.COMMA);
@@ -2544,7 +2543,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 523;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 805310464) !== 0) || _la===43 || _la===65) {
+			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & 402655232) !== 0) || _la===42 || _la===64) {
 				{
 				this.state = 512;
 				this.parameterDecl();
@@ -2569,7 +2568,7 @@ export default class GoParser extends GoParserBase {
 				this.state = 521;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if (_la===36) {
+				if (_la===35) {
 					{
 					this.state = 520;
 					this.match(GoParser.COMMA);
@@ -2618,7 +2617,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 531;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===43) {
+			if (_la===42) {
 				{
 				this.state = 530;
 				this.match(GoParser.ELLIPSIS);
@@ -2677,7 +2676,7 @@ export default class GoParser extends GoParserBase {
 				this.state = 537;
 				localctx._unary_op = this._input.LT(1);
 				_la = this._input.LA(1);
-				if(!(((((_la - 59)) & ~0x1F) === 0 && ((1 << (_la - 59)) & 127) !== 0))) {
+				if(!(((((_la - 58)) & ~0x1F) === 0 && ((1 << (_la - 58)) & 127) !== 0))) {
 				    localctx._unary_op = this._errHandler.recoverInline(this);
 				}
 				else {
@@ -2714,7 +2713,7 @@ export default class GoParser extends GoParserBase {
 						this.state = 542;
 						localctx._mul_op = this._input.LT(1);
 						_la = this._input.LA(1);
-						if(!(((((_la - 53)) & ~0x1F) === 0 && ((1 << (_la - 53)) & 3103) !== 0))) {
+						if(!(((((_la - 52)) & ~0x1F) === 0 && ((1 << (_la - 52)) & 3103) !== 0))) {
 						    localctx._mul_op = this._errHandler.recoverInline(this);
 						}
 						else {
@@ -2736,7 +2735,7 @@ export default class GoParser extends GoParserBase {
 						this.state = 545;
 						localctx._add_op = this._input.LT(1);
 						_la = this._input.LA(1);
-						if(!(((((_la - 52)) & ~0x1F) === 0 && ((1 << (_la - 52)) & 1793) !== 0))) {
+						if(!(((((_la - 51)) & ~0x1F) === 0 && ((1 << (_la - 51)) & 1793) !== 0))) {
 						    localctx._add_op = this._errHandler.recoverInline(this);
 						}
 						else {
@@ -2758,7 +2757,7 @@ export default class GoParser extends GoParserBase {
 						this.state = 548;
 						localctx._rel_op = this._input.LT(1);
 						_la = this._input.LA(1);
-						if(!(((((_la - 46)) & ~0x1F) === 0 && ((1 << (_la - 46)) & 63) !== 0))) {
+						if(!(((((_la - 45)) & ~0x1F) === 0 && ((1 << (_la - 45)) & 63) !== 0))) {
 						    localctx._rel_op = this._errHandler.recoverInline(this);
 						}
 						else {
@@ -2999,31 +2998,31 @@ export default class GoParser extends GoParserBase {
 			this.state = 594;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 27:
+			case 26:
+			case 65:
 			case 66:
 			case 67:
 			case 68:
 			case 69:
-			case 70:
+			case 72:
 			case 73:
-			case 74:
+			case 79:
 			case 80:
-			case 81:
 				this.enterOuterAlt(localctx, 1);
 				{
 				this.state = 591;
 				this.basicLit();
 				}
 				break;
-			case 28:
-			case 33:
+			case 27:
+			case 32:
 				this.enterOuterAlt(localctx, 2);
 				{
 				this.state = 592;
 				this.compositeLit();
 				}
 				break;
-			case 4:
+			case 3:
 				this.enterOuterAlt(localctx, 3);
 				{
 				this.state = 593;
@@ -3056,34 +3055,34 @@ export default class GoParser extends GoParserBase {
 			this.state = 600;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 27:
+			case 26:
 				this.enterOuterAlt(localctx, 1);
 				{
 				this.state = 596;
 				this.match(GoParser.NIL_LIT);
 				}
 				break;
+			case 65:
 			case 66:
 			case 67:
 			case 68:
-			case 69:
+			case 72:
 			case 73:
-			case 74:
 				this.enterOuterAlt(localctx, 2);
 				{
 				this.state = 597;
 				this.integer();
 				}
 				break;
+			case 79:
 			case 80:
-			case 81:
 				this.enterOuterAlt(localctx, 3);
 				{
 				this.state = 598;
 				this.string_();
 				}
 				break;
-			case 70:
+			case 69:
 				this.enterOuterAlt(localctx, 4);
 				{
 				this.state = 599;
@@ -3118,7 +3117,7 @@ export default class GoParser extends GoParserBase {
 			{
 			this.state = 602;
 			_la = this._input.LA(1);
-			if(!(((((_la - 66)) & ~0x1F) === 0 && ((1 << (_la - 66)) & 399) !== 0))) {
+			if(!(((((_la - 65)) & ~0x1F) === 0 && ((1 << (_la - 65)) & 399) !== 0))) {
 			this._errHandler.recoverInline(this);
 			}
 			else {
@@ -3231,7 +3230,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 621;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 33:
+			case 32:
 				this.enterOuterAlt(localctx, 1);
 				{
 				this.state = 613;
@@ -3244,7 +3243,7 @@ export default class GoParser extends GoParserBase {
 				this.elementType();
 				}
 				break;
-			case 28:
+			case 27:
 				this.enterOuterAlt(localctx, 2);
 				{
 				this.state = 617;
@@ -3252,7 +3251,7 @@ export default class GoParser extends GoParserBase {
 				this.state = 619;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if (_la===33) {
+				if (_la===32) {
 					{
 					this.state = 618;
 					this.typeArgs();
@@ -3292,14 +3291,14 @@ export default class GoParser extends GoParserBase {
 			this.state = 628;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (((((_la - 4)) & ~0x1F) === 0 && ((1 << (_la - 4)) & 729809153) !== 0) || ((((_la - 59)) & ~0x1F) === 0 && ((1 << (_la - 59)) & 6344703) !== 0)) {
+			if (((((_la - 3)) & ~0x1F) === 0 && ((1 << (_la - 3)) & 729809153) !== 0) || ((((_la - 58)) & ~0x1F) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)) {
 				{
 				this.state = 624;
 				this.elementList();
 				this.state = 626;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if (_la===36) {
+				if (_la===35) {
 					{
 					this.state = 625;
 					this.match(GoParser.COMMA);
@@ -3416,12 +3415,13 @@ export default class GoParser extends GoParserBase {
 			this.state = 649;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 4:
-			case 12:
+			case 3:
+			case 11:
+			case 26:
 			case 27:
 			case 28:
-			case 29:
-			case 33:
+			case 32:
+			case 58:
 			case 59:
 			case 60:
 			case 61:
@@ -3433,18 +3433,17 @@ export default class GoParser extends GoParserBase {
 			case 67:
 			case 68:
 			case 69:
-			case 70:
+			case 72:
 			case 73:
-			case 74:
+			case 79:
 			case 80:
-			case 81:
 				this.enterOuterAlt(localctx, 1);
 				{
 				this.state = 647;
 				this.expression(0);
 				}
 				break;
-			case 31:
+			case 30:
 				this.enterOuterAlt(localctx, 2);
 				{
 				this.state = 648;
@@ -3477,12 +3476,13 @@ export default class GoParser extends GoParserBase {
 			this.state = 653;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
-			case 4:
-			case 12:
+			case 3:
+			case 11:
+			case 26:
 			case 27:
 			case 28:
-			case 29:
-			case 33:
+			case 32:
+			case 58:
 			case 59:
 			case 60:
 			case 61:
@@ -3494,18 +3494,17 @@ export default class GoParser extends GoParserBase {
 			case 67:
 			case 68:
 			case 69:
-			case 70:
+			case 72:
 			case 73:
-			case 74:
+			case 79:
 			case 80:
-			case 81:
 				this.enterOuterAlt(localctx, 1);
 				{
 				this.state = 651;
 				this.expression(0);
 				}
 				break;
-			case 31:
+			case 30:
 				this.enterOuterAlt(localctx, 2);
 				{
 				this.state = 652;
@@ -3540,7 +3539,7 @@ export default class GoParser extends GoParserBase {
 			{
 			this.state = 655;
 			_la = this._input.LA(1);
-			if(!(_la===80 || _la===81)) {
+			if(!(_la===79 || _la===80)) {
 			this._errHandler.recoverInline(this);
 			}
 			else {
@@ -3574,7 +3573,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 658;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===63) {
+			if (_la===62) {
 				{
 				this.state = 657;
 				this.match(GoParser.STAR);
@@ -3586,7 +3585,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 662;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (_la===33) {
+			if (_la===32) {
 				{
 				this.state = 661;
 				this.typeArgs();
@@ -3685,7 +3684,7 @@ export default class GoParser extends GoParserBase {
 				this.state = 674;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if (((((_la - 4)) & ~0x1F) === 0 && ((1 << (_la - 4)) & 595591425) !== 0) || ((((_la - 59)) & ~0x1F) === 0 && ((1 << (_la - 59)) & 6344703) !== 0)) {
+				if (((((_la - 3)) & ~0x1F) === 0 && ((1 << (_la - 3)) & 595591425) !== 0) || ((((_la - 58)) & ~0x1F) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)) {
 					{
 					this.state = 673;
 					this.expression(0);
@@ -3697,7 +3696,7 @@ export default class GoParser extends GoParserBase {
 				this.state = 678;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if (((((_la - 4)) & ~0x1F) === 0 && ((1 << (_la - 4)) & 595591425) !== 0) || ((((_la - 59)) & ~0x1F) === 0 && ((1 << (_la - 59)) & 6344703) !== 0)) {
+				if (((((_la - 3)) & ~0x1F) === 0 && ((1 << (_la - 3)) & 595591425) !== 0) || ((((_la - 58)) & ~0x1F) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)) {
 					{
 					this.state = 677;
 					this.expression(0);
@@ -3711,7 +3710,7 @@ export default class GoParser extends GoParserBase {
 				this.state = 681;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if (((((_la - 4)) & ~0x1F) === 0 && ((1 << (_la - 4)) & 595591425) !== 0) || ((((_la - 59)) & ~0x1F) === 0 && ((1 << (_la - 59)) & 6344703) !== 0)) {
+				if (((((_la - 3)) & ~0x1F) === 0 && ((1 << (_la - 3)) & 595591425) !== 0) || ((((_la - 58)) & ~0x1F) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)) {
 					{
 					this.state = 680;
 					this.expression(0);
@@ -3791,7 +3790,7 @@ export default class GoParser extends GoParserBase {
 			this.state = 712;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if (((((_la - 4)) & ~0x1F) === 0 && ((1 << (_la - 4)) & 595591425) !== 0) || ((((_la - 59)) & ~0x1F) === 0 && ((1 << (_la - 59)) & 6344703) !== 0)) {
+			if (((((_la - 3)) & ~0x1F) === 0 && ((1 << (_la - 3)) & 595591425) !== 0) || ((((_la - 58)) & ~0x1F) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)) {
 				{
 				this.state = 704;
 				this._errHandler.sync(this);
@@ -3824,7 +3823,7 @@ export default class GoParser extends GoParserBase {
 				this.state = 707;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if (_la===43) {
+				if (_la===42) {
 					{
 					this.state = 706;
 					this.match(GoParser.ELLIPSIS);
@@ -3834,7 +3833,7 @@ export default class GoParser extends GoParserBase {
 				this.state = 710;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if (_la===36) {
+				if (_la===35) {
 					{
 					this.state = 709;
 					this.match(GoParser.COMMA);
@@ -3996,7 +3995,7 @@ export default class GoParser extends GoParserBase {
 		return true;
 	}
 
-	public static readonly _serializedATN: number[] = [4,1,90,727,2,0,7,0,2,
+	public static readonly _serializedATN: number[] = [4,1,89,727,2,0,7,0,2,
 	1,7,1,2,2,7,2,2,3,7,3,2,4,7,4,2,5,7,5,2,6,7,6,2,7,7,7,2,8,7,8,2,9,7,9,2,
 	10,7,10,2,11,7,11,2,12,7,12,2,13,7,13,2,14,7,14,2,15,7,15,2,16,7,16,2,17,
 	7,17,2,18,7,18,2,19,7,19,2,20,7,20,2,21,7,21,2,22,7,22,2,23,7,23,2,24,7,
@@ -4055,9 +4054,9 @@ export default class GoParser extends GoParserBase {
 	73,0,2,100,102,74,0,2,4,6,8,10,12,14,16,18,20,22,24,26,28,30,32,34,36,38,
 	40,42,44,46,48,50,52,54,56,58,60,62,64,66,68,70,72,74,76,78,80,82,84,86,
 	88,90,92,94,96,98,100,102,104,106,108,110,112,114,116,118,120,122,124,126,
-	128,130,132,134,136,138,140,142,144,146,0,8,2,0,28,28,39,39,1,0,40,41,1,
-	0,59,65,2,0,53,57,63,64,2,0,52,52,60,62,1,0,46,51,2,0,66,69,73,74,1,0,80,
-	81,771,0,148,1,0,0,0,2,171,1,0,0,0,4,174,1,0,0,0,6,189,1,0,0,0,8,193,1,
+	128,130,132,134,136,138,140,142,144,146,0,8,2,0,27,27,38,38,1,0,39,40,1,
+	0,58,64,2,0,52,56,62,63,2,0,51,51,59,61,1,0,45,50,2,0,65,68,72,73,1,0,79,
+	80,771,0,148,1,0,0,0,2,171,1,0,0,0,4,174,1,0,0,0,6,189,1,0,0,0,8,193,1,
 	0,0,0,10,197,1,0,0,0,12,199,1,0,0,0,14,213,1,0,0,0,16,221,1,0,0,0,18,229,
 	1,0,0,0,20,237,1,0,0,0,22,248,1,0,0,0,24,251,1,0,0,0,26,260,1,0,0,0,28,
 	264,1,0,0,0,30,273,1,0,0,0,32,287,1,0,0,0,34,297,1,0,0,0,36,315,1,0,0,0,
@@ -4078,43 +4077,43 @@ export default class GoParser extends GoParserBase {
 	1,0,0,0,157,155,1,0,0,0,158,161,3,28,14,0,159,161,3,10,5,0,160,158,1,0,
 	0,0,160,159,1,0,0,0,161,162,1,0,0,0,162,163,3,146,73,0,163,165,1,0,0,0,
 	164,160,1,0,0,0,165,168,1,0,0,0,166,164,1,0,0,0,166,167,1,0,0,0,167,169,
-	1,0,0,0,168,166,1,0,0,0,169,170,5,0,0,1,170,1,1,0,0,0,171,172,5,15,0,0,
-	172,173,5,1,0,0,173,3,1,0,0,0,174,186,5,24,0,0,175,187,3,6,3,0,176,182,
-	5,29,0,0,177,178,3,6,3,0,178,179,3,146,73,0,179,181,1,0,0,0,180,177,1,0,
+	1,0,0,0,168,166,1,0,0,0,169,170,5,0,0,1,170,1,1,0,0,0,171,172,5,14,0,0,
+	172,173,5,27,0,0,173,3,1,0,0,0,174,186,5,23,0,0,175,187,3,6,3,0,176,182,
+	5,28,0,0,177,178,3,6,3,0,178,179,3,146,73,0,179,181,1,0,0,0,180,177,1,0,
 	0,0,181,184,1,0,0,0,182,180,1,0,0,0,182,183,1,0,0,0,183,185,1,0,0,0,184,
-	182,1,0,0,0,185,187,5,30,0,0,186,175,1,0,0,0,186,176,1,0,0,0,187,5,1,0,
+	182,1,0,0,0,185,187,5,29,0,0,186,175,1,0,0,0,186,176,1,0,0,0,187,5,1,0,
 	0,0,188,190,7,0,0,0,189,188,1,0,0,0,189,190,1,0,0,0,190,191,1,0,0,0,191,
 	192,3,8,4,0,192,7,1,0,0,0,193,194,3,130,65,0,194,9,1,0,0,0,195,198,3,12,
 	6,0,196,198,3,30,15,0,197,195,1,0,0,0,197,196,1,0,0,0,198,11,1,0,0,0,199,
-	211,5,17,0,0,200,212,3,14,7,0,201,207,5,29,0,0,202,203,3,14,7,0,203,204,
+	211,5,16,0,0,200,212,3,14,7,0,201,207,5,28,0,0,202,203,3,14,7,0,203,204,
 	3,146,73,0,204,206,1,0,0,0,205,202,1,0,0,0,206,209,1,0,0,0,207,205,1,0,
-	0,0,207,208,1,0,0,0,208,210,1,0,0,0,209,207,1,0,0,0,210,212,5,30,0,0,211,
+	0,0,207,208,1,0,0,0,208,210,1,0,0,0,209,207,1,0,0,0,210,212,5,29,0,0,211,
 	200,1,0,0,0,211,201,1,0,0,0,212,13,1,0,0,0,213,219,3,16,8,0,214,216,3,78,
-	39,0,215,214,1,0,0,0,215,216,1,0,0,0,216,217,1,0,0,0,217,218,5,35,0,0,218,
-	220,3,18,9,0,219,215,1,0,0,0,219,220,1,0,0,0,220,15,1,0,0,0,221,226,5,28,
-	0,0,222,223,5,36,0,0,223,225,5,28,0,0,224,222,1,0,0,0,225,228,1,0,0,0,226,
+	39,0,215,214,1,0,0,0,215,216,1,0,0,0,216,217,1,0,0,0,217,218,5,34,0,0,218,
+	220,3,18,9,0,219,215,1,0,0,0,219,220,1,0,0,0,220,15,1,0,0,0,221,226,5,27,
+	0,0,222,223,5,35,0,0,223,225,5,27,0,0,224,222,1,0,0,0,225,228,1,0,0,0,226,
 	224,1,0,0,0,226,227,1,0,0,0,227,17,1,0,0,0,228,226,1,0,0,0,229,234,3,100,
-	50,0,230,231,5,36,0,0,231,233,3,100,50,0,232,230,1,0,0,0,233,236,1,0,0,
+	50,0,230,231,5,35,0,0,231,233,3,100,50,0,232,230,1,0,0,0,233,236,1,0,0,
 	0,234,232,1,0,0,0,234,235,1,0,0,0,235,19,1,0,0,0,236,234,1,0,0,0,237,238,
-	5,33,0,0,238,243,3,22,11,0,239,240,5,36,0,0,240,242,3,22,11,0,241,239,1,
+	5,32,0,0,238,243,3,22,11,0,239,240,5,35,0,0,240,242,3,22,11,0,241,239,1,
 	0,0,0,242,245,1,0,0,0,243,241,1,0,0,0,243,244,1,0,0,0,244,246,1,0,0,0,245,
-	243,1,0,0,0,246,247,5,34,0,0,247,21,1,0,0,0,248,249,3,16,8,0,249,250,3,
-	24,12,0,250,23,1,0,0,0,251,256,3,26,13,0,252,253,5,52,0,0,253,255,3,26,
+	243,1,0,0,0,246,247,5,33,0,0,247,21,1,0,0,0,248,249,3,16,8,0,249,250,3,
+	24,12,0,250,23,1,0,0,0,251,256,3,26,13,0,252,253,5,51,0,0,253,255,3,26,
 	13,0,254,252,1,0,0,0,255,258,1,0,0,0,256,254,1,0,0,0,256,257,1,0,0,0,257,
-	25,1,0,0,0,258,256,1,0,0,0,259,261,5,58,0,0,260,259,1,0,0,0,260,261,1,0,
-	0,0,261,262,1,0,0,0,262,263,3,78,39,0,263,27,1,0,0,0,264,265,5,4,0,0,265,
-	267,5,28,0,0,266,268,3,20,10,0,267,266,1,0,0,0,267,268,1,0,0,0,268,269,
+	25,1,0,0,0,258,256,1,0,0,0,259,261,5,57,0,0,260,259,1,0,0,0,260,261,1,0,
+	0,0,261,262,1,0,0,0,262,263,3,78,39,0,263,27,1,0,0,0,264,265,5,3,0,0,265,
+	267,5,27,0,0,266,268,3,20,10,0,267,266,1,0,0,0,267,268,1,0,0,0,268,269,
 	1,0,0,0,269,271,3,92,46,0,270,272,3,34,17,0,271,270,1,0,0,0,271,272,1,0,
-	0,0,272,29,1,0,0,0,273,285,5,26,0,0,274,286,3,32,16,0,275,281,5,29,0,0,
+	0,0,272,29,1,0,0,0,273,285,5,25,0,0,274,286,3,32,16,0,275,281,5,28,0,0,
 	276,277,3,32,16,0,277,278,3,146,73,0,278,280,1,0,0,0,279,276,1,0,0,0,280,
 	283,1,0,0,0,281,279,1,0,0,0,281,282,1,0,0,0,282,284,1,0,0,0,283,281,1,0,
-	0,0,284,286,5,30,0,0,285,274,1,0,0,0,285,275,1,0,0,0,286,31,1,0,0,0,287,
-	295,3,16,8,0,288,291,3,78,39,0,289,290,5,35,0,0,290,292,3,18,9,0,291,289,
-	1,0,0,0,291,292,1,0,0,0,292,296,1,0,0,0,293,294,5,35,0,0,294,296,3,18,9,
-	0,295,288,1,0,0,0,295,293,1,0,0,0,296,33,1,0,0,0,297,299,5,31,0,0,298,300,
-	3,36,18,0,299,298,1,0,0,0,299,300,1,0,0,0,300,301,1,0,0,0,301,302,5,32,
-	0,0,302,35,1,0,0,0,303,305,5,37,0,0,304,303,1,0,0,0,304,305,1,0,0,0,305,
-	311,1,0,0,0,306,308,5,89,0,0,307,306,1,0,0,0,307,308,1,0,0,0,308,311,1,
+	0,0,284,286,5,29,0,0,285,274,1,0,0,0,285,275,1,0,0,0,286,31,1,0,0,0,287,
+	295,3,16,8,0,288,291,3,78,39,0,289,290,5,34,0,0,290,292,3,18,9,0,291,289,
+	1,0,0,0,291,292,1,0,0,0,292,296,1,0,0,0,293,294,5,34,0,0,294,296,3,18,9,
+	0,295,288,1,0,0,0,295,293,1,0,0,0,296,33,1,0,0,0,297,299,5,30,0,0,298,300,
+	3,36,18,0,299,298,1,0,0,0,299,300,1,0,0,0,300,301,1,0,0,0,301,302,5,31,
+	0,0,302,35,1,0,0,0,303,305,5,36,0,0,304,303,1,0,0,0,304,305,1,0,0,0,305,
+	311,1,0,0,0,306,308,5,88,0,0,307,306,1,0,0,0,307,308,1,0,0,0,308,311,1,
 	0,0,0,309,311,4,18,0,0,310,304,1,0,0,0,310,307,1,0,0,0,310,309,1,0,0,0,
 	311,312,1,0,0,0,312,313,3,38,19,0,313,314,3,146,73,0,314,316,1,0,0,0,315,
 	310,1,0,0,0,316,317,1,0,0,0,317,315,1,0,0,0,317,318,1,0,0,0,318,37,1,0,
@@ -4125,113 +4124,113 @@ export default class GoParser extends GoParserBase {
 	0,0,328,327,1,0,0,0,329,39,1,0,0,0,330,336,3,44,22,0,331,336,3,46,23,0,
 	332,336,3,48,24,0,333,336,3,42,21,0,334,336,3,52,26,0,335,330,1,0,0,0,335,
 	331,1,0,0,0,335,332,1,0,0,0,335,333,1,0,0,0,335,334,1,0,0,0,336,41,1,0,
-	0,0,337,338,3,100,50,0,338,43,1,0,0,0,339,340,3,100,50,0,340,341,5,65,0,
+	0,0,337,338,3,100,50,0,338,43,1,0,0,0,339,340,3,100,50,0,340,341,5,64,0,
 	0,341,342,3,100,50,0,342,45,1,0,0,0,343,344,3,100,50,0,344,345,7,1,0,0,
 	345,47,1,0,0,0,346,347,3,18,9,0,347,348,3,50,25,0,348,349,3,18,9,0,349,
-	49,1,0,0,0,350,351,5,35,0,0,351,51,1,0,0,0,352,353,3,16,8,0,353,354,5,42,
-	0,0,354,355,3,18,9,0,355,53,1,0,0,0,356,358,5,25,0,0,357,359,3,18,9,0,358,
-	357,1,0,0,0,358,359,1,0,0,0,359,55,1,0,0,0,360,361,5,8,0,0,361,362,3,100,
-	50,0,362,57,1,0,0,0,363,372,5,19,0,0,364,373,3,100,50,0,365,366,3,146,73,
+	49,1,0,0,0,350,351,5,34,0,0,351,51,1,0,0,0,352,353,3,16,8,0,353,354,5,41,
+	0,0,354,355,3,18,9,0,355,53,1,0,0,0,356,358,5,24,0,0,357,359,3,18,9,0,358,
+	357,1,0,0,0,358,359,1,0,0,0,359,55,1,0,0,0,360,361,5,7,0,0,361,362,3,100,
+	50,0,362,57,1,0,0,0,363,372,5,18,0,0,364,373,3,100,50,0,365,366,3,146,73,
 	0,366,367,3,100,50,0,367,373,1,0,0,0,368,369,3,40,20,0,369,370,3,146,73,
 	0,370,371,3,100,50,0,371,373,1,0,0,0,372,364,1,0,0,0,372,365,1,0,0,0,372,
-	368,1,0,0,0,373,374,1,0,0,0,374,380,3,34,17,0,375,378,5,13,0,0,376,379,
+	368,1,0,0,0,373,374,1,0,0,0,374,380,3,34,17,0,375,378,5,12,0,0,376,379,
 	3,58,29,0,377,379,3,34,17,0,378,376,1,0,0,0,378,377,1,0,0,0,379,381,1,0,
 	0,0,380,375,1,0,0,0,380,381,1,0,0,0,381,59,1,0,0,0,382,385,3,78,39,0,383,
-	385,5,27,0,0,384,382,1,0,0,0,384,383,1,0,0,0,385,393,1,0,0,0,386,389,5,
-	36,0,0,387,390,3,78,39,0,388,390,5,27,0,0,389,387,1,0,0,0,389,388,1,0,0,
+	385,5,26,0,0,384,382,1,0,0,0,384,383,1,0,0,0,385,393,1,0,0,0,386,389,5,
+	35,0,0,387,390,3,78,39,0,388,390,5,26,0,0,389,387,1,0,0,0,389,388,1,0,0,
 	0,390,392,1,0,0,0,391,386,1,0,0,0,392,395,1,0,0,0,393,391,1,0,0,0,393,394,
-	1,0,0,0,394,61,1,0,0,0,395,393,1,0,0,0,396,397,5,6,0,0,397,401,5,31,0,0,
+	1,0,0,0,394,61,1,0,0,0,395,393,1,0,0,0,396,397,5,5,0,0,397,401,5,30,0,0,
 	398,400,3,64,32,0,399,398,1,0,0,0,400,403,1,0,0,0,401,399,1,0,0,0,401,402,
-	1,0,0,0,402,404,1,0,0,0,403,401,1,0,0,0,404,405,5,32,0,0,405,63,1,0,0,0,
-	406,407,3,66,33,0,407,409,5,38,0,0,408,410,3,36,18,0,409,408,1,0,0,0,409,
-	410,1,0,0,0,410,65,1,0,0,0,411,414,5,7,0,0,412,415,3,44,22,0,413,415,3,
-	68,34,0,414,412,1,0,0,0,414,413,1,0,0,0,415,418,1,0,0,0,416,418,5,3,0,0,
+	1,0,0,0,402,404,1,0,0,0,403,401,1,0,0,0,404,405,5,31,0,0,405,63,1,0,0,0,
+	406,407,3,66,33,0,407,409,5,37,0,0,408,410,3,36,18,0,409,408,1,0,0,0,409,
+	410,1,0,0,0,410,65,1,0,0,0,411,414,5,6,0,0,412,415,3,44,22,0,413,415,3,
+	68,34,0,414,412,1,0,0,0,414,413,1,0,0,0,415,418,1,0,0,0,416,418,5,2,0,0,
 	417,411,1,0,0,0,417,416,1,0,0,0,418,67,1,0,0,0,419,420,3,18,9,0,420,421,
-	5,35,0,0,421,426,1,0,0,0,422,423,3,16,8,0,423,424,5,42,0,0,424,426,1,0,
+	5,34,0,0,421,426,1,0,0,0,422,423,3,16,8,0,423,424,5,41,0,0,424,426,1,0,
 	0,0,425,419,1,0,0,0,425,422,1,0,0,0,425,426,1,0,0,0,426,427,1,0,0,0,427,
-	428,3,100,50,0,428,69,1,0,0,0,429,437,5,23,0,0,430,432,3,100,50,0,431,430,
+	428,3,100,50,0,428,69,1,0,0,0,429,437,5,22,0,0,430,432,3,100,50,0,431,430,
 	1,0,0,0,431,432,1,0,0,0,432,438,1,0,0,0,433,438,3,72,36,0,434,436,3,74,
 	37,0,435,434,1,0,0,0,435,436,1,0,0,0,436,438,1,0,0,0,437,431,1,0,0,0,437,
 	433,1,0,0,0,437,435,1,0,0,0,438,439,1,0,0,0,439,440,3,34,17,0,440,71,1,
 	0,0,0,441,443,3,40,20,0,442,441,1,0,0,0,442,443,1,0,0,0,443,444,1,0,0,0,
 	444,446,3,146,73,0,445,447,3,100,50,0,446,445,1,0,0,0,446,447,1,0,0,0,447,
 	448,1,0,0,0,448,450,3,146,73,0,449,451,3,40,20,0,450,449,1,0,0,0,450,451,
-	1,0,0,0,451,73,1,0,0,0,452,453,3,18,9,0,453,454,5,35,0,0,454,459,1,0,0,
-	0,455,456,3,16,8,0,456,457,5,42,0,0,457,459,1,0,0,0,458,452,1,0,0,0,458,
-	455,1,0,0,0,458,459,1,0,0,0,459,460,1,0,0,0,460,461,5,20,0,0,461,462,3,
-	100,50,0,462,75,1,0,0,0,463,464,5,9,0,0,464,465,3,100,50,0,465,77,1,0,0,
+	1,0,0,0,451,73,1,0,0,0,452,453,3,18,9,0,453,454,5,34,0,0,454,459,1,0,0,
+	0,455,456,3,16,8,0,456,457,5,41,0,0,457,459,1,0,0,0,458,452,1,0,0,0,458,
+	455,1,0,0,0,458,459,1,0,0,0,459,460,1,0,0,0,460,461,5,19,0,0,461,462,3,
+	100,50,0,462,75,1,0,0,0,463,464,5,8,0,0,464,465,3,100,50,0,465,77,1,0,0,
 	0,466,468,3,82,41,0,467,469,3,80,40,0,468,467,1,0,0,0,468,469,1,0,0,0,469,
-	476,1,0,0,0,470,476,3,84,42,0,471,472,5,29,0,0,472,473,3,78,39,0,473,474,
-	5,30,0,0,474,476,1,0,0,0,475,466,1,0,0,0,475,470,1,0,0,0,475,471,1,0,0,
-	0,476,79,1,0,0,0,477,478,5,33,0,0,478,480,3,60,30,0,479,481,5,36,0,0,480,
-	479,1,0,0,0,480,481,1,0,0,0,481,482,1,0,0,0,482,483,5,34,0,0,483,81,1,0,
-	0,0,484,487,3,114,57,0,485,487,5,28,0,0,486,484,1,0,0,0,486,485,1,0,0,0,
+	476,1,0,0,0,470,476,3,84,42,0,471,472,5,28,0,0,472,473,3,78,39,0,473,474,
+	5,29,0,0,474,476,1,0,0,0,475,466,1,0,0,0,475,470,1,0,0,0,475,471,1,0,0,
+	0,476,79,1,0,0,0,477,478,5,32,0,0,478,480,3,60,30,0,479,481,5,35,0,0,480,
+	479,1,0,0,0,480,481,1,0,0,0,481,482,1,0,0,0,482,483,5,33,0,0,483,81,1,0,
+	0,0,484,487,3,114,57,0,485,487,5,27,0,0,486,484,1,0,0,0,486,485,1,0,0,0,
 	487,83,1,0,0,0,488,489,3,90,45,0,489,85,1,0,0,0,490,491,3,100,50,0,491,
-	87,1,0,0,0,492,493,3,78,39,0,493,89,1,0,0,0,494,500,5,12,0,0,495,496,5,
-	12,0,0,496,500,5,65,0,0,497,498,5,65,0,0,498,500,5,12,0,0,499,494,1,0,0,
+	87,1,0,0,0,492,493,3,78,39,0,493,89,1,0,0,0,494,500,5,11,0,0,495,496,5,
+	11,0,0,496,500,5,64,0,0,497,498,5,64,0,0,498,500,5,11,0,0,499,494,1,0,0,
 	0,499,495,1,0,0,0,499,497,1,0,0,0,500,501,1,0,0,0,501,502,3,88,44,0,502,
 	91,1,0,0,0,503,505,3,96,48,0,504,506,3,94,47,0,505,504,1,0,0,0,505,506,
 	1,0,0,0,506,93,1,0,0,0,507,510,3,96,48,0,508,510,3,78,39,0,509,507,1,0,
-	0,0,509,508,1,0,0,0,510,95,1,0,0,0,511,523,5,29,0,0,512,517,3,98,49,0,513,
-	514,5,36,0,0,514,516,3,98,49,0,515,513,1,0,0,0,516,519,1,0,0,0,517,515,
-	1,0,0,0,517,518,1,0,0,0,518,521,1,0,0,0,519,517,1,0,0,0,520,522,5,36,0,
+	0,0,509,508,1,0,0,0,510,95,1,0,0,0,511,523,5,28,0,0,512,517,3,98,49,0,513,
+	514,5,35,0,0,514,516,3,98,49,0,515,513,1,0,0,0,516,519,1,0,0,0,517,515,
+	1,0,0,0,517,518,1,0,0,0,518,521,1,0,0,0,519,517,1,0,0,0,520,522,5,35,0,
 	0,521,520,1,0,0,0,521,522,1,0,0,0,522,524,1,0,0,0,523,512,1,0,0,0,523,524,
-	1,0,0,0,524,525,1,0,0,0,525,526,5,30,0,0,526,97,1,0,0,0,527,529,3,16,8,
-	0,528,527,1,0,0,0,528,529,1,0,0,0,529,531,1,0,0,0,530,532,5,43,0,0,531,
+	1,0,0,0,524,525,1,0,0,0,525,526,5,29,0,0,526,97,1,0,0,0,527,529,3,16,8,
+	0,528,527,1,0,0,0,528,529,1,0,0,0,529,531,1,0,0,0,530,532,5,42,0,0,531,
 	530,1,0,0,0,531,532,1,0,0,0,532,533,1,0,0,0,533,534,3,78,39,0,534,99,1,
 	0,0,0,535,536,6,50,-1,0,536,540,3,102,51,0,537,538,7,2,0,0,538,540,3,100,
 	50,6,539,535,1,0,0,0,539,537,1,0,0,0,540,558,1,0,0,0,541,542,10,5,0,0,542,
 	543,7,3,0,0,543,557,3,100,50,6,544,545,10,4,0,0,545,546,7,4,0,0,546,557,
 	3,100,50,5,547,548,10,3,0,0,548,549,7,5,0,0,549,557,3,100,50,4,550,551,
-	10,2,0,0,551,552,5,45,0,0,552,557,3,100,50,3,553,554,10,1,0,0,554,555,5,
-	44,0,0,555,557,3,100,50,2,556,541,1,0,0,0,556,544,1,0,0,0,556,547,1,0,0,
+	10,2,0,0,551,552,5,44,0,0,552,557,3,100,50,3,553,554,10,1,0,0,554,555,5,
+	43,0,0,555,557,3,100,50,2,556,541,1,0,0,0,556,544,1,0,0,0,556,547,1,0,0,
 	0,556,550,1,0,0,0,556,553,1,0,0,0,557,560,1,0,0,0,558,556,1,0,0,0,558,559,
 	1,0,0,0,559,101,1,0,0,0,560,558,1,0,0,0,561,562,6,51,-1,0,562,565,3,104,
 	52,0,563,565,3,144,72,0,564,561,1,0,0,0,564,563,1,0,0,0,565,577,1,0,0,0,
-	566,573,10,1,0,0,567,568,5,39,0,0,568,574,5,28,0,0,569,574,3,136,68,0,570,
+	566,573,10,1,0,0,567,568,5,38,0,0,568,574,5,27,0,0,569,574,3,136,68,0,570,
 	574,3,138,69,0,571,574,3,140,70,0,572,574,3,142,71,0,573,567,1,0,0,0,573,
 	569,1,0,0,0,573,570,1,0,0,0,573,571,1,0,0,0,573,572,1,0,0,0,574,576,1,0,
 	0,0,575,566,1,0,0,0,576,579,1,0,0,0,577,575,1,0,0,0,577,578,1,0,0,0,578,
 	103,1,0,0,0,579,577,1,0,0,0,580,590,3,106,53,0,581,583,3,112,56,0,582,584,
-	3,80,40,0,583,582,1,0,0,0,583,584,1,0,0,0,584,590,1,0,0,0,585,586,5,29,
-	0,0,586,587,3,100,50,0,587,588,5,30,0,0,588,590,1,0,0,0,589,580,1,0,0,0,
+	3,80,40,0,583,582,1,0,0,0,583,584,1,0,0,0,584,590,1,0,0,0,585,586,5,28,
+	0,0,586,587,3,100,50,0,587,588,5,29,0,0,588,590,1,0,0,0,589,580,1,0,0,0,
 	589,581,1,0,0,0,589,585,1,0,0,0,590,105,1,0,0,0,591,595,3,108,54,0,592,
 	595,3,116,58,0,593,595,3,134,67,0,594,591,1,0,0,0,594,592,1,0,0,0,594,593,
-	1,0,0,0,595,107,1,0,0,0,596,601,5,27,0,0,597,601,3,110,55,0,598,601,3,130,
-	65,0,599,601,5,70,0,0,600,596,1,0,0,0,600,597,1,0,0,0,600,598,1,0,0,0,600,
-	599,1,0,0,0,601,109,1,0,0,0,602,603,7,6,0,0,603,111,1,0,0,0,604,605,5,28,
-	0,0,605,113,1,0,0,0,606,607,5,28,0,0,607,608,5,39,0,0,608,609,5,28,0,0,
+	1,0,0,0,595,107,1,0,0,0,596,601,5,26,0,0,597,601,3,110,55,0,598,601,3,130,
+	65,0,599,601,5,69,0,0,600,596,1,0,0,0,600,597,1,0,0,0,600,598,1,0,0,0,600,
+	599,1,0,0,0,601,109,1,0,0,0,602,603,7,6,0,0,603,111,1,0,0,0,604,605,5,27,
+	0,0,605,113,1,0,0,0,606,607,5,27,0,0,607,608,5,38,0,0,608,609,5,27,0,0,
 	609,115,1,0,0,0,610,611,3,118,59,0,611,612,3,120,60,0,612,117,1,0,0,0,613,
-	614,5,33,0,0,614,615,5,43,0,0,615,616,5,34,0,0,616,622,3,88,44,0,617,619,
+	614,5,32,0,0,614,615,5,42,0,0,615,616,5,33,0,0,616,622,3,88,44,0,617,619,
 	3,82,41,0,618,620,3,80,40,0,619,618,1,0,0,0,619,620,1,0,0,0,620,622,1,0,
-	0,0,621,613,1,0,0,0,621,617,1,0,0,0,622,119,1,0,0,0,623,628,5,31,0,0,624,
-	626,3,122,61,0,625,627,5,36,0,0,626,625,1,0,0,0,626,627,1,0,0,0,627,629,
-	1,0,0,0,628,624,1,0,0,0,628,629,1,0,0,0,629,630,1,0,0,0,630,631,5,32,0,
-	0,631,121,1,0,0,0,632,637,3,124,62,0,633,634,5,36,0,0,634,636,3,124,62,
+	0,0,621,613,1,0,0,0,621,617,1,0,0,0,622,119,1,0,0,0,623,628,5,30,0,0,624,
+	626,3,122,61,0,625,627,5,35,0,0,626,625,1,0,0,0,626,627,1,0,0,0,627,629,
+	1,0,0,0,628,624,1,0,0,0,628,629,1,0,0,0,629,630,1,0,0,0,630,631,5,31,0,
+	0,631,121,1,0,0,0,632,637,3,124,62,0,633,634,5,35,0,0,634,636,3,124,62,
 	0,635,633,1,0,0,0,636,639,1,0,0,0,637,635,1,0,0,0,637,638,1,0,0,0,638,123,
-	1,0,0,0,639,637,1,0,0,0,640,641,3,126,63,0,641,642,5,38,0,0,642,644,1,0,
+	1,0,0,0,639,637,1,0,0,0,640,641,3,126,63,0,641,642,5,37,0,0,642,644,1,0,
 	0,0,643,640,1,0,0,0,643,644,1,0,0,0,644,645,1,0,0,0,645,646,3,128,64,0,
 	646,125,1,0,0,0,647,650,3,100,50,0,648,650,3,120,60,0,649,647,1,0,0,0,649,
 	648,1,0,0,0,650,127,1,0,0,0,651,654,3,100,50,0,652,654,3,120,60,0,653,651,
 	1,0,0,0,653,652,1,0,0,0,654,129,1,0,0,0,655,656,7,7,0,0,656,131,1,0,0,0,
-	657,659,5,63,0,0,658,657,1,0,0,0,658,659,1,0,0,0,659,660,1,0,0,0,660,662,
+	657,659,5,62,0,0,658,657,1,0,0,0,658,659,1,0,0,0,659,660,1,0,0,0,660,662,
 	3,82,41,0,661,663,3,80,40,0,662,661,1,0,0,0,662,663,1,0,0,0,663,133,1,0,
-	0,0,664,665,5,4,0,0,665,666,3,92,46,0,666,667,3,34,17,0,667,135,1,0,0,0,
-	668,669,5,33,0,0,669,670,3,100,50,0,670,671,5,34,0,0,671,137,1,0,0,0,672,
-	688,5,33,0,0,673,675,3,100,50,0,674,673,1,0,0,0,674,675,1,0,0,0,675,676,
-	1,0,0,0,676,678,5,38,0,0,677,679,3,100,50,0,678,677,1,0,0,0,678,679,1,0,
+	0,0,664,665,5,3,0,0,665,666,3,92,46,0,666,667,3,34,17,0,667,135,1,0,0,0,
+	668,669,5,32,0,0,669,670,3,100,50,0,670,671,5,33,0,0,671,137,1,0,0,0,672,
+	688,5,32,0,0,673,675,3,100,50,0,674,673,1,0,0,0,674,675,1,0,0,0,675,676,
+	1,0,0,0,676,678,5,37,0,0,677,679,3,100,50,0,678,677,1,0,0,0,678,679,1,0,
 	0,0,679,689,1,0,0,0,680,682,3,100,50,0,681,680,1,0,0,0,681,682,1,0,0,0,
-	682,683,1,0,0,0,683,684,5,38,0,0,684,685,3,100,50,0,685,686,5,38,0,0,686,
+	682,683,1,0,0,0,683,684,5,37,0,0,684,685,3,100,50,0,685,686,5,37,0,0,686,
 	687,3,100,50,0,687,689,1,0,0,0,688,674,1,0,0,0,688,681,1,0,0,0,689,690,
-	1,0,0,0,690,691,5,34,0,0,691,139,1,0,0,0,692,693,5,39,0,0,693,694,5,29,
-	0,0,694,695,3,78,39,0,695,696,5,30,0,0,696,141,1,0,0,0,697,712,5,29,0,0,
-	698,705,3,18,9,0,699,702,3,78,39,0,700,701,5,36,0,0,701,703,3,18,9,0,702,
+	1,0,0,0,690,691,5,33,0,0,691,139,1,0,0,0,692,693,5,38,0,0,693,694,5,28,
+	0,0,694,695,3,78,39,0,695,696,5,29,0,0,696,141,1,0,0,0,697,712,5,28,0,0,
+	698,705,3,18,9,0,699,702,3,78,39,0,700,701,5,35,0,0,701,703,3,18,9,0,702,
 	700,1,0,0,0,702,703,1,0,0,0,703,705,1,0,0,0,704,698,1,0,0,0,704,699,1,0,
-	0,0,705,707,1,0,0,0,706,708,5,43,0,0,707,706,1,0,0,0,707,708,1,0,0,0,708,
-	710,1,0,0,0,709,711,5,36,0,0,710,709,1,0,0,0,710,711,1,0,0,0,711,713,1,
-	0,0,0,712,704,1,0,0,0,712,713,1,0,0,0,713,714,1,0,0,0,714,715,5,30,0,0,
-	715,143,1,0,0,0,716,717,3,78,39,0,717,718,5,39,0,0,718,719,5,28,0,0,719,
-	145,1,0,0,0,720,725,5,37,0,0,721,725,5,0,0,1,722,725,5,89,0,0,723,725,4,
+	0,0,705,707,1,0,0,0,706,708,5,42,0,0,707,706,1,0,0,0,707,708,1,0,0,0,708,
+	710,1,0,0,0,709,711,5,35,0,0,710,709,1,0,0,0,710,711,1,0,0,0,711,713,1,
+	0,0,0,712,704,1,0,0,0,712,713,1,0,0,0,713,714,1,0,0,0,714,715,5,29,0,0,
+	715,143,1,0,0,0,716,717,3,78,39,0,717,718,5,38,0,0,718,719,5,27,0,0,719,
+	145,1,0,0,0,720,725,5,36,0,0,721,725,5,0,0,1,722,725,5,88,0,0,723,725,4,
 	73,7,0,724,720,1,0,0,0,724,721,1,0,0,0,724,722,1,0,0,0,724,723,1,0,0,0,
 	725,147,1,0,0,0,90,155,160,166,182,186,189,197,207,211,215,219,226,234,
 	243,256,260,267,271,281,285,291,295,299,304,307,310,317,328,335,358,372,
@@ -4322,8 +4321,8 @@ export class PackageClauseContext extends ParserRuleContext {
 	public PACKAGE(): TerminalNode {
 		return this.getToken(GoParser.PACKAGE, 0);
 	}
-	public MAIN_PACKAGE(): TerminalNode {
-		return this.getToken(GoParser.MAIN_PACKAGE, 0);
+	public IDENTIFIER(): TerminalNode {
+		return this.getToken(GoParser.IDENTIFIER, 0);
 	}
     public get ruleIndex(): number {
     	return GoParser.RULE_packageClause;
