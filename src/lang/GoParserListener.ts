@@ -13,17 +13,11 @@ import { ConstDeclContext } from "./GoParser";
 import { ConstSpecContext } from "./GoParser";
 import { IdentifierListContext } from "./GoParser";
 import { ExpressionListContext } from "./GoParser";
-import { TypeDeclContext } from "./GoParser";
-import { TypeSpecContext } from "./GoParser";
-import { AliasDeclContext } from "./GoParser";
-import { TypeDefContext } from "./GoParser";
 import { TypeParametersContext } from "./GoParser";
 import { TypeParameterDeclContext } from "./GoParser";
 import { TypeElementContext } from "./GoParser";
 import { TypeTermContext } from "./GoParser";
 import { FunctionDeclContext } from "./GoParser";
-import { MethodDeclContext } from "./GoParser";
-import { ReceiverContext } from "./GoParser";
 import { VarDeclContext } from "./GoParser";
 import { VarSpecContext } from "./GoParser";
 import { BlockContext } from "./GoParser";
@@ -36,22 +30,9 @@ import { IncDecStmtContext } from "./GoParser";
 import { AssignmentContext } from "./GoParser";
 import { Assign_opContext } from "./GoParser";
 import { ShortVarDeclContext } from "./GoParser";
-import { LabeledStmtContext } from "./GoParser";
 import { ReturnStmtContext } from "./GoParser";
-import { BreakStmtContext } from "./GoParser";
-import { ContinueStmtContext } from "./GoParser";
-import { GotoStmtContext } from "./GoParser";
-import { FallthroughStmtContext } from "./GoParser";
 import { DeferStmtContext } from "./GoParser";
 import { IfStmtContext } from "./GoParser";
-import { SwitchStmtContext } from "./GoParser";
-import { ExprSwitchStmtContext } from "./GoParser";
-import { ExprCaseClauseContext } from "./GoParser";
-import { ExprSwitchCaseContext } from "./GoParser";
-import { TypeSwitchStmtContext } from "./GoParser";
-import { TypeSwitchGuardContext } from "./GoParser";
-import { TypeCaseClauseContext } from "./GoParser";
-import { TypeSwitchCaseContext } from "./GoParser";
 import { TypeListContext } from "./GoParser";
 import { SelectStmtContext } from "./GoParser";
 import { CommClauseContext } from "./GoParser";
@@ -65,23 +46,15 @@ import { Type_Context } from "./GoParser";
 import { TypeArgsContext } from "./GoParser";
 import { TypeNameContext } from "./GoParser";
 import { TypeLitContext } from "./GoParser";
-import { ArrayTypeContext } from "./GoParser";
 import { ArrayLengthContext } from "./GoParser";
 import { ElementTypeContext } from "./GoParser";
-import { PointerTypeContext } from "./GoParser";
-import { InterfaceTypeContext } from "./GoParser";
-import { SliceTypeContext } from "./GoParser";
-import { MapTypeContext } from "./GoParser";
 import { ChannelTypeContext } from "./GoParser";
-import { MethodSpecContext } from "./GoParser";
-import { FunctionTypeContext } from "./GoParser";
 import { SignatureContext } from "./GoParser";
 import { ResultContext } from "./GoParser";
 import { ParametersContext } from "./GoParser";
 import { ParameterDeclContext } from "./GoParser";
 import { ExpressionContext } from "./GoParser";
 import { PrimaryExprContext } from "./GoParser";
-import { ConversionContext } from "./GoParser";
 import { OperandContext } from "./GoParser";
 import { LiteralContext } from "./GoParser";
 import { BasicLitContext } from "./GoParser";
@@ -95,8 +68,6 @@ import { ElementListContext } from "./GoParser";
 import { KeyedElementContext } from "./GoParser";
 import { KeyContext } from "./GoParser";
 import { ElementContext } from "./GoParser";
-import { StructTypeContext } from "./GoParser";
-import { FieldDeclContext } from "./GoParser";
 import { String_Context } from "./GoParser";
 import { EmbeddedFieldContext } from "./GoParser";
 import { FunctionLitContext } from "./GoParser";
@@ -214,46 +185,6 @@ export default class GoParserListener extends ParseTreeListener {
 	 */
 	exitExpressionList?: (ctx: ExpressionListContext) => void;
 	/**
-	 * Enter a parse tree produced by `GoParser.typeDecl`.
-	 * @param ctx the parse tree
-	 */
-	enterTypeDecl?: (ctx: TypeDeclContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.typeDecl`.
-	 * @param ctx the parse tree
-	 */
-	exitTypeDecl?: (ctx: TypeDeclContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.typeSpec`.
-	 * @param ctx the parse tree
-	 */
-	enterTypeSpec?: (ctx: TypeSpecContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.typeSpec`.
-	 * @param ctx the parse tree
-	 */
-	exitTypeSpec?: (ctx: TypeSpecContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.aliasDecl`.
-	 * @param ctx the parse tree
-	 */
-	enterAliasDecl?: (ctx: AliasDeclContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.aliasDecl`.
-	 * @param ctx the parse tree
-	 */
-	exitAliasDecl?: (ctx: AliasDeclContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.typeDef`.
-	 * @param ctx the parse tree
-	 */
-	enterTypeDef?: (ctx: TypeDefContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.typeDef`.
-	 * @param ctx the parse tree
-	 */
-	exitTypeDef?: (ctx: TypeDefContext) => void;
-	/**
 	 * Enter a parse tree produced by `GoParser.typeParameters`.
 	 * @param ctx the parse tree
 	 */
@@ -303,26 +234,6 @@ export default class GoParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitFunctionDecl?: (ctx: FunctionDeclContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.methodDecl`.
-	 * @param ctx the parse tree
-	 */
-	enterMethodDecl?: (ctx: MethodDeclContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.methodDecl`.
-	 * @param ctx the parse tree
-	 */
-	exitMethodDecl?: (ctx: MethodDeclContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.receiver`.
-	 * @param ctx the parse tree
-	 */
-	enterReceiver?: (ctx: ReceiverContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.receiver`.
-	 * @param ctx the parse tree
-	 */
-	exitReceiver?: (ctx: ReceiverContext) => void;
 	/**
 	 * Enter a parse tree produced by `GoParser.varDecl`.
 	 * @param ctx the parse tree
@@ -444,16 +355,6 @@ export default class GoParserListener extends ParseTreeListener {
 	 */
 	exitShortVarDecl?: (ctx: ShortVarDeclContext) => void;
 	/**
-	 * Enter a parse tree produced by `GoParser.labeledStmt`.
-	 * @param ctx the parse tree
-	 */
-	enterLabeledStmt?: (ctx: LabeledStmtContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.labeledStmt`.
-	 * @param ctx the parse tree
-	 */
-	exitLabeledStmt?: (ctx: LabeledStmtContext) => void;
-	/**
 	 * Enter a parse tree produced by `GoParser.returnStmt`.
 	 * @param ctx the parse tree
 	 */
@@ -463,46 +364,6 @@ export default class GoParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitReturnStmt?: (ctx: ReturnStmtContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.breakStmt`.
-	 * @param ctx the parse tree
-	 */
-	enterBreakStmt?: (ctx: BreakStmtContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.breakStmt`.
-	 * @param ctx the parse tree
-	 */
-	exitBreakStmt?: (ctx: BreakStmtContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.continueStmt`.
-	 * @param ctx the parse tree
-	 */
-	enterContinueStmt?: (ctx: ContinueStmtContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.continueStmt`.
-	 * @param ctx the parse tree
-	 */
-	exitContinueStmt?: (ctx: ContinueStmtContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.gotoStmt`.
-	 * @param ctx the parse tree
-	 */
-	enterGotoStmt?: (ctx: GotoStmtContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.gotoStmt`.
-	 * @param ctx the parse tree
-	 */
-	exitGotoStmt?: (ctx: GotoStmtContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.fallthroughStmt`.
-	 * @param ctx the parse tree
-	 */
-	enterFallthroughStmt?: (ctx: FallthroughStmtContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.fallthroughStmt`.
-	 * @param ctx the parse tree
-	 */
-	exitFallthroughStmt?: (ctx: FallthroughStmtContext) => void;
 	/**
 	 * Enter a parse tree produced by `GoParser.deferStmt`.
 	 * @param ctx the parse tree
@@ -523,86 +384,6 @@ export default class GoParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitIfStmt?: (ctx: IfStmtContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.switchStmt`.
-	 * @param ctx the parse tree
-	 */
-	enterSwitchStmt?: (ctx: SwitchStmtContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.switchStmt`.
-	 * @param ctx the parse tree
-	 */
-	exitSwitchStmt?: (ctx: SwitchStmtContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.exprSwitchStmt`.
-	 * @param ctx the parse tree
-	 */
-	enterExprSwitchStmt?: (ctx: ExprSwitchStmtContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.exprSwitchStmt`.
-	 * @param ctx the parse tree
-	 */
-	exitExprSwitchStmt?: (ctx: ExprSwitchStmtContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.exprCaseClause`.
-	 * @param ctx the parse tree
-	 */
-	enterExprCaseClause?: (ctx: ExprCaseClauseContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.exprCaseClause`.
-	 * @param ctx the parse tree
-	 */
-	exitExprCaseClause?: (ctx: ExprCaseClauseContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.exprSwitchCase`.
-	 * @param ctx the parse tree
-	 */
-	enterExprSwitchCase?: (ctx: ExprSwitchCaseContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.exprSwitchCase`.
-	 * @param ctx the parse tree
-	 */
-	exitExprSwitchCase?: (ctx: ExprSwitchCaseContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.typeSwitchStmt`.
-	 * @param ctx the parse tree
-	 */
-	enterTypeSwitchStmt?: (ctx: TypeSwitchStmtContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.typeSwitchStmt`.
-	 * @param ctx the parse tree
-	 */
-	exitTypeSwitchStmt?: (ctx: TypeSwitchStmtContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.typeSwitchGuard`.
-	 * @param ctx the parse tree
-	 */
-	enterTypeSwitchGuard?: (ctx: TypeSwitchGuardContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.typeSwitchGuard`.
-	 * @param ctx the parse tree
-	 */
-	exitTypeSwitchGuard?: (ctx: TypeSwitchGuardContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.typeCaseClause`.
-	 * @param ctx the parse tree
-	 */
-	enterTypeCaseClause?: (ctx: TypeCaseClauseContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.typeCaseClause`.
-	 * @param ctx the parse tree
-	 */
-	exitTypeCaseClause?: (ctx: TypeCaseClauseContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.typeSwitchCase`.
-	 * @param ctx the parse tree
-	 */
-	enterTypeSwitchCase?: (ctx: TypeSwitchCaseContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.typeSwitchCase`.
-	 * @param ctx the parse tree
-	 */
-	exitTypeSwitchCase?: (ctx: TypeSwitchCaseContext) => void;
 	/**
 	 * Enter a parse tree produced by `GoParser.typeList`.
 	 * @param ctx the parse tree
@@ -734,16 +515,6 @@ export default class GoParserListener extends ParseTreeListener {
 	 */
 	exitTypeLit?: (ctx: TypeLitContext) => void;
 	/**
-	 * Enter a parse tree produced by `GoParser.arrayType`.
-	 * @param ctx the parse tree
-	 */
-	enterArrayType?: (ctx: ArrayTypeContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.arrayType`.
-	 * @param ctx the parse tree
-	 */
-	exitArrayType?: (ctx: ArrayTypeContext) => void;
-	/**
 	 * Enter a parse tree produced by `GoParser.arrayLength`.
 	 * @param ctx the parse tree
 	 */
@@ -764,46 +535,6 @@ export default class GoParserListener extends ParseTreeListener {
 	 */
 	exitElementType?: (ctx: ElementTypeContext) => void;
 	/**
-	 * Enter a parse tree produced by `GoParser.pointerType`.
-	 * @param ctx the parse tree
-	 */
-	enterPointerType?: (ctx: PointerTypeContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.pointerType`.
-	 * @param ctx the parse tree
-	 */
-	exitPointerType?: (ctx: PointerTypeContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.interfaceType`.
-	 * @param ctx the parse tree
-	 */
-	enterInterfaceType?: (ctx: InterfaceTypeContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.interfaceType`.
-	 * @param ctx the parse tree
-	 */
-	exitInterfaceType?: (ctx: InterfaceTypeContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.sliceType`.
-	 * @param ctx the parse tree
-	 */
-	enterSliceType?: (ctx: SliceTypeContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.sliceType`.
-	 * @param ctx the parse tree
-	 */
-	exitSliceType?: (ctx: SliceTypeContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.mapType`.
-	 * @param ctx the parse tree
-	 */
-	enterMapType?: (ctx: MapTypeContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.mapType`.
-	 * @param ctx the parse tree
-	 */
-	exitMapType?: (ctx: MapTypeContext) => void;
-	/**
 	 * Enter a parse tree produced by `GoParser.channelType`.
 	 * @param ctx the parse tree
 	 */
@@ -813,26 +544,6 @@ export default class GoParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitChannelType?: (ctx: ChannelTypeContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.methodSpec`.
-	 * @param ctx the parse tree
-	 */
-	enterMethodSpec?: (ctx: MethodSpecContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.methodSpec`.
-	 * @param ctx the parse tree
-	 */
-	exitMethodSpec?: (ctx: MethodSpecContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.functionType`.
-	 * @param ctx the parse tree
-	 */
-	enterFunctionType?: (ctx: FunctionTypeContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.functionType`.
-	 * @param ctx the parse tree
-	 */
-	exitFunctionType?: (ctx: FunctionTypeContext) => void;
 	/**
 	 * Enter a parse tree produced by `GoParser.signature`.
 	 * @param ctx the parse tree
@@ -893,16 +604,6 @@ export default class GoParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitPrimaryExpr?: (ctx: PrimaryExprContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.conversion`.
-	 * @param ctx the parse tree
-	 */
-	enterConversion?: (ctx: ConversionContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.conversion`.
-	 * @param ctx the parse tree
-	 */
-	exitConversion?: (ctx: ConversionContext) => void;
 	/**
 	 * Enter a parse tree produced by `GoParser.operand`.
 	 * @param ctx the parse tree
@@ -1033,26 +734,6 @@ export default class GoParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitElement?: (ctx: ElementContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.structType`.
-	 * @param ctx the parse tree
-	 */
-	enterStructType?: (ctx: StructTypeContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.structType`.
-	 * @param ctx the parse tree
-	 */
-	exitStructType?: (ctx: StructTypeContext) => void;
-	/**
-	 * Enter a parse tree produced by `GoParser.fieldDecl`.
-	 * @param ctx the parse tree
-	 */
-	enterFieldDecl?: (ctx: FieldDeclContext) => void;
-	/**
-	 * Exit a parse tree produced by `GoParser.fieldDecl`.
-	 * @param ctx the parse tree
-	 */
-	exitFieldDecl?: (ctx: FieldDeclContext) => void;
 	/**
 	 * Enter a parse tree produced by `GoParser.string_`.
 	 * @param ctx the parse tree
