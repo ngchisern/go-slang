@@ -1,5 +1,5 @@
 import GoParserVisitor from "../lang/GoParserVisitor";
-import { AstNode } from "./astNode";
+import { AstNode, BaseNode } from "./astNode";
 
 import { ResultContext, SourceFileContext } from "../lang/GoParser";
 import { PackageClauseContext } from "../lang/GoParser";
@@ -74,10 +74,23 @@ import { TypeAssertionContext } from "../lang/GoParser";
 import { ArgumentsContext } from "../lang/GoParser";
 import { MethodExprContext } from "../lang/GoParser";
 import { EosContext } from "../lang/GoParser";
+import { ErrorNode, ParseTree, RuleNode, TerminalNode } from "antlr4";
 
 
 // TODO: extend each method to return the correct type
 export class CustomVisitor extends GoParserVisitor<AstNode> {
+
+   // Base functions for visiting the parse tree
+   visit(tree: ParseTree): BaseNode  {
+      return { type: tree.getText() }
+   }
+
+   visitChildren: (node: RuleNode) => AstNode;
+
+   visitTerminal: (node: TerminalNode) => AstNode;
+
+   visitErrorNode: (node: ErrorNode) => AstNode;
+
     /**
     * Visit a parse tree produced by `GoParser.sourceFile`.
     * @param ctx the parse tree

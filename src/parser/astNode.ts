@@ -1,7 +1,7 @@
-interface Node {
+export interface BaseNode {
     type: string
 }
 
-export type AstNode = Node | Node[]
+export type AstNode = BaseNode | BaseNode[]
 
 // TODO - Add more types
