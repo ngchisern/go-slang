@@ -80,6 +80,7 @@ import { ErrorNode, ParseTree, RuleNode, TerminalNode } from 'antlr4'
 export class CustomVisitor extends GoParserVisitor<AstNode> {
   // Base functions for visiting the parse tree
   visit(tree: ParseTree): BaseNode {
+    console.log(tree);
     return { type: tree.getText() }
   }
 
