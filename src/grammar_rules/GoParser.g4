@@ -44,7 +44,7 @@ sourceFile
     ;
 
 packageClause
-    : PACKAGE packageName = MAIN_PACKAGE
+    : PACKAGE packageName = IDENTIFIER
     ;
 
 importDecl
