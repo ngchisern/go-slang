@@ -11,7 +11,6 @@ export function parseGoCode(source: string) {
   parser.buildParseTrees = true
 
   let tree = parser.sourceFile()
-  tree.accept
   const visitor = new CustomVisitor()
   const program = tree.accept(visitor)
 
