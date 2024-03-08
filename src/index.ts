@@ -1,20 +1,4 @@
-import { CharStream, CommonTokenStream } from 'antlr4';
-import GoParser from './parser/GoParser'
-import GoLexer from './parser/GoLexer'
-
-function parseGoCode(code: string) {
-    const charStream = new CharStream(code);
-
-    const lexer = new GoLexer(charStream);
-
-    const tokenStream = new CommonTokenStream(lexer);
-
-    const parser = new GoParser(tokenStream);
-
-    let tree = parser.sourceFile();
-
-    console.log(tree);
-}
+import { parseGoCode } from './parser/parser'
 
 const code = `
 package main
@@ -22,9 +6,8 @@ package main
 import "fmt"
 
 func main() {
-    fmt.Println("Hello, World!")
+  fmt.Println("Hello, World!");
 }
-`;
+`
 
-parseGoCode(code);
-
+parseGoCode(code)

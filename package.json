@@ -8,7 +8,8 @@
     "start:dev": "npx nodemon",
     "build": "rimraf ./build && tsc",
     "start": "npm run build && node build/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prettier-format": "prettier --config .prettierrc 'src/**/*.ts' --write"
   },
   "repository": {
     "type": "git",
@@ -22,6 +23,7 @@
   "homepage": "https://github.com/ngchisern/go-slang#readme",
   "devDependencies": {
     "@types/node": "^20.11.24",
+    "prettier": "3.2.5",
     "rimraf": "^5.0.5",
     "typescript": "^5.3.3"
   },
