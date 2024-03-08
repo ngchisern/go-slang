@@ -7,15 +7,8 @@ import { PackageClauseContext } from './GoParser'
 import { ImportDeclContext } from './GoParser'
 import { ImportSpecContext } from './GoParser'
 import { ImportPathContext } from './GoParser'
-import { DeclarationContext } from './GoParser'
-import { ConstDeclContext } from './GoParser'
-import { ConstSpecContext } from './GoParser'
 import { IdentifierListContext } from './GoParser'
 import { ExpressionListContext } from './GoParser'
-import { TypeParametersContext } from './GoParser'
-import { TypeParameterDeclContext } from './GoParser'
-import { TypeElementContext } from './GoParser'
-import { TypeTermContext } from './GoParser'
 import { FunctionDeclContext } from './GoParser'
 import { VarDeclContext } from './GoParser'
 import { VarSpecContext } from './GoParser'
@@ -25,31 +18,21 @@ import { StatementContext } from './GoParser'
 import { SimpleStmtContext } from './GoParser'
 import { ExpressionStmtContext } from './GoParser'
 import { SendStmtContext } from './GoParser'
-import { IncDecStmtContext } from './GoParser'
 import { AssignmentContext } from './GoParser'
-import { Assign_opContext } from './GoParser'
 import { ShortVarDeclContext } from './GoParser'
 import { ReturnStmtContext } from './GoParser'
 import { DeferStmtContext } from './GoParser'
 import { IfStmtContext } from './GoParser'
-import { TypeListContext } from './GoParser'
-import { SelectStmtContext } from './GoParser'
-import { CommClauseContext } from './GoParser'
-import { CommCaseContext } from './GoParser'
 import { RecvStmtContext } from './GoParser'
 import { ForStmtContext } from './GoParser'
 import { ForClauseContext } from './GoParser'
 import { RangeClauseContext } from './GoParser'
 import { GoStmtContext } from './GoParser'
 import { Type_Context } from './GoParser'
-import { TypeArgsContext } from './GoParser'
 import { TypeNameContext } from './GoParser'
-import { TypeLitContext } from './GoParser'
-import { ArrayLengthContext } from './GoParser'
 import { ElementTypeContext } from './GoParser'
 import { ChannelTypeContext } from './GoParser'
 import { SignatureContext } from './GoParser'
-import { ResultContext } from './GoParser'
 import { ParametersContext } from './GoParser'
 import { ParameterDeclContext } from './GoParser'
 import { ExpressionContext } from './GoParser'
@@ -57,22 +40,10 @@ import { PrimaryExprContext } from './GoParser'
 import { OperandContext } from './GoParser'
 import { LiteralContext } from './GoParser'
 import { BasicLitContext } from './GoParser'
-import { IntegerContext } from './GoParser'
 import { OperandNameContext } from './GoParser'
 import { QualifiedIdentContext } from './GoParser'
-import { CompositeLitContext } from './GoParser'
-import { LiteralTypeContext } from './GoParser'
-import { LiteralValueContext } from './GoParser'
-import { ElementListContext } from './GoParser'
-import { KeyedElementContext } from './GoParser'
-import { KeyContext } from './GoParser'
-import { ElementContext } from './GoParser'
 import { String_Context } from './GoParser'
-import { EmbeddedFieldContext } from './GoParser'
 import { FunctionLitContext } from './GoParser'
-import { IndexContext } from './GoParser'
-import { Slice_Context } from './GoParser'
-import { TypeAssertionContext } from './GoParser'
 import { ArgumentsContext } from './GoParser'
 import { MethodExprContext } from './GoParser'
 import { EosContext } from './GoParser'
@@ -116,24 +87,6 @@ export default class GoParserVisitor<Result> extends ParseTreeVisitor<Result> {
    */
   visitImportPath?: (ctx: ImportPathContext) => Result
   /**
-   * Visit a parse tree produced by `GoParser.declaration`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitDeclaration?: (ctx: DeclarationContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.constDecl`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitConstDecl?: (ctx: ConstDeclContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.constSpec`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitConstSpec?: (ctx: ConstSpecContext) => Result
-  /**
    * Visit a parse tree produced by `GoParser.identifierList`.
    * @param ctx the parse tree
    * @return the visitor result
@@ -145,30 +98,6 @@ export default class GoParserVisitor<Result> extends ParseTreeVisitor<Result> {
    * @return the visitor result
    */
   visitExpressionList?: (ctx: ExpressionListContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.typeParameters`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitTypeParameters?: (ctx: TypeParametersContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.typeParameterDecl`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitTypeParameterDecl?: (ctx: TypeParameterDeclContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.typeElement`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitTypeElement?: (ctx: TypeElementContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.typeTerm`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitTypeTerm?: (ctx: TypeTermContext) => Result
   /**
    * Visit a parse tree produced by `GoParser.functionDecl`.
    * @param ctx the parse tree
@@ -224,23 +153,11 @@ export default class GoParserVisitor<Result> extends ParseTreeVisitor<Result> {
    */
   visitSendStmt?: (ctx: SendStmtContext) => Result
   /**
-   * Visit a parse tree produced by `GoParser.incDecStmt`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitIncDecStmt?: (ctx: IncDecStmtContext) => Result
-  /**
    * Visit a parse tree produced by `GoParser.assignment`.
    * @param ctx the parse tree
    * @return the visitor result
    */
   visitAssignment?: (ctx: AssignmentContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.assign_op`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitAssign_op?: (ctx: Assign_opContext) => Result
   /**
    * Visit a parse tree produced by `GoParser.shortVarDecl`.
    * @param ctx the parse tree
@@ -265,30 +182,6 @@ export default class GoParserVisitor<Result> extends ParseTreeVisitor<Result> {
    * @return the visitor result
    */
   visitIfStmt?: (ctx: IfStmtContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.typeList`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitTypeList?: (ctx: TypeListContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.selectStmt`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitSelectStmt?: (ctx: SelectStmtContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.commClause`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitCommClause?: (ctx: CommClauseContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.commCase`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitCommCase?: (ctx: CommCaseContext) => Result
   /**
    * Visit a parse tree produced by `GoParser.recvStmt`.
    * @param ctx the parse tree
@@ -326,29 +219,11 @@ export default class GoParserVisitor<Result> extends ParseTreeVisitor<Result> {
    */
   visitType_?: (ctx: Type_Context) => Result
   /**
-   * Visit a parse tree produced by `GoParser.typeArgs`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitTypeArgs?: (ctx: TypeArgsContext) => Result
-  /**
    * Visit a parse tree produced by `GoParser.typeName`.
    * @param ctx the parse tree
    * @return the visitor result
    */
   visitTypeName?: (ctx: TypeNameContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.typeLit`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitTypeLit?: (ctx: TypeLitContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.arrayLength`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitArrayLength?: (ctx: ArrayLengthContext) => Result
   /**
    * Visit a parse tree produced by `GoParser.elementType`.
    * @param ctx the parse tree
@@ -367,12 +242,6 @@ export default class GoParserVisitor<Result> extends ParseTreeVisitor<Result> {
    * @return the visitor result
    */
   visitSignature?: (ctx: SignatureContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.result`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitResult?: (ctx: ResultContext) => Result
   /**
    * Visit a parse tree produced by `GoParser.parameters`.
    * @param ctx the parse tree
@@ -416,12 +285,6 @@ export default class GoParserVisitor<Result> extends ParseTreeVisitor<Result> {
    */
   visitBasicLit?: (ctx: BasicLitContext) => Result
   /**
-   * Visit a parse tree produced by `GoParser.integer`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitInteger?: (ctx: IntegerContext) => Result
-  /**
    * Visit a parse tree produced by `GoParser.operandName`.
    * @param ctx the parse tree
    * @return the visitor result
@@ -434,83 +297,17 @@ export default class GoParserVisitor<Result> extends ParseTreeVisitor<Result> {
    */
   visitQualifiedIdent?: (ctx: QualifiedIdentContext) => Result
   /**
-   * Visit a parse tree produced by `GoParser.compositeLit`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitCompositeLit?: (ctx: CompositeLitContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.literalType`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitLiteralType?: (ctx: LiteralTypeContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.literalValue`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitLiteralValue?: (ctx: LiteralValueContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.elementList`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitElementList?: (ctx: ElementListContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.keyedElement`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitKeyedElement?: (ctx: KeyedElementContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.key`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitKey?: (ctx: KeyContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.element`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitElement?: (ctx: ElementContext) => Result
-  /**
    * Visit a parse tree produced by `GoParser.string_`.
    * @param ctx the parse tree
    * @return the visitor result
    */
   visitString_?: (ctx: String_Context) => Result
   /**
-   * Visit a parse tree produced by `GoParser.embeddedField`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitEmbeddedField?: (ctx: EmbeddedFieldContext) => Result
-  /**
    * Visit a parse tree produced by `GoParser.functionLit`.
    * @param ctx the parse tree
    * @return the visitor result
    */
   visitFunctionLit?: (ctx: FunctionLitContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.index`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitIndex?: (ctx: IndexContext) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.slice_`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitSlice_?: (ctx: Slice_Context) => Result
-  /**
-   * Visit a parse tree produced by `GoParser.typeAssertion`.
-   * @param ctx the parse tree
-   * @return the visitor result
-   */
-  visitTypeAssertion?: (ctx: TypeAssertionContext) => Result
   /**
    * Visit a parse tree produced by `GoParser.arguments`.
    * @param ctx the parse tree

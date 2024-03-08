@@ -40,7 +40,7 @@ options {
 }
 
 sourceFile
-    : packageClause eos (importDecl eos)* ((functionDecl | declaration) eos)* EOF
+    : packageClause eos (importDecl eos)* ((functionDecl | varDecl) eos)* EOF
     ;
 
 packageClause
@@ -59,19 +59,6 @@ importPath
     : string_
     ;
 
-declaration
-    : constDecl
-    | varDecl
-    ;
-
-constDecl
-    : CONST (constSpec | L_PAREN (constSpec eos)* R_PAREN)
-    ;
-
-constSpec
-    : identifierList (type_? ASSIGN expressionList)?
-    ;
-
 identifierList
     : IDENTIFIER (COMMA IDENTIFIER)*
     ;
@@ -80,26 +67,10 @@ expressionList
     : expression (COMMA expression)*
     ;
 
-typeParameters
-    : L_BRACKET typeParameterDecl (COMMA typeParameterDecl)* R_BRACKET
-    ;
-
-typeParameterDecl
-    : identifierList typeElement
-    ;
-
-typeElement
-    : typeTerm (OR typeTerm)*
-    ;
-
-typeTerm
-    : UNDERLYING? type_
-    ;
-
 // Function declarations
 
 functionDecl
-    : FUNC IDENTIFIER typeParameters? signature block?
+    : FUNC IDENTIFIER signature block?
     ;
 
 varDecl
@@ -119,20 +90,18 @@ statementList
     ;
 
 statement
-    : declaration
+    : varDecl
     | simpleStmt
     | goStmt
     | returnStmt
     | block
     | ifStmt
-    | selectStmt
     | forStmt
     | deferStmt
     ;
 
 simpleStmt
     : sendStmt
-    | incDecStmt
     | assignment
     | expressionStmt
     | shortVarDecl
@@ -146,16 +115,8 @@ sendStmt
     : channel = expression RECEIVE expression
     ;
 
-incDecStmt
-    : expression (PLUS_PLUS | MINUS_MINUS)
-    ;
-
 assignment
-    : expressionList assign_op expressionList
-    ;
-
-assign_op
-    : ASSIGN
+    : expressionList ASSIGN expressionList
     ;
 
 shortVarDecl
@@ -172,23 +133,6 @@ deferStmt
 
 ifStmt
     : IF (expression | eos expression | simpleStmt eos expression) block (ELSE (ifStmt | block))?
-    ;
-
-typeList
-    : (type_ | NIL_LIT) (COMMA (type_ | NIL_LIT))*
-    ;
-
-selectStmt
-    : SELECT L_CURLY commClause* R_CURLY
-    ;
-
-commClause
-    : commCase COLON statementList?
-    ;
-
-commCase
-    : CASE (sendStmt | recvStmt)
-    | DEFAULT
     ;
 
 recvStmt
@@ -212,13 +156,8 @@ goStmt
     ;
 
 type_
-    : typeName typeArgs?
-    | typeLit
-    | L_PAREN type_ R_PAREN
-    ;
-
-typeArgs
-    : L_BRACKET typeList COMMA? R_BRACKET
+    : typeName
+    | channelType
     ;
 
 typeName
@@ -226,29 +165,16 @@ typeName
     | IDENTIFIER
     ;
 
-typeLit
-    : channelType
-    ;
-
-arrayLength
-    : expression
-    ;
-
 elementType
     : type_
     ;
 
 channelType
-    : (CHAN | CHAN RECEIVE | RECEIVE CHAN) elementType
+    : CHAN elementType
     ;
 
 signature
-    : parameters result?
-    ;
-
-result
-    : parameters
-    | type_
+    : parameters (result = type_)?
     ;
 
 parameters
@@ -256,14 +182,14 @@ parameters
     ;
 
 parameterDecl
-    : identifierList? ELLIPSIS? type_
+    : identifierList? type_
     ;
 
 expression
     : primaryExpr
-    | unary_op = (PLUS | MINUS | EXCLAMATION | CARET | STAR | AMPERSAND | RECEIVE) expression
-    | expression mul_op = (STAR | DIV | MOD | LSHIFT | RSHIFT | AMPERSAND | BIT_CLEAR) expression
-    | expression add_op = (PLUS | MINUS | OR | CARET) expression
+    | unary_op = RECEIVE expression
+    | expression mul_op = (STAR | DIV | MOD) expression
+    | expression add_op = (PLUS | MINUS) expression
     | expression rel_op = (
         EQUALS
         | NOT_EQUALS
@@ -272,42 +198,29 @@ expression
         | GREATER
         | GREATER_OR_EQUALS
     ) expression
-    | expression LOGICAL_AND expression
-    | expression LOGICAL_OR expression
     ;
 
 primaryExpr
     : operand
     | methodExpr
-    | primaryExpr ( DOT IDENTIFIER | index | slice_ | typeAssertion | arguments)
+    | primaryExpr ( DOT IDENTIFIER | arguments)
     ;
 
 operand
     : literal
-    | operandName typeArgs?
+    | operandName
     | L_PAREN expression R_PAREN
     ;
 
 literal
     : basicLit
-    | compositeLit
     | functionLit
     ;
 
 basicLit
     : NIL_LIT
-    | integer
+    | DECIMAL_LIT
     | string_
-    | FLOAT_LIT
-    ;
-
-integer
-    : DECIMAL_LIT
-    | BINARY_LIT
-    | OCTAL_LIT
-    | HEX_LIT
-    | IMAGINARY_LIT
-    | RUNE_LIT
     ;
 
 operandName
@@ -318,64 +231,17 @@ qualifiedIdent
     : IDENTIFIER DOT IDENTIFIER
     ;
 
-compositeLit
-    : literalType literalValue
-    ;
-
-literalType
-    : L_BRACKET ELLIPSIS R_BRACKET elementType
-    | typeName typeArgs?
-    ;
-
-literalValue
-    : L_CURLY (elementList COMMA?)? R_CURLY
-    ;
-
-elementList
-    : keyedElement (COMMA keyedElement)*
-    ;
-
-keyedElement
-    : (key COLON)? element
-    ;
-
-key
-    : expression
-    | literalValue
-    ;
-
-element
-    : expression
-    | literalValue
-    ;
-
 string_
     : RAW_STRING_LIT
     | INTERPRETED_STRING_LIT
-    ;
-
-embeddedField
-    : STAR? typeName typeArgs?
     ;
 
 functionLit
     : FUNC signature block
     ; // function
 
-index
-    : L_BRACKET expression R_BRACKET
-    ;
-
-slice_
-    : L_BRACKET (expression? COLON expression? | expression? COLON expression COLON expression) R_BRACKET
-    ;
-
-typeAssertion
-    : DOT L_PAREN type_ R_PAREN
-    ;
-
 arguments
-    : L_PAREN ((expressionList | type_ (COMMA expressionList)?) ELLIPSIS? COMMA?)? R_PAREN
+    : L_PAREN expressionList? R_PAREN
     ;
 
 methodExpr

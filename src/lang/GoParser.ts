@@ -128,75 +128,46 @@ export default class GoParser extends GoParserBase {
   public static readonly RULE_importDecl = 2
   public static readonly RULE_importSpec = 3
   public static readonly RULE_importPath = 4
-  public static readonly RULE_declaration = 5
-  public static readonly RULE_constDecl = 6
-  public static readonly RULE_constSpec = 7
-  public static readonly RULE_identifierList = 8
-  public static readonly RULE_expressionList = 9
-  public static readonly RULE_typeParameters = 10
-  public static readonly RULE_typeParameterDecl = 11
-  public static readonly RULE_typeElement = 12
-  public static readonly RULE_typeTerm = 13
-  public static readonly RULE_functionDecl = 14
-  public static readonly RULE_varDecl = 15
-  public static readonly RULE_varSpec = 16
-  public static readonly RULE_block = 17
-  public static readonly RULE_statementList = 18
-  public static readonly RULE_statement = 19
-  public static readonly RULE_simpleStmt = 20
-  public static readonly RULE_expressionStmt = 21
-  public static readonly RULE_sendStmt = 22
-  public static readonly RULE_incDecStmt = 23
-  public static readonly RULE_assignment = 24
-  public static readonly RULE_assign_op = 25
-  public static readonly RULE_shortVarDecl = 26
-  public static readonly RULE_returnStmt = 27
-  public static readonly RULE_deferStmt = 28
-  public static readonly RULE_ifStmt = 29
-  public static readonly RULE_typeList = 30
-  public static readonly RULE_selectStmt = 31
-  public static readonly RULE_commClause = 32
-  public static readonly RULE_commCase = 33
-  public static readonly RULE_recvStmt = 34
-  public static readonly RULE_forStmt = 35
-  public static readonly RULE_forClause = 36
-  public static readonly RULE_rangeClause = 37
-  public static readonly RULE_goStmt = 38
-  public static readonly RULE_type_ = 39
-  public static readonly RULE_typeArgs = 40
-  public static readonly RULE_typeName = 41
-  public static readonly RULE_typeLit = 42
-  public static readonly RULE_arrayLength = 43
-  public static readonly RULE_elementType = 44
-  public static readonly RULE_channelType = 45
-  public static readonly RULE_signature = 46
-  public static readonly RULE_result = 47
-  public static readonly RULE_parameters = 48
-  public static readonly RULE_parameterDecl = 49
-  public static readonly RULE_expression = 50
-  public static readonly RULE_primaryExpr = 51
-  public static readonly RULE_operand = 52
-  public static readonly RULE_literal = 53
-  public static readonly RULE_basicLit = 54
-  public static readonly RULE_integer = 55
-  public static readonly RULE_operandName = 56
-  public static readonly RULE_qualifiedIdent = 57
-  public static readonly RULE_compositeLit = 58
-  public static readonly RULE_literalType = 59
-  public static readonly RULE_literalValue = 60
-  public static readonly RULE_elementList = 61
-  public static readonly RULE_keyedElement = 62
-  public static readonly RULE_key = 63
-  public static readonly RULE_element = 64
-  public static readonly RULE_string_ = 65
-  public static readonly RULE_embeddedField = 66
-  public static readonly RULE_functionLit = 67
-  public static readonly RULE_index = 68
-  public static readonly RULE_slice_ = 69
-  public static readonly RULE_typeAssertion = 70
-  public static readonly RULE_arguments = 71
-  public static readonly RULE_methodExpr = 72
-  public static readonly RULE_eos = 73
+  public static readonly RULE_identifierList = 5
+  public static readonly RULE_expressionList = 6
+  public static readonly RULE_functionDecl = 7
+  public static readonly RULE_varDecl = 8
+  public static readonly RULE_varSpec = 9
+  public static readonly RULE_block = 10
+  public static readonly RULE_statementList = 11
+  public static readonly RULE_statement = 12
+  public static readonly RULE_simpleStmt = 13
+  public static readonly RULE_expressionStmt = 14
+  public static readonly RULE_sendStmt = 15
+  public static readonly RULE_assignment = 16
+  public static readonly RULE_shortVarDecl = 17
+  public static readonly RULE_returnStmt = 18
+  public static readonly RULE_deferStmt = 19
+  public static readonly RULE_ifStmt = 20
+  public static readonly RULE_recvStmt = 21
+  public static readonly RULE_forStmt = 22
+  public static readonly RULE_forClause = 23
+  public static readonly RULE_rangeClause = 24
+  public static readonly RULE_goStmt = 25
+  public static readonly RULE_type_ = 26
+  public static readonly RULE_typeName = 27
+  public static readonly RULE_elementType = 28
+  public static readonly RULE_channelType = 29
+  public static readonly RULE_signature = 30
+  public static readonly RULE_parameters = 31
+  public static readonly RULE_parameterDecl = 32
+  public static readonly RULE_expression = 33
+  public static readonly RULE_primaryExpr = 34
+  public static readonly RULE_operand = 35
+  public static readonly RULE_literal = 36
+  public static readonly RULE_basicLit = 37
+  public static readonly RULE_operandName = 38
+  public static readonly RULE_qualifiedIdent = 39
+  public static readonly RULE_string_ = 40
+  public static readonly RULE_functionLit = 41
+  public static readonly RULE_arguments = 42
+  public static readonly RULE_methodExpr = 43
+  public static readonly RULE_eos = 44
   public static readonly literalNames: (string | null)[] = [
     null,
     "'break'",
@@ -363,15 +334,8 @@ export default class GoParser extends GoParserBase {
     'importDecl',
     'importSpec',
     'importPath',
-    'declaration',
-    'constDecl',
-    'constSpec',
     'identifierList',
     'expressionList',
-    'typeParameters',
-    'typeParameterDecl',
-    'typeElement',
-    'typeTerm',
     'functionDecl',
     'varDecl',
     'varSpec',
@@ -381,31 +345,21 @@ export default class GoParser extends GoParserBase {
     'simpleStmt',
     'expressionStmt',
     'sendStmt',
-    'incDecStmt',
     'assignment',
-    'assign_op',
     'shortVarDecl',
     'returnStmt',
     'deferStmt',
     'ifStmt',
-    'typeList',
-    'selectStmt',
-    'commClause',
-    'commCase',
     'recvStmt',
     'forStmt',
     'forClause',
     'rangeClause',
     'goStmt',
     'type_',
-    'typeArgs',
     'typeName',
-    'typeLit',
-    'arrayLength',
     'elementType',
     'channelType',
     'signature',
-    'result',
     'parameters',
     'parameterDecl',
     'expression',
@@ -413,22 +367,10 @@ export default class GoParser extends GoParserBase {
     'operand',
     'literal',
     'basicLit',
-    'integer',
     'operandName',
     'qualifiedIdent',
-    'compositeLit',
-    'literalType',
-    'literalValue',
-    'elementList',
-    'keyedElement',
-    'key',
-    'element',
     'string_',
-    'embeddedField',
     'functionLit',
-    'index',
-    'slice_',
-    'typeAssertion',
     'arguments',
     'methodExpr',
     'eos'
@@ -473,60 +415,59 @@ export default class GoParser extends GoParserBase {
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 148
+        this.state = 90
         this.packageClause()
-        this.state = 149
+        this.state = 91
         this.eos()
-        this.state = 155
+        this.state = 97
         this._errHandler.sync(this)
         _la = this._input.LA(1)
         while (_la === 23) {
           {
             {
-              this.state = 150
+              this.state = 92
               this.importDecl()
-              this.state = 151
+              this.state = 93
               this.eos()
             }
           }
-          this.state = 157
+          this.state = 99
           this._errHandler.sync(this)
           _la = this._input.LA(1)
         }
-        this.state = 166
+        this.state = 108
         this._errHandler.sync(this)
         _la = this._input.LA(1)
-        while ((_la & ~0x1f) === 0 && ((1 << _la) & 33619976) !== 0) {
+        while (_la === 3 || _la === 25) {
           {
             {
-              this.state = 160
+              this.state = 102
               this._errHandler.sync(this)
               switch (this._input.LA(1)) {
                 case 3:
                   {
-                    this.state = 158
+                    this.state = 100
                     this.functionDecl()
                   }
                   break
-                case 16:
                 case 25:
                   {
-                    this.state = 159
-                    this.declaration()
+                    this.state = 101
+                    this.varDecl()
                   }
                   break
                 default:
                   throw new NoViableAltException(this)
               }
-              this.state = 162
+              this.state = 104
               this.eos()
             }
           }
-          this.state = 168
+          this.state = 110
           this._errHandler.sync(this)
           _la = this._input.LA(1)
         }
-        this.state = 169
+        this.state = 111
         this.match(GoParser.EOF)
       }
     } catch (re) {
@@ -549,9 +490,9 @@ export default class GoParser extends GoParserBase {
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 171
+        this.state = 113
         this.match(GoParser.PACKAGE)
-        this.state = 172
+        this.state = 114
         localctx._packageName = this.match(GoParser.IDENTIFIER)
       }
     } catch (re) {
@@ -575,9 +516,9 @@ export default class GoParser extends GoParserBase {
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 174
+        this.state = 116
         this.match(GoParser.IMPORT)
-        this.state = 186
+        this.state = 128
         this._errHandler.sync(this)
         switch (this._input.LA(1)) {
           case 27:
@@ -585,31 +526,31 @@ export default class GoParser extends GoParserBase {
           case 79:
           case 80:
             {
-              this.state = 175
+              this.state = 117
               this.importSpec()
             }
             break
           case 28:
             {
-              this.state = 176
+              this.state = 118
               this.match(GoParser.L_PAREN)
-              this.state = 182
+              this.state = 124
               this._errHandler.sync(this)
               _la = this._input.LA(1)
               while (_la === 27 || _la === 38 || _la === 79 || _la === 80) {
                 {
                   {
-                    this.state = 177
+                    this.state = 119
                     this.importSpec()
-                    this.state = 178
+                    this.state = 120
                     this.eos()
                   }
                 }
-                this.state = 184
+                this.state = 126
                 this._errHandler.sync(this)
                 _la = this._input.LA(1)
               }
-              this.state = 185
+              this.state = 127
               this.match(GoParser.R_PAREN)
             }
             break
@@ -638,12 +579,12 @@ export default class GoParser extends GoParserBase {
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 189
+        this.state = 131
         this._errHandler.sync(this)
         _la = this._input.LA(1)
         if (_la === 27 || _la === 38) {
           {
-            this.state = 188
+            this.state = 130
             localctx._alias = this._input.LT(1)
             _la = this._input.LA(1)
             if (!(_la === 27 || _la === 38)) {
@@ -655,7 +596,7 @@ export default class GoParser extends GoParserBase {
           }
         }
 
-        this.state = 191
+        this.state = 133
         this.importPath()
       }
     } catch (re) {
@@ -678,152 +619,8 @@ export default class GoParser extends GoParserBase {
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 193
+        this.state = 135
         this.string_()
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public declaration(): DeclarationContext {
-    let localctx: DeclarationContext = new DeclarationContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 10, GoParser.RULE_declaration)
-    try {
-      this.state = 197
-      this._errHandler.sync(this)
-      switch (this._input.LA(1)) {
-        case 16:
-          this.enterOuterAlt(localctx, 1)
-          {
-            this.state = 195
-            this.constDecl()
-          }
-          break
-        case 25:
-          this.enterOuterAlt(localctx, 2)
-          {
-            this.state = 196
-            this.varDecl()
-          }
-          break
-        default:
-          throw new NoViableAltException(this)
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public constDecl(): ConstDeclContext {
-    let localctx: ConstDeclContext = new ConstDeclContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 12, GoParser.RULE_constDecl)
-    let _la: number
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 199
-        this.match(GoParser.CONST)
-        this.state = 211
-        this._errHandler.sync(this)
-        switch (this._input.LA(1)) {
-          case 27:
-            {
-              this.state = 200
-              this.constSpec()
-            }
-            break
-          case 28:
-            {
-              this.state = 201
-              this.match(GoParser.L_PAREN)
-              this.state = 207
-              this._errHandler.sync(this)
-              _la = this._input.LA(1)
-              while (_la === 27) {
-                {
-                  {
-                    this.state = 202
-                    this.constSpec()
-                    this.state = 203
-                    this.eos()
-                  }
-                }
-                this.state = 209
-                this._errHandler.sync(this)
-                _la = this._input.LA(1)
-              }
-              this.state = 210
-              this.match(GoParser.R_PAREN)
-            }
-            break
-          default:
-            throw new NoViableAltException(this)
-        }
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public constSpec(): ConstSpecContext {
-    let localctx: ConstSpecContext = new ConstSpecContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 14, GoParser.RULE_constSpec)
-    let _la: number
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 213
-        this.identifierList()
-        this.state = 219
-        this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 10, this._ctx)) {
-          case 1:
-            {
-              this.state = 215
-              this._errHandler.sync(this)
-              _la = this._input.LA(1)
-              if (((_la & ~0x1f) === 0 && ((1 << _la) & 402655232) !== 0) || _la === 64) {
-                {
-                  this.state = 214
-                  this.type_()
-                }
-              }
-
-              this.state = 217
-              this.match(GoParser.ASSIGN)
-              this.state = 218
-              this.expressionList()
-            }
-            break
-        }
       }
     } catch (re) {
       if (re instanceof RecognitionException) {
@@ -841,30 +638,28 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public identifierList(): IdentifierListContext {
     let localctx: IdentifierListContext = new IdentifierListContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 16, GoParser.RULE_identifierList)
+    this.enterRule(localctx, 10, GoParser.RULE_identifierList)
+    let _la: number
     try {
-      let _alt: number
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 221
+        this.state = 137
         this.match(GoParser.IDENTIFIER)
-        this.state = 226
+        this.state = 142
         this._errHandler.sync(this)
-        _alt = this._interp.adaptivePredict(this._input, 11, this._ctx)
-        while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
-          if (_alt === 1) {
+        _la = this._input.LA(1)
+        while (_la === 35) {
+          {
             {
-              {
-                this.state = 222
-                this.match(GoParser.COMMA)
-                this.state = 223
-                this.match(GoParser.IDENTIFIER)
-              }
+              this.state = 138
+              this.match(GoParser.COMMA)
+              this.state = 139
+              this.match(GoParser.IDENTIFIER)
             }
           }
-          this.state = 228
+          this.state = 144
           this._errHandler.sync(this)
-          _alt = this._interp.adaptivePredict(this._input, 11, this._ctx)
+          _la = this._input.LA(1)
         }
       }
     } catch (re) {
@@ -883,178 +678,31 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public expressionList(): ExpressionListContext {
     let localctx: ExpressionListContext = new ExpressionListContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 18, GoParser.RULE_expressionList)
+    this.enterRule(localctx, 12, GoParser.RULE_expressionList)
     try {
       let _alt: number
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 229
+        this.state = 145
         this.expression(0)
-        this.state = 234
+        this.state = 150
         this._errHandler.sync(this)
-        _alt = this._interp.adaptivePredict(this._input, 12, this._ctx)
+        _alt = this._interp.adaptivePredict(this._input, 7, this._ctx)
         while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
           if (_alt === 1) {
             {
               {
-                this.state = 230
+                this.state = 146
                 this.match(GoParser.COMMA)
-                this.state = 231
+                this.state = 147
                 this.expression(0)
               }
             }
           }
-          this.state = 236
+          this.state = 152
           this._errHandler.sync(this)
-          _alt = this._interp.adaptivePredict(this._input, 12, this._ctx)
+          _alt = this._interp.adaptivePredict(this._input, 7, this._ctx)
         }
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public typeParameters(): TypeParametersContext {
-    let localctx: TypeParametersContext = new TypeParametersContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 20, GoParser.RULE_typeParameters)
-    let _la: number
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 237
-        this.match(GoParser.L_BRACKET)
-        this.state = 238
-        this.typeParameterDecl()
-        this.state = 243
-        this._errHandler.sync(this)
-        _la = this._input.LA(1)
-        while (_la === 35) {
-          {
-            {
-              this.state = 239
-              this.match(GoParser.COMMA)
-              this.state = 240
-              this.typeParameterDecl()
-            }
-          }
-          this.state = 245
-          this._errHandler.sync(this)
-          _la = this._input.LA(1)
-        }
-        this.state = 246
-        this.match(GoParser.R_BRACKET)
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public typeParameterDecl(): TypeParameterDeclContext {
-    let localctx: TypeParameterDeclContext = new TypeParameterDeclContext(
-      this,
-      this._ctx,
-      this.state
-    )
-    this.enterRule(localctx, 22, GoParser.RULE_typeParameterDecl)
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 248
-        this.identifierList()
-        this.state = 249
-        this.typeElement()
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public typeElement(): TypeElementContext {
-    let localctx: TypeElementContext = new TypeElementContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 24, GoParser.RULE_typeElement)
-    let _la: number
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 251
-        this.typeTerm()
-        this.state = 256
-        this._errHandler.sync(this)
-        _la = this._input.LA(1)
-        while (_la === 51) {
-          {
-            {
-              this.state = 252
-              this.match(GoParser.OR)
-              this.state = 253
-              this.typeTerm()
-            }
-          }
-          this.state = 258
-          this._errHandler.sync(this)
-          _la = this._input.LA(1)
-        }
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public typeTerm(): TypeTermContext {
-    let localctx: TypeTermContext = new TypeTermContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 26, GoParser.RULE_typeTerm)
-    let _la: number
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 260
-        this._errHandler.sync(this)
-        _la = this._input.LA(1)
-        if (_la === 57) {
-          {
-            this.state = 259
-            this.match(GoParser.UNDERLYING)
-          }
-        }
-
-        this.state = 262
-        this.type_()
       }
     } catch (re) {
       if (re instanceof RecognitionException) {
@@ -1072,33 +720,22 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public functionDecl(): FunctionDeclContext {
     let localctx: FunctionDeclContext = new FunctionDeclContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 28, GoParser.RULE_functionDecl)
-    let _la: number
+    this.enterRule(localctx, 14, GoParser.RULE_functionDecl)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 264
+        this.state = 153
         this.match(GoParser.FUNC)
-        this.state = 265
+        this.state = 154
         this.match(GoParser.IDENTIFIER)
-        this.state = 267
-        this._errHandler.sync(this)
-        _la = this._input.LA(1)
-        if (_la === 32) {
-          {
-            this.state = 266
-            this.typeParameters()
-          }
-        }
-
-        this.state = 269
+        this.state = 155
         this.signature()
-        this.state = 271
+        this.state = 157
         this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 17, this._ctx)) {
+        switch (this._interp.adaptivePredict(this._input, 8, this._ctx)) {
           case 1:
             {
-              this.state = 270
+              this.state = 156
               this.block()
             }
             break
@@ -1120,43 +757,43 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public varDecl(): VarDeclContext {
     let localctx: VarDeclContext = new VarDeclContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 30, GoParser.RULE_varDecl)
+    this.enterRule(localctx, 16, GoParser.RULE_varDecl)
     let _la: number
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 273
+        this.state = 159
         this.match(GoParser.VAR)
-        this.state = 285
+        this.state = 171
         this._errHandler.sync(this)
         switch (this._input.LA(1)) {
           case 27:
             {
-              this.state = 274
+              this.state = 160
               this.varSpec()
             }
             break
           case 28:
             {
-              this.state = 275
+              this.state = 161
               this.match(GoParser.L_PAREN)
-              this.state = 281
+              this.state = 167
               this._errHandler.sync(this)
               _la = this._input.LA(1)
               while (_la === 27) {
                 {
                   {
-                    this.state = 276
+                    this.state = 162
                     this.varSpec()
-                    this.state = 277
+                    this.state = 163
                     this.eos()
                   }
                 }
-                this.state = 283
+                this.state = 169
                 this._errHandler.sync(this)
                 _la = this._input.LA(1)
               }
-              this.state = 284
+              this.state = 170
               this.match(GoParser.R_PAREN)
             }
             break
@@ -1180,30 +817,28 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public varSpec(): VarSpecContext {
     let localctx: VarSpecContext = new VarSpecContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 32, GoParser.RULE_varSpec)
+    this.enterRule(localctx, 18, GoParser.RULE_varSpec)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 287
+        this.state = 173
         this.identifierList()
-        this.state = 295
+        this.state = 181
         this._errHandler.sync(this)
         switch (this._input.LA(1)) {
           case 11:
           case 27:
-          case 28:
-          case 64:
             {
-              this.state = 288
+              this.state = 174
               this.type_()
-              this.state = 291
+              this.state = 177
               this._errHandler.sync(this)
-              switch (this._interp.adaptivePredict(this._input, 20, this._ctx)) {
+              switch (this._interp.adaptivePredict(this._input, 11, this._ctx)) {
                 case 1:
                   {
-                    this.state = 289
+                    this.state = 175
                     this.match(GoParser.ASSIGN)
-                    this.state = 290
+                    this.state = 176
                     this.expressionList()
                   }
                   break
@@ -1212,9 +847,9 @@ export default class GoParser extends GoParserBase {
             break
           case 34:
             {
-              this.state = 293
+              this.state = 179
               this.match(GoParser.ASSIGN)
-              this.state = 294
+              this.state = 180
               this.expressionList()
             }
             break
@@ -1238,23 +873,23 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public block(): BlockContext {
     let localctx: BlockContext = new BlockContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 34, GoParser.RULE_block)
+    this.enterRule(localctx, 20, GoParser.RULE_block)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 297
+        this.state = 183
         this.match(GoParser.L_CURLY)
-        this.state = 299
+        this.state = 185
         this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 22, this._ctx)) {
+        switch (this._interp.adaptivePredict(this._input, 13, this._ctx)) {
           case 1:
             {
-              this.state = 298
+              this.state = 184
               this.statementList()
             }
             break
         }
-        this.state = 301
+        this.state = 187
         this.match(GoParser.R_CURLY)
       }
     } catch (re) {
@@ -1273,13 +908,13 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public statementList(): StatementListContext {
     let localctx: StatementListContext = new StatementListContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 36, GoParser.RULE_statementList)
+    this.enterRule(localctx, 22, GoParser.RULE_statementList)
     let _la: number
     try {
       let _alt: number
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 315
+        this.state = 201
         this._errHandler.sync(this)
         _alt = 1
         do {
@@ -1287,17 +922,17 @@ export default class GoParser extends GoParserBase {
             case 1:
               {
                 {
-                  this.state = 310
+                  this.state = 196
                   this._errHandler.sync(this)
-                  switch (this._interp.adaptivePredict(this._input, 25, this._ctx)) {
+                  switch (this._interp.adaptivePredict(this._input, 16, this._ctx)) {
                     case 1:
                       {
-                        this.state = 304
+                        this.state = 190
                         this._errHandler.sync(this)
                         _la = this._input.LA(1)
                         if (_la === 36) {
                           {
-                            this.state = 303
+                            this.state = 189
                             this.match(GoParser.SEMI)
                           }
                         }
@@ -1305,12 +940,12 @@ export default class GoParser extends GoParserBase {
                       break
                     case 2:
                       {
-                        this.state = 307
+                        this.state = 193
                         this._errHandler.sync(this)
                         _la = this._input.LA(1)
                         if (_la === 88) {
                           {
-                            this.state = 306
+                            this.state = 192
                             this.match(GoParser.EOS)
                           }
                         }
@@ -1318,16 +953,16 @@ export default class GoParser extends GoParserBase {
                       break
                     case 3:
                       {
-                        this.state = 309
+                        this.state = 195
                         if (!this.closingBracket()) {
                           throw this.createFailedPredicateException('this.closingBracket()')
                         }
                       }
                       break
                   }
-                  this.state = 312
+                  this.state = 198
                   this.statement()
-                  this.state = 313
+                  this.state = 199
                   this.eos()
                 }
               }
@@ -1335,9 +970,9 @@ export default class GoParser extends GoParserBase {
             default:
               throw new NoViableAltException(this)
           }
-          this.state = 317
+          this.state = 203
           this._errHandler.sync(this)
-          _alt = this._interp.adaptivePredict(this._input, 26, this._ctx)
+          _alt = this._interp.adaptivePredict(this._input, 17, this._ctx)
         } while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER)
       }
     } catch (re) {
@@ -1356,17 +991,16 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public statement(): StatementContext {
     let localctx: StatementContext = new StatementContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 38, GoParser.RULE_statement)
+    this.enterRule(localctx, 24, GoParser.RULE_statement)
     try {
-      this.state = 328
+      this.state = 213
       this._errHandler.sync(this)
       switch (this._input.LA(1)) {
-        case 16:
         case 25:
           this.enterOuterAlt(localctx, 1)
           {
-            this.state = 319
-            this.declaration()
+            this.state = 205
+            this.varDecl()
           }
           break
         case 3:
@@ -1374,75 +1008,55 @@ export default class GoParser extends GoParserBase {
         case 26:
         case 27:
         case 28:
-        case 32:
-        case 58:
-        case 59:
-        case 60:
-        case 61:
-        case 62:
-        case 63:
         case 64:
         case 65:
-        case 66:
-        case 67:
-        case 68:
-        case 69:
-        case 72:
-        case 73:
         case 79:
         case 80:
           this.enterOuterAlt(localctx, 2)
           {
-            this.state = 320
+            this.state = 206
             this.simpleStmt()
           }
           break
         case 8:
           this.enterOuterAlt(localctx, 3)
           {
-            this.state = 321
+            this.state = 207
             this.goStmt()
           }
           break
         case 24:
           this.enterOuterAlt(localctx, 4)
           {
-            this.state = 322
+            this.state = 208
             this.returnStmt()
           }
           break
         case 30:
           this.enterOuterAlt(localctx, 5)
           {
-            this.state = 323
+            this.state = 209
             this.block()
           }
           break
         case 18:
           this.enterOuterAlt(localctx, 6)
           {
-            this.state = 324
+            this.state = 210
             this.ifStmt()
           }
           break
-        case 5:
+        case 22:
           this.enterOuterAlt(localctx, 7)
           {
-            this.state = 325
-            this.selectStmt()
-          }
-          break
-        case 22:
-          this.enterOuterAlt(localctx, 8)
-          {
-            this.state = 326
+            this.state = 211
             this.forStmt()
           }
           break
         case 7:
-          this.enterOuterAlt(localctx, 9)
+          this.enterOuterAlt(localctx, 8)
           {
-            this.state = 327
+            this.state = 212
             this.deferStmt()
           }
           break
@@ -1465,43 +1079,36 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public simpleStmt(): SimpleStmtContext {
     let localctx: SimpleStmtContext = new SimpleStmtContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 40, GoParser.RULE_simpleStmt)
+    this.enterRule(localctx, 26, GoParser.RULE_simpleStmt)
     try {
-      this.state = 335
+      this.state = 219
       this._errHandler.sync(this)
-      switch (this._interp.adaptivePredict(this._input, 28, this._ctx)) {
+      switch (this._interp.adaptivePredict(this._input, 19, this._ctx)) {
         case 1:
           this.enterOuterAlt(localctx, 1)
           {
-            this.state = 330
+            this.state = 215
             this.sendStmt()
           }
           break
         case 2:
           this.enterOuterAlt(localctx, 2)
           {
-            this.state = 331
-            this.incDecStmt()
+            this.state = 216
+            this.assignment()
           }
           break
         case 3:
           this.enterOuterAlt(localctx, 3)
           {
-            this.state = 332
-            this.assignment()
+            this.state = 217
+            this.expressionStmt()
           }
           break
         case 4:
           this.enterOuterAlt(localctx, 4)
           {
-            this.state = 333
-            this.expressionStmt()
-          }
-          break
-        case 5:
-          this.enterOuterAlt(localctx, 5)
-          {
-            this.state = 334
+            this.state = 218
             this.shortVarDecl()
           }
           break
@@ -1522,11 +1129,11 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public expressionStmt(): ExpressionStmtContext {
     let localctx: ExpressionStmtContext = new ExpressionStmtContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 42, GoParser.RULE_expressionStmt)
+    this.enterRule(localctx, 28, GoParser.RULE_expressionStmt)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 337
+        this.state = 221
         this.expression(0)
       }
     } catch (re) {
@@ -1545,48 +1152,16 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public sendStmt(): SendStmtContext {
     let localctx: SendStmtContext = new SendStmtContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 44, GoParser.RULE_sendStmt)
+    this.enterRule(localctx, 30, GoParser.RULE_sendStmt)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 339
+        this.state = 223
         localctx._channel = this.expression(0)
-        this.state = 340
+        this.state = 224
         this.match(GoParser.RECEIVE)
-        this.state = 341
+        this.state = 225
         this.expression(0)
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public incDecStmt(): IncDecStmtContext {
-    let localctx: IncDecStmtContext = new IncDecStmtContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 46, GoParser.RULE_incDecStmt)
-    let _la: number
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 343
-        this.expression(0)
-        this.state = 344
-        _la = this._input.LA(1)
-        if (!(_la === 39 || _la === 40)) {
-          this._errHandler.recoverInline(this)
-        } else {
-          this._errHandler.reportMatch(this)
-          this.consume()
-        }
       }
     } catch (re) {
       if (re instanceof RecognitionException) {
@@ -1604,39 +1179,16 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public assignment(): AssignmentContext {
     let localctx: AssignmentContext = new AssignmentContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 48, GoParser.RULE_assignment)
+    this.enterRule(localctx, 32, GoParser.RULE_assignment)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 346
+        this.state = 227
         this.expressionList()
-        this.state = 347
-        this.assign_op()
-        this.state = 348
-        this.expressionList()
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public assign_op(): Assign_opContext {
-    let localctx: Assign_opContext = new Assign_opContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 50, GoParser.RULE_assign_op)
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 350
+        this.state = 228
         this.match(GoParser.ASSIGN)
+        this.state = 229
+        this.expressionList()
       }
     } catch (re) {
       if (re instanceof RecognitionException) {
@@ -1654,15 +1206,15 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public shortVarDecl(): ShortVarDeclContext {
     let localctx: ShortVarDeclContext = new ShortVarDeclContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 52, GoParser.RULE_shortVarDecl)
+    this.enterRule(localctx, 34, GoParser.RULE_shortVarDecl)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 352
+        this.state = 231
         this.identifierList()
-        this.state = 353
+        this.state = 232
         this.match(GoParser.DECLARE_ASSIGN)
-        this.state = 354
+        this.state = 233
         this.expressionList()
       }
     } catch (re) {
@@ -1681,18 +1233,18 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public returnStmt(): ReturnStmtContext {
     let localctx: ReturnStmtContext = new ReturnStmtContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 54, GoParser.RULE_returnStmt)
+    this.enterRule(localctx, 36, GoParser.RULE_returnStmt)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 356
+        this.state = 235
         this.match(GoParser.RETURN)
-        this.state = 358
+        this.state = 237
         this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 29, this._ctx)) {
+        switch (this._interp.adaptivePredict(this._input, 20, this._ctx)) {
           case 1:
             {
-              this.state = 357
+              this.state = 236
               this.expressionList()
             }
             break
@@ -1714,13 +1266,13 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public deferStmt(): DeferStmtContext {
     let localctx: DeferStmtContext = new DeferStmtContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 56, GoParser.RULE_deferStmt)
+    this.enterRule(localctx, 38, GoParser.RULE_deferStmt)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 360
+        this.state = 239
         this.match(GoParser.DEFER)
-        this.state = 361
+        this.state = 240
         this.expression(0)
       }
     } catch (re) {
@@ -1739,61 +1291,61 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public ifStmt(): IfStmtContext {
     let localctx: IfStmtContext = new IfStmtContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 58, GoParser.RULE_ifStmt)
+    this.enterRule(localctx, 40, GoParser.RULE_ifStmt)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 363
+        this.state = 242
         this.match(GoParser.IF)
-        this.state = 372
+        this.state = 251
         this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 30, this._ctx)) {
+        switch (this._interp.adaptivePredict(this._input, 21, this._ctx)) {
           case 1:
             {
-              this.state = 364
+              this.state = 243
               this.expression(0)
             }
             break
           case 2:
             {
-              this.state = 365
+              this.state = 244
               this.eos()
-              this.state = 366
+              this.state = 245
               this.expression(0)
             }
             break
           case 3:
             {
-              this.state = 368
+              this.state = 247
               this.simpleStmt()
-              this.state = 369
+              this.state = 248
               this.eos()
-              this.state = 370
+              this.state = 249
               this.expression(0)
             }
             break
         }
-        this.state = 374
+        this.state = 253
         this.block()
-        this.state = 380
+        this.state = 259
         this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 32, this._ctx)) {
+        switch (this._interp.adaptivePredict(this._input, 23, this._ctx)) {
           case 1:
             {
-              this.state = 375
+              this.state = 254
               this.match(GoParser.ELSE)
-              this.state = 378
+              this.state = 257
               this._errHandler.sync(this)
               switch (this._input.LA(1)) {
                 case 18:
                   {
-                    this.state = 376
+                    this.state = 255
                     this.ifStmt()
                   }
                   break
                 case 30:
                   {
-                    this.state = 377
+                    this.state = 256
                     this.block()
                   }
                   break
@@ -1818,244 +1370,33 @@ export default class GoParser extends GoParserBase {
     return localctx
   }
   // @RuleVersion(0)
-  public typeList(): TypeListContext {
-    let localctx: TypeListContext = new TypeListContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 60, GoParser.RULE_typeList)
-    try {
-      let _alt: number
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 384
-        this._errHandler.sync(this)
-        switch (this._input.LA(1)) {
-          case 11:
-          case 27:
-          case 28:
-          case 64:
-            {
-              this.state = 382
-              this.type_()
-            }
-            break
-          case 26:
-            {
-              this.state = 383
-              this.match(GoParser.NIL_LIT)
-            }
-            break
-          default:
-            throw new NoViableAltException(this)
-        }
-        this.state = 393
-        this._errHandler.sync(this)
-        _alt = this._interp.adaptivePredict(this._input, 35, this._ctx)
-        while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
-          if (_alt === 1) {
-            {
-              {
-                this.state = 386
-                this.match(GoParser.COMMA)
-                this.state = 389
-                this._errHandler.sync(this)
-                switch (this._input.LA(1)) {
-                  case 11:
-                  case 27:
-                  case 28:
-                  case 64:
-                    {
-                      this.state = 387
-                      this.type_()
-                    }
-                    break
-                  case 26:
-                    {
-                      this.state = 388
-                      this.match(GoParser.NIL_LIT)
-                    }
-                    break
-                  default:
-                    throw new NoViableAltException(this)
-                }
-              }
-            }
-          }
-          this.state = 395
-          this._errHandler.sync(this)
-          _alt = this._interp.adaptivePredict(this._input, 35, this._ctx)
-        }
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public selectStmt(): SelectStmtContext {
-    let localctx: SelectStmtContext = new SelectStmtContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 62, GoParser.RULE_selectStmt)
-    let _la: number
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 396
-        this.match(GoParser.SELECT)
-        this.state = 397
-        this.match(GoParser.L_CURLY)
-        this.state = 401
-        this._errHandler.sync(this)
-        _la = this._input.LA(1)
-        while (_la === 2 || _la === 6) {
-          {
-            {
-              this.state = 398
-              this.commClause()
-            }
-          }
-          this.state = 403
-          this._errHandler.sync(this)
-          _la = this._input.LA(1)
-        }
-        this.state = 404
-        this.match(GoParser.R_CURLY)
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public commClause(): CommClauseContext {
-    let localctx: CommClauseContext = new CommClauseContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 64, GoParser.RULE_commClause)
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 406
-        this.commCase()
-        this.state = 407
-        this.match(GoParser.COLON)
-        this.state = 409
-        this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 37, this._ctx)) {
-          case 1:
-            {
-              this.state = 408
-              this.statementList()
-            }
-            break
-        }
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public commCase(): CommCaseContext {
-    let localctx: CommCaseContext = new CommCaseContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 66, GoParser.RULE_commCase)
-    try {
-      this.state = 417
-      this._errHandler.sync(this)
-      switch (this._input.LA(1)) {
-        case 6:
-          this.enterOuterAlt(localctx, 1)
-          {
-            this.state = 411
-            this.match(GoParser.CASE)
-            this.state = 414
-            this._errHandler.sync(this)
-            switch (this._interp.adaptivePredict(this._input, 38, this._ctx)) {
-              case 1:
-                {
-                  this.state = 412
-                  this.sendStmt()
-                }
-                break
-              case 2:
-                {
-                  this.state = 413
-                  this.recvStmt()
-                }
-                break
-            }
-          }
-          break
-        case 2:
-          this.enterOuterAlt(localctx, 2)
-          {
-            this.state = 416
-            this.match(GoParser.DEFAULT)
-          }
-          break
-        default:
-          throw new NoViableAltException(this)
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
   public recvStmt(): RecvStmtContext {
     let localctx: RecvStmtContext = new RecvStmtContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 68, GoParser.RULE_recvStmt)
+    this.enterRule(localctx, 42, GoParser.RULE_recvStmt)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 425
+        this.state = 267
         this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 40, this._ctx)) {
+        switch (this._interp.adaptivePredict(this._input, 24, this._ctx)) {
           case 1:
             {
-              this.state = 419
+              this.state = 261
               this.expressionList()
-              this.state = 420
+              this.state = 262
               this.match(GoParser.ASSIGN)
             }
             break
           case 2:
             {
-              this.state = 422
+              this.state = 264
               this.identifierList()
-              this.state = 423
+              this.state = 265
               this.match(GoParser.DECLARE_ASSIGN)
             }
             break
         }
-        this.state = 427
+        this.state = 269
         localctx._recvExpr = this.expression(0)
       }
     } catch (re) {
@@ -2074,27 +1415,27 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public forStmt(): ForStmtContext {
     let localctx: ForStmtContext = new ForStmtContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 70, GoParser.RULE_forStmt)
+    this.enterRule(localctx, 44, GoParser.RULE_forStmt)
     let _la: number
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 429
+        this.state = 271
         this.match(GoParser.FOR)
-        this.state = 437
+        this.state = 279
         this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 43, this._ctx)) {
+        switch (this._interp.adaptivePredict(this._input, 27, this._ctx)) {
           case 1:
             {
-              this.state = 431
+              this.state = 273
               this._errHandler.sync(this)
               _la = this._input.LA(1)
               if (
-                (((_la - 3) & ~0x1f) === 0 && ((1 << (_la - 3)) & 595591425) !== 0) ||
-                (((_la - 58) & ~0x1f) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)
+                ((_la & ~0x1f) === 0 && ((1 << _la) & 469764104) !== 0) ||
+                (((_la - 64) & ~0x1f) === 0 && ((1 << (_la - 64)) & 98307) !== 0)
               ) {
                 {
-                  this.state = 430
+                  this.state = 272
                   this.expression(0)
                 }
               }
@@ -2102,28 +1443,28 @@ export default class GoParser extends GoParserBase {
             break
           case 2:
             {
-              this.state = 433
+              this.state = 275
               this.forClause()
             }
             break
           case 3:
             {
-              this.state = 435
+              this.state = 277
               this._errHandler.sync(this)
               _la = this._input.LA(1)
               if (
-                (((_la - 3) & ~0x1f) === 0 && ((1 << (_la - 3)) & 595656961) !== 0) ||
-                (((_la - 58) & ~0x1f) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)
+                ((_la & ~0x1f) === 0 && ((1 << _la) & 470288392) !== 0) ||
+                (((_la - 64) & ~0x1f) === 0 && ((1 << (_la - 64)) & 98307) !== 0)
               ) {
                 {
-                  this.state = 434
+                  this.state = 276
                   this.rangeClause()
                 }
               }
             }
             break
         }
-        this.state = 439
+        this.state = 281
         this.block()
       }
     } catch (re) {
@@ -2142,44 +1483,44 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public forClause(): ForClauseContext {
     let localctx: ForClauseContext = new ForClauseContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 72, GoParser.RULE_forClause)
+    this.enterRule(localctx, 46, GoParser.RULE_forClause)
     let _la: number
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 442
+        this.state = 284
         this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 44, this._ctx)) {
+        switch (this._interp.adaptivePredict(this._input, 28, this._ctx)) {
           case 1:
             {
-              this.state = 441
+              this.state = 283
               localctx._initStmt = this.simpleStmt()
             }
             break
         }
-        this.state = 444
+        this.state = 286
         this.eos()
-        this.state = 446
+        this.state = 288
         this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 45, this._ctx)) {
+        switch (this._interp.adaptivePredict(this._input, 29, this._ctx)) {
           case 1:
             {
-              this.state = 445
+              this.state = 287
               this.expression(0)
             }
             break
         }
-        this.state = 448
+        this.state = 290
         this.eos()
-        this.state = 450
+        this.state = 292
         this._errHandler.sync(this)
         _la = this._input.LA(1)
         if (
-          (((_la - 3) & ~0x1f) === 0 && ((1 << (_la - 3)) & 595591425) !== 0) ||
-          (((_la - 58) & ~0x1f) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)
+          ((_la & ~0x1f) === 0 && ((1 << _la) & 469764104) !== 0) ||
+          (((_la - 64) & ~0x1f) === 0 && ((1 << (_la - 64)) & 98307) !== 0)
         ) {
           {
-            this.state = 449
+            this.state = 291
             localctx._postStmt = this.simpleStmt()
           }
         }
@@ -2200,33 +1541,33 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public rangeClause(): RangeClauseContext {
     let localctx: RangeClauseContext = new RangeClauseContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 74, GoParser.RULE_rangeClause)
+    this.enterRule(localctx, 48, GoParser.RULE_rangeClause)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 458
+        this.state = 300
         this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 47, this._ctx)) {
+        switch (this._interp.adaptivePredict(this._input, 31, this._ctx)) {
           case 1:
             {
-              this.state = 452
+              this.state = 294
               this.expressionList()
-              this.state = 453
+              this.state = 295
               this.match(GoParser.ASSIGN)
             }
             break
           case 2:
             {
-              this.state = 455
+              this.state = 297
               this.identifierList()
-              this.state = 456
+              this.state = 298
               this.match(GoParser.DECLARE_ASSIGN)
             }
             break
         }
-        this.state = 460
+        this.state = 302
         this.match(GoParser.RANGE)
-        this.state = 461
+        this.state = 303
         this.expression(0)
       }
     } catch (re) {
@@ -2245,13 +1586,13 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public goStmt(): GoStmtContext {
     let localctx: GoStmtContext = new GoStmtContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 76, GoParser.RULE_goStmt)
+    this.enterRule(localctx, 50, GoParser.RULE_goStmt)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 463
+        this.state = 305
         this.match(GoParser.GO)
-        this.state = 464
+        this.state = 306
         this.expression(0)
       }
     } catch (re) {
@@ -2270,45 +1611,23 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public type_(): Type_Context {
     let localctx: Type_Context = new Type_Context(this, this._ctx, this.state)
-    this.enterRule(localctx, 78, GoParser.RULE_type_)
+    this.enterRule(localctx, 52, GoParser.RULE_type_)
     try {
-      this.state = 475
+      this.state = 310
       this._errHandler.sync(this)
       switch (this._input.LA(1)) {
         case 27:
           this.enterOuterAlt(localctx, 1)
           {
-            this.state = 466
+            this.state = 308
             this.typeName()
-            this.state = 468
-            this._errHandler.sync(this)
-            switch (this._interp.adaptivePredict(this._input, 48, this._ctx)) {
-              case 1:
-                {
-                  this.state = 467
-                  this.typeArgs()
-                }
-                break
-            }
           }
           break
         case 11:
-        case 64:
           this.enterOuterAlt(localctx, 2)
           {
-            this.state = 470
-            this.typeLit()
-          }
-          break
-        case 28:
-          this.enterOuterAlt(localctx, 3)
-          {
-            this.state = 471
-            this.match(GoParser.L_PAREN)
-            this.state = 472
-            this.type_()
-            this.state = 473
-            this.match(GoParser.R_PAREN)
+            this.state = 309
+            this.channelType()
           }
           break
         default:
@@ -2328,62 +1647,24 @@ export default class GoParser extends GoParserBase {
     return localctx
   }
   // @RuleVersion(0)
-  public typeArgs(): TypeArgsContext {
-    let localctx: TypeArgsContext = new TypeArgsContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 80, GoParser.RULE_typeArgs)
-    let _la: number
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 477
-        this.match(GoParser.L_BRACKET)
-        this.state = 478
-        this.typeList()
-        this.state = 480
-        this._errHandler.sync(this)
-        _la = this._input.LA(1)
-        if (_la === 35) {
-          {
-            this.state = 479
-            this.match(GoParser.COMMA)
-          }
-        }
-
-        this.state = 482
-        this.match(GoParser.R_BRACKET)
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
   public typeName(): TypeNameContext {
     let localctx: TypeNameContext = new TypeNameContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 82, GoParser.RULE_typeName)
+    this.enterRule(localctx, 54, GoParser.RULE_typeName)
     try {
-      this.state = 486
+      this.state = 314
       this._errHandler.sync(this)
-      switch (this._interp.adaptivePredict(this._input, 51, this._ctx)) {
+      switch (this._interp.adaptivePredict(this._input, 33, this._ctx)) {
         case 1:
           this.enterOuterAlt(localctx, 1)
           {
-            this.state = 484
+            this.state = 312
             this.qualifiedIdent()
           }
           break
         case 2:
           this.enterOuterAlt(localctx, 2)
           {
-            this.state = 485
+            this.state = 313
             this.match(GoParser.IDENTIFIER)
           }
           break
@@ -2402,59 +1683,13 @@ export default class GoParser extends GoParserBase {
     return localctx
   }
   // @RuleVersion(0)
-  public typeLit(): TypeLitContext {
-    let localctx: TypeLitContext = new TypeLitContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 84, GoParser.RULE_typeLit)
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 488
-        this.channelType()
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public arrayLength(): ArrayLengthContext {
-    let localctx: ArrayLengthContext = new ArrayLengthContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 86, GoParser.RULE_arrayLength)
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 490
-        this.expression(0)
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
   public elementType(): ElementTypeContext {
     let localctx: ElementTypeContext = new ElementTypeContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 88, GoParser.RULE_elementType)
+    this.enterRule(localctx, 56, GoParser.RULE_elementType)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 492
+        this.state = 316
         this.type_()
       }
     } catch (re) {
@@ -2473,37 +1708,13 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public channelType(): ChannelTypeContext {
     let localctx: ChannelTypeContext = new ChannelTypeContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 90, GoParser.RULE_channelType)
+    this.enterRule(localctx, 58, GoParser.RULE_channelType)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 499
-        this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 52, this._ctx)) {
-          case 1:
-            {
-              this.state = 494
-              this.match(GoParser.CHAN)
-            }
-            break
-          case 2:
-            {
-              this.state = 495
-              this.match(GoParser.CHAN)
-              this.state = 496
-              this.match(GoParser.RECEIVE)
-            }
-            break
-          case 3:
-            {
-              this.state = 497
-              this.match(GoParser.RECEIVE)
-              this.state = 498
-              this.match(GoParser.CHAN)
-            }
-            break
-        }
-        this.state = 501
+        this.state = 318
+        this.match(GoParser.CHAN)
+        this.state = 319
         this.elementType()
       }
     } catch (re) {
@@ -2522,19 +1733,19 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public signature(): SignatureContext {
     let localctx: SignatureContext = new SignatureContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 92, GoParser.RULE_signature)
+    this.enterRule(localctx, 60, GoParser.RULE_signature)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 503
+        this.state = 321
         this.parameters()
-        this.state = 505
+        this.state = 323
         this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 53, this._ctx)) {
+        switch (this._interp.adaptivePredict(this._input, 34, this._ctx)) {
           case 1:
             {
-              this.state = 504
-              this.result()
+              this.state = 322
+              localctx._result = this.type_()
             }
             break
         }
@@ -2553,90 +1764,54 @@ export default class GoParser extends GoParserBase {
     return localctx
   }
   // @RuleVersion(0)
-  public result(): ResultContext {
-    let localctx: ResultContext = new ResultContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 94, GoParser.RULE_result)
-    try {
-      this.state = 509
-      this._errHandler.sync(this)
-      switch (this._interp.adaptivePredict(this._input, 54, this._ctx)) {
-        case 1:
-          this.enterOuterAlt(localctx, 1)
-          {
-            this.state = 507
-            this.parameters()
-          }
-          break
-        case 2:
-          this.enterOuterAlt(localctx, 2)
-          {
-            this.state = 508
-            this.type_()
-          }
-          break
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
   public parameters(): ParametersContext {
     let localctx: ParametersContext = new ParametersContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 96, GoParser.RULE_parameters)
+    this.enterRule(localctx, 62, GoParser.RULE_parameters)
     let _la: number
     try {
       let _alt: number
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 511
+        this.state = 325
         this.match(GoParser.L_PAREN)
-        this.state = 523
+        this.state = 337
         this._errHandler.sync(this)
         _la = this._input.LA(1)
-        if (((_la & ~0x1f) === 0 && ((1 << _la) & 402655232) !== 0) || _la === 42 || _la === 64) {
+        if (_la === 11 || _la === 27) {
           {
-            this.state = 512
+            this.state = 326
             this.parameterDecl()
-            this.state = 517
+            this.state = 331
             this._errHandler.sync(this)
-            _alt = this._interp.adaptivePredict(this._input, 55, this._ctx)
+            _alt = this._interp.adaptivePredict(this._input, 35, this._ctx)
             while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
               if (_alt === 1) {
                 {
                   {
-                    this.state = 513
+                    this.state = 327
                     this.match(GoParser.COMMA)
-                    this.state = 514
+                    this.state = 328
                     this.parameterDecl()
                   }
                 }
               }
-              this.state = 519
+              this.state = 333
               this._errHandler.sync(this)
-              _alt = this._interp.adaptivePredict(this._input, 55, this._ctx)
+              _alt = this._interp.adaptivePredict(this._input, 35, this._ctx)
             }
-            this.state = 521
+            this.state = 335
             this._errHandler.sync(this)
             _la = this._input.LA(1)
             if (_la === 35) {
               {
-                this.state = 520
+                this.state = 334
                 this.match(GoParser.COMMA)
               }
             }
           }
         }
 
-        this.state = 525
+        this.state = 339
         this.match(GoParser.R_PAREN)
       }
     } catch (re) {
@@ -2655,32 +1830,21 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public parameterDecl(): ParameterDeclContext {
     let localctx: ParameterDeclContext = new ParameterDeclContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 98, GoParser.RULE_parameterDecl)
-    let _la: number
+    this.enterRule(localctx, 64, GoParser.RULE_parameterDecl)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 528
+        this.state = 342
         this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 58, this._ctx)) {
+        switch (this._interp.adaptivePredict(this._input, 38, this._ctx)) {
           case 1:
             {
-              this.state = 527
+              this.state = 341
               this.identifierList()
             }
             break
         }
-        this.state = 531
-        this._errHandler.sync(this)
-        _la = this._input.LA(1)
-        if (_la === 42) {
-          {
-            this.state = 530
-            this.match(GoParser.ELLIPSIS)
-          }
-        }
-
-        this.state = 533
+        this.state = 344
         this.type_()
       }
     } catch (re) {
@@ -2709,42 +1873,44 @@ export default class GoParser extends GoParserBase {
     let _parentState: number = this.state
     let localctx: ExpressionContext = new ExpressionContext(this, this._ctx, _parentState)
     let _prevctx: ExpressionContext = localctx
-    let _startState: number = 100
-    this.enterRecursionRule(localctx, 100, GoParser.RULE_expression, _p)
+    let _startState: number = 66
+    this.enterRecursionRule(localctx, 66, GoParser.RULE_expression, _p)
     let _la: number
     try {
       let _alt: number
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 539
+        this.state = 350
         this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 60, this._ctx)) {
-          case 1:
+        switch (this._input.LA(1)) {
+          case 3:
+          case 11:
+          case 26:
+          case 27:
+          case 28:
+          case 65:
+          case 79:
+          case 80:
             {
-              this.state = 536
+              this.state = 347
               this.primaryExpr(0)
             }
             break
-          case 2:
+          case 64:
             {
-              this.state = 537
-              localctx._unary_op = this._input.LT(1)
-              _la = this._input.LA(1)
-              if (!(((_la - 58) & ~0x1f) === 0 && ((1 << (_la - 58)) & 127) !== 0)) {
-                localctx._unary_op = this._errHandler.recoverInline(this)
-              } else {
-                this._errHandler.reportMatch(this)
-                this.consume()
-              }
-              this.state = 538
-              this.expression(6)
+              this.state = 348
+              localctx._unary_op = this.match(GoParser.RECEIVE)
+              this.state = 349
+              this.expression(4)
             }
             break
+          default:
+            throw new NoViableAltException(this)
         }
         this._ctx.stop = this._input.LT(-1)
-        this.state = 558
+        this.state = 363
         this._errHandler.sync(this)
-        _alt = this._interp.adaptivePredict(this._input, 62, this._ctx)
+        _alt = this._interp.adaptivePredict(this._input, 41, this._ctx)
         while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
           if (_alt === 1) {
             if (this._parseListeners != null) {
@@ -2752,60 +1918,60 @@ export default class GoParser extends GoParserBase {
             }
             _prevctx = localctx
             {
-              this.state = 556
+              this.state = 361
               this._errHandler.sync(this)
-              switch (this._interp.adaptivePredict(this._input, 61, this._ctx)) {
+              switch (this._interp.adaptivePredict(this._input, 40, this._ctx)) {
                 case 1:
                   {
                     localctx = new ExpressionContext(this, _parentctx, _parentState)
                     this.pushNewRecursionContext(localctx, _startState, GoParser.RULE_expression)
-                    this.state = 541
-                    if (!this.precpred(this._ctx, 5)) {
-                      throw this.createFailedPredicateException('this.precpred(this._ctx, 5)')
+                    this.state = 352
+                    if (!this.precpred(this._ctx, 3)) {
+                      throw this.createFailedPredicateException('this.precpred(this._ctx, 3)')
                     }
-                    this.state = 542
+                    this.state = 353
                     localctx._mul_op = this._input.LT(1)
                     _la = this._input.LA(1)
-                    if (!(((_la - 52) & ~0x1f) === 0 && ((1 << (_la - 52)) & 3103) !== 0)) {
+                    if (!(((_la - 52) & ~0x1f) === 0 && ((1 << (_la - 52)) & 1027) !== 0)) {
                       localctx._mul_op = this._errHandler.recoverInline(this)
                     } else {
                       this._errHandler.reportMatch(this)
                       this.consume()
                     }
-                    this.state = 543
-                    this.expression(6)
+                    this.state = 354
+                    this.expression(4)
                   }
                   break
                 case 2:
                   {
                     localctx = new ExpressionContext(this, _parentctx, _parentState)
                     this.pushNewRecursionContext(localctx, _startState, GoParser.RULE_expression)
-                    this.state = 544
-                    if (!this.precpred(this._ctx, 4)) {
-                      throw this.createFailedPredicateException('this.precpred(this._ctx, 4)')
+                    this.state = 355
+                    if (!this.precpred(this._ctx, 2)) {
+                      throw this.createFailedPredicateException('this.precpred(this._ctx, 2)')
                     }
-                    this.state = 545
+                    this.state = 356
                     localctx._add_op = this._input.LT(1)
                     _la = this._input.LA(1)
-                    if (!(((_la - 51) & ~0x1f) === 0 && ((1 << (_la - 51)) & 1793) !== 0)) {
+                    if (!(_la === 59 || _la === 60)) {
                       localctx._add_op = this._errHandler.recoverInline(this)
                     } else {
                       this._errHandler.reportMatch(this)
                       this.consume()
                     }
-                    this.state = 546
-                    this.expression(5)
+                    this.state = 357
+                    this.expression(3)
                   }
                   break
                 case 3:
                   {
                     localctx = new ExpressionContext(this, _parentctx, _parentState)
                     this.pushNewRecursionContext(localctx, _startState, GoParser.RULE_expression)
-                    this.state = 547
-                    if (!this.precpred(this._ctx, 3)) {
-                      throw this.createFailedPredicateException('this.precpred(this._ctx, 3)')
+                    this.state = 358
+                    if (!this.precpred(this._ctx, 1)) {
+                      throw this.createFailedPredicateException('this.precpred(this._ctx, 1)')
                     }
-                    this.state = 548
+                    this.state = 359
                     localctx._rel_op = this._input.LT(1)
                     _la = this._input.LA(1)
                     if (!(((_la - 45) & ~0x1f) === 0 && ((1 << (_la - 45)) & 63) !== 0)) {
@@ -2814,44 +1980,16 @@ export default class GoParser extends GoParserBase {
                       this._errHandler.reportMatch(this)
                       this.consume()
                     }
-                    this.state = 549
-                    this.expression(4)
-                  }
-                  break
-                case 4:
-                  {
-                    localctx = new ExpressionContext(this, _parentctx, _parentState)
-                    this.pushNewRecursionContext(localctx, _startState, GoParser.RULE_expression)
-                    this.state = 550
-                    if (!this.precpred(this._ctx, 2)) {
-                      throw this.createFailedPredicateException('this.precpred(this._ctx, 2)')
-                    }
-                    this.state = 551
-                    this.match(GoParser.LOGICAL_AND)
-                    this.state = 552
-                    this.expression(3)
-                  }
-                  break
-                case 5:
-                  {
-                    localctx = new ExpressionContext(this, _parentctx, _parentState)
-                    this.pushNewRecursionContext(localctx, _startState, GoParser.RULE_expression)
-                    this.state = 553
-                    if (!this.precpred(this._ctx, 1)) {
-                      throw this.createFailedPredicateException('this.precpred(this._ctx, 1)')
-                    }
-                    this.state = 554
-                    this.match(GoParser.LOGICAL_OR)
-                    this.state = 555
+                    this.state = 360
                     this.expression(2)
                   }
                   break
               }
             }
           }
-          this.state = 560
+          this.state = 365
           this._errHandler.sync(this)
-          _alt = this._interp.adaptivePredict(this._input, 62, this._ctx)
+          _alt = this._interp.adaptivePredict(this._input, 41, this._ctx)
         }
       }
     } catch (re) {
@@ -2880,32 +2018,32 @@ export default class GoParser extends GoParserBase {
     let _parentState: number = this.state
     let localctx: PrimaryExprContext = new PrimaryExprContext(this, this._ctx, _parentState)
     let _prevctx: PrimaryExprContext = localctx
-    let _startState: number = 102
-    this.enterRecursionRule(localctx, 102, GoParser.RULE_primaryExpr, _p)
+    let _startState: number = 68
+    this.enterRecursionRule(localctx, 68, GoParser.RULE_primaryExpr, _p)
     try {
       let _alt: number
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 564
+        this.state = 369
         this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 63, this._ctx)) {
+        switch (this._interp.adaptivePredict(this._input, 42, this._ctx)) {
           case 1:
             {
-              this.state = 562
+              this.state = 367
               this.operand()
             }
             break
           case 2:
             {
-              this.state = 563
+              this.state = 368
               this.methodExpr()
             }
             break
         }
         this._ctx.stop = this._input.LT(-1)
-        this.state = 577
+        this.state = 379
         this._errHandler.sync(this)
-        _alt = this._interp.adaptivePredict(this._input, 65, this._ctx)
+        _alt = this._interp.adaptivePredict(this._input, 44, this._ctx)
         while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
           if (_alt === 1) {
             if (this._parseListeners != null) {
@@ -2916,52 +2054,36 @@ export default class GoParser extends GoParserBase {
               {
                 localctx = new PrimaryExprContext(this, _parentctx, _parentState)
                 this.pushNewRecursionContext(localctx, _startState, GoParser.RULE_primaryExpr)
-                this.state = 566
+                this.state = 371
                 if (!this.precpred(this._ctx, 1)) {
                   throw this.createFailedPredicateException('this.precpred(this._ctx, 1)')
                 }
-                this.state = 573
+                this.state = 375
                 this._errHandler.sync(this)
-                switch (this._interp.adaptivePredict(this._input, 64, this._ctx)) {
-                  case 1:
+                switch (this._input.LA(1)) {
+                  case 38:
                     {
-                      this.state = 567
+                      this.state = 372
                       this.match(GoParser.DOT)
-                      this.state = 568
+                      this.state = 373
                       this.match(GoParser.IDENTIFIER)
                     }
                     break
-                  case 2:
+                  case 28:
                     {
-                      this.state = 569
-                      this.index()
-                    }
-                    break
-                  case 3:
-                    {
-                      this.state = 570
-                      this.slice_()
-                    }
-                    break
-                  case 4:
-                    {
-                      this.state = 571
-                      this.typeAssertion()
-                    }
-                    break
-                  case 5:
-                    {
-                      this.state = 572
+                      this.state = 374
                       this.arguments()
                     }
                     break
+                  default:
+                    throw new NoViableAltException(this)
                 }
               }
             }
           }
-          this.state = 579
+          this.state = 381
           this._errHandler.sync(this)
-          _alt = this._interp.adaptivePredict(this._input, 65, this._ctx)
+          _alt = this._interp.adaptivePredict(this._input, 44, this._ctx)
         }
       }
     } catch (re) {
@@ -2980,46 +2102,42 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public operand(): OperandContext {
     let localctx: OperandContext = new OperandContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 104, GoParser.RULE_operand)
+    this.enterRule(localctx, 70, GoParser.RULE_operand)
     try {
-      this.state = 589
+      this.state = 388
       this._errHandler.sync(this)
-      switch (this._interp.adaptivePredict(this._input, 67, this._ctx)) {
-        case 1:
+      switch (this._input.LA(1)) {
+        case 3:
+        case 26:
+        case 65:
+        case 79:
+        case 80:
           this.enterOuterAlt(localctx, 1)
           {
-            this.state = 580
+            this.state = 382
             this.literal()
           }
           break
-        case 2:
+        case 27:
           this.enterOuterAlt(localctx, 2)
           {
-            this.state = 581
+            this.state = 383
             this.operandName()
-            this.state = 583
-            this._errHandler.sync(this)
-            switch (this._interp.adaptivePredict(this._input, 66, this._ctx)) {
-              case 1:
-                {
-                  this.state = 582
-                  this.typeArgs()
-                }
-                break
-            }
           }
           break
-        case 3:
+        case 28:
           this.enterOuterAlt(localctx, 3)
           {
-            this.state = 585
+            this.state = 384
             this.match(GoParser.L_PAREN)
-            this.state = 586
+            this.state = 385
             this.expression(0)
-            this.state = 587
+            this.state = 386
             this.match(GoParser.R_PAREN)
           }
           break
+        default:
+          throw new NoViableAltException(this)
       }
     } catch (re) {
       if (re instanceof RecognitionException) {
@@ -3037,39 +2155,25 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public literal(): LiteralContext {
     let localctx: LiteralContext = new LiteralContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 106, GoParser.RULE_literal)
+    this.enterRule(localctx, 72, GoParser.RULE_literal)
     try {
-      this.state = 594
+      this.state = 392
       this._errHandler.sync(this)
       switch (this._input.LA(1)) {
         case 26:
         case 65:
-        case 66:
-        case 67:
-        case 68:
-        case 69:
-        case 72:
-        case 73:
         case 79:
         case 80:
           this.enterOuterAlt(localctx, 1)
           {
-            this.state = 591
+            this.state = 390
             this.basicLit()
           }
           break
-        case 27:
-        case 32:
+        case 3:
           this.enterOuterAlt(localctx, 2)
           {
-            this.state = 592
-            this.compositeLit()
-          }
-          break
-        case 3:
-          this.enterOuterAlt(localctx, 3)
-          {
-            this.state = 593
+            this.state = 391
             this.functionLit()
           }
           break
@@ -3092,43 +2196,31 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public basicLit(): BasicLitContext {
     let localctx: BasicLitContext = new BasicLitContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 108, GoParser.RULE_basicLit)
+    this.enterRule(localctx, 74, GoParser.RULE_basicLit)
     try {
-      this.state = 600
+      this.state = 397
       this._errHandler.sync(this)
       switch (this._input.LA(1)) {
         case 26:
           this.enterOuterAlt(localctx, 1)
           {
-            this.state = 596
+            this.state = 394
             this.match(GoParser.NIL_LIT)
           }
           break
         case 65:
-        case 66:
-        case 67:
-        case 68:
-        case 72:
-        case 73:
           this.enterOuterAlt(localctx, 2)
           {
-            this.state = 597
-            this.integer()
+            this.state = 395
+            this.match(GoParser.DECIMAL_LIT)
           }
           break
         case 79:
         case 80:
           this.enterOuterAlt(localctx, 3)
           {
-            this.state = 598
+            this.state = 396
             this.string_()
-          }
-          break
-        case 69:
-          this.enterOuterAlt(localctx, 4)
-          {
-            this.state = 599
-            this.match(GoParser.FLOAT_LIT)
           }
           break
         default:
@@ -3148,43 +2240,13 @@ export default class GoParser extends GoParserBase {
     return localctx
   }
   // @RuleVersion(0)
-  public integer(): IntegerContext {
-    let localctx: IntegerContext = new IntegerContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 110, GoParser.RULE_integer)
-    let _la: number
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 602
-        _la = this._input.LA(1)
-        if (!(((_la - 65) & ~0x1f) === 0 && ((1 << (_la - 65)) & 399) !== 0)) {
-          this._errHandler.recoverInline(this)
-        } else {
-          this._errHandler.reportMatch(this)
-          this.consume()
-        }
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
   public operandName(): OperandNameContext {
     let localctx: OperandNameContext = new OperandNameContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 112, GoParser.RULE_operandName)
+    this.enterRule(localctx, 76, GoParser.RULE_operandName)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 604
+        this.state = 399
         this.match(GoParser.IDENTIFIER)
       }
     } catch (re) {
@@ -3203,338 +2265,16 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public qualifiedIdent(): QualifiedIdentContext {
     let localctx: QualifiedIdentContext = new QualifiedIdentContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 114, GoParser.RULE_qualifiedIdent)
+    this.enterRule(localctx, 78, GoParser.RULE_qualifiedIdent)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 606
+        this.state = 401
         this.match(GoParser.IDENTIFIER)
-        this.state = 607
+        this.state = 402
         this.match(GoParser.DOT)
-        this.state = 608
+        this.state = 403
         this.match(GoParser.IDENTIFIER)
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public compositeLit(): CompositeLitContext {
-    let localctx: CompositeLitContext = new CompositeLitContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 116, GoParser.RULE_compositeLit)
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 610
-        this.literalType()
-        this.state = 611
-        this.literalValue()
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public literalType(): LiteralTypeContext {
-    let localctx: LiteralTypeContext = new LiteralTypeContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 118, GoParser.RULE_literalType)
-    let _la: number
-    try {
-      this.state = 621
-      this._errHandler.sync(this)
-      switch (this._input.LA(1)) {
-        case 32:
-          this.enterOuterAlt(localctx, 1)
-          {
-            this.state = 613
-            this.match(GoParser.L_BRACKET)
-            this.state = 614
-            this.match(GoParser.ELLIPSIS)
-            this.state = 615
-            this.match(GoParser.R_BRACKET)
-            this.state = 616
-            this.elementType()
-          }
-          break
-        case 27:
-          this.enterOuterAlt(localctx, 2)
-          {
-            this.state = 617
-            this.typeName()
-            this.state = 619
-            this._errHandler.sync(this)
-            _la = this._input.LA(1)
-            if (_la === 32) {
-              {
-                this.state = 618
-                this.typeArgs()
-              }
-            }
-          }
-          break
-        default:
-          throw new NoViableAltException(this)
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public literalValue(): LiteralValueContext {
-    let localctx: LiteralValueContext = new LiteralValueContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 120, GoParser.RULE_literalValue)
-    let _la: number
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 623
-        this.match(GoParser.L_CURLY)
-        this.state = 628
-        this._errHandler.sync(this)
-        _la = this._input.LA(1)
-        if (
-          (((_la - 3) & ~0x1f) === 0 && ((1 << (_la - 3)) & 729809153) !== 0) ||
-          (((_la - 58) & ~0x1f) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)
-        ) {
-          {
-            this.state = 624
-            this.elementList()
-            this.state = 626
-            this._errHandler.sync(this)
-            _la = this._input.LA(1)
-            if (_la === 35) {
-              {
-                this.state = 625
-                this.match(GoParser.COMMA)
-              }
-            }
-          }
-        }
-
-        this.state = 630
-        this.match(GoParser.R_CURLY)
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public elementList(): ElementListContext {
-    let localctx: ElementListContext = new ElementListContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 122, GoParser.RULE_elementList)
-    try {
-      let _alt: number
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 632
-        this.keyedElement()
-        this.state = 637
-        this._errHandler.sync(this)
-        _alt = this._interp.adaptivePredict(this._input, 74, this._ctx)
-        while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
-          if (_alt === 1) {
-            {
-              {
-                this.state = 633
-                this.match(GoParser.COMMA)
-                this.state = 634
-                this.keyedElement()
-              }
-            }
-          }
-          this.state = 639
-          this._errHandler.sync(this)
-          _alt = this._interp.adaptivePredict(this._input, 74, this._ctx)
-        }
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public keyedElement(): KeyedElementContext {
-    let localctx: KeyedElementContext = new KeyedElementContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 124, GoParser.RULE_keyedElement)
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 643
-        this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 75, this._ctx)) {
-          case 1:
-            {
-              this.state = 640
-              this.key()
-              this.state = 641
-              this.match(GoParser.COLON)
-            }
-            break
-        }
-        this.state = 645
-        this.element()
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public key(): KeyContext {
-    let localctx: KeyContext = new KeyContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 126, GoParser.RULE_key)
-    try {
-      this.state = 649
-      this._errHandler.sync(this)
-      switch (this._input.LA(1)) {
-        case 3:
-        case 11:
-        case 26:
-        case 27:
-        case 28:
-        case 32:
-        case 58:
-        case 59:
-        case 60:
-        case 61:
-        case 62:
-        case 63:
-        case 64:
-        case 65:
-        case 66:
-        case 67:
-        case 68:
-        case 69:
-        case 72:
-        case 73:
-        case 79:
-        case 80:
-          this.enterOuterAlt(localctx, 1)
-          {
-            this.state = 647
-            this.expression(0)
-          }
-          break
-        case 30:
-          this.enterOuterAlt(localctx, 2)
-          {
-            this.state = 648
-            this.literalValue()
-          }
-          break
-        default:
-          throw new NoViableAltException(this)
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public element(): ElementContext {
-    let localctx: ElementContext = new ElementContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 128, GoParser.RULE_element)
-    try {
-      this.state = 653
-      this._errHandler.sync(this)
-      switch (this._input.LA(1)) {
-        case 3:
-        case 11:
-        case 26:
-        case 27:
-        case 28:
-        case 32:
-        case 58:
-        case 59:
-        case 60:
-        case 61:
-        case 62:
-        case 63:
-        case 64:
-        case 65:
-        case 66:
-        case 67:
-        case 68:
-        case 69:
-        case 72:
-        case 73:
-        case 79:
-        case 80:
-          this.enterOuterAlt(localctx, 1)
-          {
-            this.state = 651
-            this.expression(0)
-          }
-          break
-        case 30:
-          this.enterOuterAlt(localctx, 2)
-          {
-            this.state = 652
-            this.literalValue()
-          }
-          break
-        default:
-          throw new NoViableAltException(this)
       }
     } catch (re) {
       if (re instanceof RecognitionException) {
@@ -3552,12 +2292,12 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public string_(): String_Context {
     let localctx: String_Context = new String_Context(this, this._ctx, this.state)
-    this.enterRule(localctx, 130, GoParser.RULE_string_)
+    this.enterRule(localctx, 80, GoParser.RULE_string_)
     let _la: number
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 655
+        this.state = 405
         _la = this._input.LA(1)
         if (!(_la === 79 || _la === 80)) {
           this._errHandler.recoverInline(this)
@@ -3580,203 +2320,18 @@ export default class GoParser extends GoParserBase {
     return localctx
   }
   // @RuleVersion(0)
-  public embeddedField(): EmbeddedFieldContext {
-    let localctx: EmbeddedFieldContext = new EmbeddedFieldContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 132, GoParser.RULE_embeddedField)
-    let _la: number
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 658
-        this._errHandler.sync(this)
-        _la = this._input.LA(1)
-        if (_la === 62) {
-          {
-            this.state = 657
-            this.match(GoParser.STAR)
-          }
-        }
-
-        this.state = 660
-        this.typeName()
-        this.state = 662
-        this._errHandler.sync(this)
-        _la = this._input.LA(1)
-        if (_la === 32) {
-          {
-            this.state = 661
-            this.typeArgs()
-          }
-        }
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
   public functionLit(): FunctionLitContext {
     let localctx: FunctionLitContext = new FunctionLitContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 134, GoParser.RULE_functionLit)
+    this.enterRule(localctx, 82, GoParser.RULE_functionLit)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 664
+        this.state = 407
         this.match(GoParser.FUNC)
-        this.state = 665
+        this.state = 408
         this.signature()
-        this.state = 666
+        this.state = 409
         this.block()
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public index(): IndexContext {
-    let localctx: IndexContext = new IndexContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 136, GoParser.RULE_index)
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 668
-        this.match(GoParser.L_BRACKET)
-        this.state = 669
-        this.expression(0)
-        this.state = 670
-        this.match(GoParser.R_BRACKET)
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public slice_(): Slice_Context {
-    let localctx: Slice_Context = new Slice_Context(this, this._ctx, this.state)
-    this.enterRule(localctx, 138, GoParser.RULE_slice_)
-    let _la: number
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 672
-        this.match(GoParser.L_BRACKET)
-        this.state = 688
-        this._errHandler.sync(this)
-        switch (this._interp.adaptivePredict(this._input, 83, this._ctx)) {
-          case 1:
-            {
-              this.state = 674
-              this._errHandler.sync(this)
-              _la = this._input.LA(1)
-              if (
-                (((_la - 3) & ~0x1f) === 0 && ((1 << (_la - 3)) & 595591425) !== 0) ||
-                (((_la - 58) & ~0x1f) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)
-              ) {
-                {
-                  this.state = 673
-                  this.expression(0)
-                }
-              }
-
-              this.state = 676
-              this.match(GoParser.COLON)
-              this.state = 678
-              this._errHandler.sync(this)
-              _la = this._input.LA(1)
-              if (
-                (((_la - 3) & ~0x1f) === 0 && ((1 << (_la - 3)) & 595591425) !== 0) ||
-                (((_la - 58) & ~0x1f) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)
-              ) {
-                {
-                  this.state = 677
-                  this.expression(0)
-                }
-              }
-            }
-            break
-          case 2:
-            {
-              this.state = 681
-              this._errHandler.sync(this)
-              _la = this._input.LA(1)
-              if (
-                (((_la - 3) & ~0x1f) === 0 && ((1 << (_la - 3)) & 595591425) !== 0) ||
-                (((_la - 58) & ~0x1f) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)
-              ) {
-                {
-                  this.state = 680
-                  this.expression(0)
-                }
-              }
-
-              this.state = 683
-              this.match(GoParser.COLON)
-              this.state = 684
-              this.expression(0)
-              this.state = 685
-              this.match(GoParser.COLON)
-              this.state = 686
-              this.expression(0)
-            }
-            break
-        }
-        this.state = 690
-        this.match(GoParser.R_BRACKET)
-      }
-    } catch (re) {
-      if (re instanceof RecognitionException) {
-        localctx.exception = re
-        this._errHandler.reportError(this, re)
-        this._errHandler.recover(this, re)
-      } else {
-        throw re
-      }
-    } finally {
-      this.exitRule()
-    }
-    return localctx
-  }
-  // @RuleVersion(0)
-  public typeAssertion(): TypeAssertionContext {
-    let localctx: TypeAssertionContext = new TypeAssertionContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 140, GoParser.RULE_typeAssertion)
-    try {
-      this.enterOuterAlt(localctx, 1)
-      {
-        this.state = 692
-        this.match(GoParser.DOT)
-        this.state = 693
-        this.match(GoParser.L_PAREN)
-        this.state = 694
-        this.type_()
-        this.state = 695
-        this.match(GoParser.R_PAREN)
       }
     } catch (re) {
       if (re instanceof RecognitionException) {
@@ -3794,72 +2349,27 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public arguments(): ArgumentsContext {
     let localctx: ArgumentsContext = new ArgumentsContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 142, GoParser.RULE_arguments)
+    this.enterRule(localctx, 84, GoParser.RULE_arguments)
     let _la: number
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 697
+        this.state = 411
         this.match(GoParser.L_PAREN)
-        this.state = 712
+        this.state = 413
         this._errHandler.sync(this)
         _la = this._input.LA(1)
         if (
-          (((_la - 3) & ~0x1f) === 0 && ((1 << (_la - 3)) & 595591425) !== 0) ||
-          (((_la - 58) & ~0x1f) === 0 && ((1 << (_la - 58)) & 6344703) !== 0)
+          ((_la & ~0x1f) === 0 && ((1 << _la) & 469764104) !== 0) ||
+          (((_la - 64) & ~0x1f) === 0 && ((1 << (_la - 64)) & 98307) !== 0)
         ) {
           {
-            this.state = 704
-            this._errHandler.sync(this)
-            switch (this._interp.adaptivePredict(this._input, 85, this._ctx)) {
-              case 1:
-                {
-                  this.state = 698
-                  this.expressionList()
-                }
-                break
-              case 2:
-                {
-                  this.state = 699
-                  this.type_()
-                  this.state = 702
-                  this._errHandler.sync(this)
-                  switch (this._interp.adaptivePredict(this._input, 84, this._ctx)) {
-                    case 1:
-                      {
-                        this.state = 700
-                        this.match(GoParser.COMMA)
-                        this.state = 701
-                        this.expressionList()
-                      }
-                      break
-                  }
-                }
-                break
-            }
-            this.state = 707
-            this._errHandler.sync(this)
-            _la = this._input.LA(1)
-            if (_la === 42) {
-              {
-                this.state = 706
-                this.match(GoParser.ELLIPSIS)
-              }
-            }
-
-            this.state = 710
-            this._errHandler.sync(this)
-            _la = this._input.LA(1)
-            if (_la === 35) {
-              {
-                this.state = 709
-                this.match(GoParser.COMMA)
-              }
-            }
+            this.state = 412
+            this.expressionList()
           }
         }
 
-        this.state = 714
+        this.state = 415
         this.match(GoParser.R_PAREN)
       }
     } catch (re) {
@@ -3878,15 +2388,15 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public methodExpr(): MethodExprContext {
     let localctx: MethodExprContext = new MethodExprContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 144, GoParser.RULE_methodExpr)
+    this.enterRule(localctx, 86, GoParser.RULE_methodExpr)
     try {
       this.enterOuterAlt(localctx, 1)
       {
-        this.state = 716
+        this.state = 417
         this.type_()
-        this.state = 717
+        this.state = 418
         this.match(GoParser.DOT)
-        this.state = 718
+        this.state = 419
         this.match(GoParser.IDENTIFIER)
       }
     } catch (re) {
@@ -3905,36 +2415,36 @@ export default class GoParser extends GoParserBase {
   // @RuleVersion(0)
   public eos(): EosContext {
     let localctx: EosContext = new EosContext(this, this._ctx, this.state)
-    this.enterRule(localctx, 146, GoParser.RULE_eos)
+    this.enterRule(localctx, 88, GoParser.RULE_eos)
     try {
-      this.state = 724
+      this.state = 425
       this._errHandler.sync(this)
-      switch (this._interp.adaptivePredict(this._input, 89, this._ctx)) {
+      switch (this._interp.adaptivePredict(this._input, 49, this._ctx)) {
         case 1:
           this.enterOuterAlt(localctx, 1)
           {
-            this.state = 720
+            this.state = 421
             this.match(GoParser.SEMI)
           }
           break
         case 2:
           this.enterOuterAlt(localctx, 2)
           {
-            this.state = 721
+            this.state = 422
             this.match(GoParser.EOF)
           }
           break
         case 3:
           this.enterOuterAlt(localctx, 3)
           {
-            this.state = 722
+            this.state = 423
             this.match(GoParser.EOS)
           }
           break
         case 4:
           this.enterOuterAlt(localctx, 4)
           {
-            this.state = 723
+            this.state = 424
             if (!this.closingBracket()) {
               throw this.createFailedPredicateException('this.closingBracket()')
             }
@@ -3957,13 +2467,13 @@ export default class GoParser extends GoParserBase {
 
   public sempred(localctx: RuleContext, ruleIndex: number, predIndex: number): boolean {
     switch (ruleIndex) {
-      case 18:
+      case 11:
         return this.statementList_sempred(localctx as StatementListContext, predIndex)
-      case 50:
+      case 33:
         return this.expression_sempred(localctx as ExpressionContext, predIndex)
-      case 51:
+      case 34:
         return this.primaryExpr_sempred(localctx as PrimaryExprContext, predIndex)
-      case 73:
+      case 44:
         return this.eos_sempred(localctx as EosContext, predIndex)
     }
     return true
@@ -3978,284 +2488,175 @@ export default class GoParser extends GoParserBase {
   private expression_sempred(localctx: ExpressionContext, predIndex: number): boolean {
     switch (predIndex) {
       case 1:
-        return this.precpred(this._ctx, 5)
-      case 2:
-        return this.precpred(this._ctx, 4)
-      case 3:
         return this.precpred(this._ctx, 3)
-      case 4:
+      case 2:
         return this.precpred(this._ctx, 2)
-      case 5:
+      case 3:
         return this.precpred(this._ctx, 1)
     }
     return true
   }
   private primaryExpr_sempred(localctx: PrimaryExprContext, predIndex: number): boolean {
     switch (predIndex) {
-      case 6:
+      case 4:
         return this.precpred(this._ctx, 1)
     }
     return true
   }
   private eos_sempred(localctx: EosContext, predIndex: number): boolean {
     switch (predIndex) {
-      case 7:
+      case 5:
         return this.closingBracket()
     }
     return true
   }
 
   public static readonly _serializedATN: number[] = [
-    4, 1, 89, 727, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7, 4, 2, 5, 7, 5, 2, 6, 7,
+    4, 1, 89, 428, 2, 0, 7, 0, 2, 1, 7, 1, 2, 2, 7, 2, 2, 3, 7, 3, 2, 4, 7, 4, 2, 5, 7, 5, 2, 6, 7,
     6, 2, 7, 7, 7, 2, 8, 7, 8, 2, 9, 7, 9, 2, 10, 7, 10, 2, 11, 7, 11, 2, 12, 7, 12, 2, 13, 7, 13,
     2, 14, 7, 14, 2, 15, 7, 15, 2, 16, 7, 16, 2, 17, 7, 17, 2, 18, 7, 18, 2, 19, 7, 19, 2, 20, 7,
     20, 2, 21, 7, 21, 2, 22, 7, 22, 2, 23, 7, 23, 2, 24, 7, 24, 2, 25, 7, 25, 2, 26, 7, 26, 2, 27,
     7, 27, 2, 28, 7, 28, 2, 29, 7, 29, 2, 30, 7, 30, 2, 31, 7, 31, 2, 32, 7, 32, 2, 33, 7, 33, 2,
     34, 7, 34, 2, 35, 7, 35, 2, 36, 7, 36, 2, 37, 7, 37, 2, 38, 7, 38, 2, 39, 7, 39, 2, 40, 7, 40,
-    2, 41, 7, 41, 2, 42, 7, 42, 2, 43, 7, 43, 2, 44, 7, 44, 2, 45, 7, 45, 2, 46, 7, 46, 2, 47, 7,
-    47, 2, 48, 7, 48, 2, 49, 7, 49, 2, 50, 7, 50, 2, 51, 7, 51, 2, 52, 7, 52, 2, 53, 7, 53, 2, 54,
-    7, 54, 2, 55, 7, 55, 2, 56, 7, 56, 2, 57, 7, 57, 2, 58, 7, 58, 2, 59, 7, 59, 2, 60, 7, 60, 2,
-    61, 7, 61, 2, 62, 7, 62, 2, 63, 7, 63, 2, 64, 7, 64, 2, 65, 7, 65, 2, 66, 7, 66, 2, 67, 7, 67,
-    2, 68, 7, 68, 2, 69, 7, 69, 2, 70, 7, 70, 2, 71, 7, 71, 2, 72, 7, 72, 2, 73, 7, 73, 1, 0, 1, 0,
-    1, 0, 1, 0, 1, 0, 5, 0, 154, 8, 0, 10, 0, 12, 0, 157, 9, 0, 1, 0, 1, 0, 3, 0, 161, 8, 0, 1, 0,
-    1, 0, 5, 0, 165, 8, 0, 10, 0, 12, 0, 168, 9, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 2,
-    1, 2, 1, 2, 1, 2, 5, 2, 181, 8, 2, 10, 2, 12, 2, 184, 9, 2, 1, 2, 3, 2, 187, 8, 2, 1, 3, 3, 3,
-    190, 8, 3, 1, 3, 1, 3, 1, 4, 1, 4, 1, 5, 1, 5, 3, 5, 198, 8, 5, 1, 6, 1, 6, 1, 6, 1, 6, 1, 6, 1,
-    6, 5, 6, 206, 8, 6, 10, 6, 12, 6, 209, 9, 6, 1, 6, 3, 6, 212, 8, 6, 1, 7, 1, 7, 3, 7, 216, 8, 7,
-    1, 7, 1, 7, 3, 7, 220, 8, 7, 1, 8, 1, 8, 1, 8, 5, 8, 225, 8, 8, 10, 8, 12, 8, 228, 9, 8, 1, 9,
-    1, 9, 1, 9, 5, 9, 233, 8, 9, 10, 9, 12, 9, 236, 9, 9, 1, 10, 1, 10, 1, 10, 1, 10, 5, 10, 242, 8,
-    10, 10, 10, 12, 10, 245, 9, 10, 1, 10, 1, 10, 1, 11, 1, 11, 1, 11, 1, 12, 1, 12, 1, 12, 5, 12,
-    255, 8, 12, 10, 12, 12, 12, 258, 9, 12, 1, 13, 3, 13, 261, 8, 13, 1, 13, 1, 13, 1, 14, 1, 14, 1,
-    14, 3, 14, 268, 8, 14, 1, 14, 1, 14, 3, 14, 272, 8, 14, 1, 15, 1, 15, 1, 15, 1, 15, 1, 15, 1,
-    15, 5, 15, 280, 8, 15, 10, 15, 12, 15, 283, 9, 15, 1, 15, 3, 15, 286, 8, 15, 1, 16, 1, 16, 1,
-    16, 1, 16, 3, 16, 292, 8, 16, 1, 16, 1, 16, 3, 16, 296, 8, 16, 1, 17, 1, 17, 3, 17, 300, 8, 17,
-    1, 17, 1, 17, 1, 18, 3, 18, 305, 8, 18, 1, 18, 3, 18, 308, 8, 18, 1, 18, 3, 18, 311, 8, 18, 1,
-    18, 1, 18, 1, 18, 4, 18, 316, 8, 18, 11, 18, 12, 18, 317, 1, 19, 1, 19, 1, 19, 1, 19, 1, 19, 1,
-    19, 1, 19, 1, 19, 1, 19, 3, 19, 329, 8, 19, 1, 20, 1, 20, 1, 20, 1, 20, 1, 20, 3, 20, 336, 8,
-    20, 1, 21, 1, 21, 1, 22, 1, 22, 1, 22, 1, 22, 1, 23, 1, 23, 1, 23, 1, 24, 1, 24, 1, 24, 1, 24,
-    1, 25, 1, 25, 1, 26, 1, 26, 1, 26, 1, 26, 1, 27, 1, 27, 3, 27, 359, 8, 27, 1, 28, 1, 28, 1, 28,
-    1, 29, 1, 29, 1, 29, 1, 29, 1, 29, 1, 29, 1, 29, 1, 29, 1, 29, 3, 29, 373, 8, 29, 1, 29, 1, 29,
-    1, 29, 1, 29, 3, 29, 379, 8, 29, 3, 29, 381, 8, 29, 1, 30, 1, 30, 3, 30, 385, 8, 30, 1, 30, 1,
-    30, 1, 30, 3, 30, 390, 8, 30, 5, 30, 392, 8, 30, 10, 30, 12, 30, 395, 9, 30, 1, 31, 1, 31, 1,
-    31, 5, 31, 400, 8, 31, 10, 31, 12, 31, 403, 9, 31, 1, 31, 1, 31, 1, 32, 1, 32, 1, 32, 3, 32,
-    410, 8, 32, 1, 33, 1, 33, 1, 33, 3, 33, 415, 8, 33, 1, 33, 3, 33, 418, 8, 33, 1, 34, 1, 34, 1,
-    34, 1, 34, 1, 34, 1, 34, 3, 34, 426, 8, 34, 1, 34, 1, 34, 1, 35, 1, 35, 3, 35, 432, 8, 35, 1,
-    35, 1, 35, 3, 35, 436, 8, 35, 3, 35, 438, 8, 35, 1, 35, 1, 35, 1, 36, 3, 36, 443, 8, 36, 1, 36,
-    1, 36, 3, 36, 447, 8, 36, 1, 36, 1, 36, 3, 36, 451, 8, 36, 1, 37, 1, 37, 1, 37, 1, 37, 1, 37, 1,
-    37, 3, 37, 459, 8, 37, 1, 37, 1, 37, 1, 37, 1, 38, 1, 38, 1, 38, 1, 39, 1, 39, 3, 39, 469, 8,
-    39, 1, 39, 1, 39, 1, 39, 1, 39, 1, 39, 3, 39, 476, 8, 39, 1, 40, 1, 40, 1, 40, 3, 40, 481, 8,
-    40, 1, 40, 1, 40, 1, 41, 1, 41, 3, 41, 487, 8, 41, 1, 42, 1, 42, 1, 43, 1, 43, 1, 44, 1, 44, 1,
-    45, 1, 45, 1, 45, 1, 45, 1, 45, 3, 45, 500, 8, 45, 1, 45, 1, 45, 1, 46, 1, 46, 3, 46, 506, 8,
-    46, 1, 47, 1, 47, 3, 47, 510, 8, 47, 1, 48, 1, 48, 1, 48, 1, 48, 5, 48, 516, 8, 48, 10, 48, 12,
-    48, 519, 9, 48, 1, 48, 3, 48, 522, 8, 48, 3, 48, 524, 8, 48, 1, 48, 1, 48, 1, 49, 3, 49, 529, 8,
-    49, 1, 49, 3, 49, 532, 8, 49, 1, 49, 1, 49, 1, 50, 1, 50, 1, 50, 1, 50, 3, 50, 540, 8, 50, 1,
-    50, 1, 50, 1, 50, 1, 50, 1, 50, 1, 50, 1, 50, 1, 50, 1, 50, 1, 50, 1, 50, 1, 50, 1, 50, 1, 50,
-    1, 50, 5, 50, 557, 8, 50, 10, 50, 12, 50, 560, 9, 50, 1, 51, 1, 51, 1, 51, 3, 51, 565, 8, 51, 1,
-    51, 1, 51, 1, 51, 1, 51, 1, 51, 1, 51, 1, 51, 3, 51, 574, 8, 51, 5, 51, 576, 8, 51, 10, 51, 12,
-    51, 579, 9, 51, 1, 52, 1, 52, 1, 52, 3, 52, 584, 8, 52, 1, 52, 1, 52, 1, 52, 1, 52, 3, 52, 590,
-    8, 52, 1, 53, 1, 53, 1, 53, 3, 53, 595, 8, 53, 1, 54, 1, 54, 1, 54, 1, 54, 3, 54, 601, 8, 54, 1,
-    55, 1, 55, 1, 56, 1, 56, 1, 57, 1, 57, 1, 57, 1, 57, 1, 58, 1, 58, 1, 58, 1, 59, 1, 59, 1, 59,
-    1, 59, 1, 59, 1, 59, 3, 59, 620, 8, 59, 3, 59, 622, 8, 59, 1, 60, 1, 60, 1, 60, 3, 60, 627, 8,
-    60, 3, 60, 629, 8, 60, 1, 60, 1, 60, 1, 61, 1, 61, 1, 61, 5, 61, 636, 8, 61, 10, 61, 12, 61,
-    639, 9, 61, 1, 62, 1, 62, 1, 62, 3, 62, 644, 8, 62, 1, 62, 1, 62, 1, 63, 1, 63, 3, 63, 650, 8,
-    63, 1, 64, 1, 64, 3, 64, 654, 8, 64, 1, 65, 1, 65, 1, 66, 3, 66, 659, 8, 66, 1, 66, 1, 66, 3,
-    66, 663, 8, 66, 1, 67, 1, 67, 1, 67, 1, 67, 1, 68, 1, 68, 1, 68, 1, 68, 1, 69, 1, 69, 3, 69,
-    675, 8, 69, 1, 69, 1, 69, 3, 69, 679, 8, 69, 1, 69, 3, 69, 682, 8, 69, 1, 69, 1, 69, 1, 69, 1,
-    69, 1, 69, 3, 69, 689, 8, 69, 1, 69, 1, 69, 1, 70, 1, 70, 1, 70, 1, 70, 1, 70, 1, 71, 1, 71, 1,
-    71, 1, 71, 1, 71, 3, 71, 703, 8, 71, 3, 71, 705, 8, 71, 1, 71, 3, 71, 708, 8, 71, 1, 71, 3, 71,
-    711, 8, 71, 3, 71, 713, 8, 71, 1, 71, 1, 71, 1, 72, 1, 72, 1, 72, 1, 72, 1, 73, 1, 73, 1, 73, 1,
-    73, 3, 73, 725, 8, 73, 1, 73, 0, 2, 100, 102, 74, 0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24,
-    26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62, 64, 66, 68, 70, 72,
-    74, 76, 78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104, 106, 108, 110, 112, 114, 116,
-    118, 120, 122, 124, 126, 128, 130, 132, 134, 136, 138, 140, 142, 144, 146, 0, 8, 2, 0, 27, 27,
-    38, 38, 1, 0, 39, 40, 1, 0, 58, 64, 2, 0, 52, 56, 62, 63, 2, 0, 51, 51, 59, 61, 1, 0, 45, 50, 2,
-    0, 65, 68, 72, 73, 1, 0, 79, 80, 771, 0, 148, 1, 0, 0, 0, 2, 171, 1, 0, 0, 0, 4, 174, 1, 0, 0,
-    0, 6, 189, 1, 0, 0, 0, 8, 193, 1, 0, 0, 0, 10, 197, 1, 0, 0, 0, 12, 199, 1, 0, 0, 0, 14, 213, 1,
-    0, 0, 0, 16, 221, 1, 0, 0, 0, 18, 229, 1, 0, 0, 0, 20, 237, 1, 0, 0, 0, 22, 248, 1, 0, 0, 0, 24,
-    251, 1, 0, 0, 0, 26, 260, 1, 0, 0, 0, 28, 264, 1, 0, 0, 0, 30, 273, 1, 0, 0, 0, 32, 287, 1, 0,
-    0, 0, 34, 297, 1, 0, 0, 0, 36, 315, 1, 0, 0, 0, 38, 328, 1, 0, 0, 0, 40, 335, 1, 0, 0, 0, 42,
-    337, 1, 0, 0, 0, 44, 339, 1, 0, 0, 0, 46, 343, 1, 0, 0, 0, 48, 346, 1, 0, 0, 0, 50, 350, 1, 0,
-    0, 0, 52, 352, 1, 0, 0, 0, 54, 356, 1, 0, 0, 0, 56, 360, 1, 0, 0, 0, 58, 363, 1, 0, 0, 0, 60,
-    384, 1, 0, 0, 0, 62, 396, 1, 0, 0, 0, 64, 406, 1, 0, 0, 0, 66, 417, 1, 0, 0, 0, 68, 425, 1, 0,
-    0, 0, 70, 429, 1, 0, 0, 0, 72, 442, 1, 0, 0, 0, 74, 458, 1, 0, 0, 0, 76, 463, 1, 0, 0, 0, 78,
-    475, 1, 0, 0, 0, 80, 477, 1, 0, 0, 0, 82, 486, 1, 0, 0, 0, 84, 488, 1, 0, 0, 0, 86, 490, 1, 0,
-    0, 0, 88, 492, 1, 0, 0, 0, 90, 499, 1, 0, 0, 0, 92, 503, 1, 0, 0, 0, 94, 509, 1, 0, 0, 0, 96,
-    511, 1, 0, 0, 0, 98, 528, 1, 0, 0, 0, 100, 539, 1, 0, 0, 0, 102, 564, 1, 0, 0, 0, 104, 589, 1,
-    0, 0, 0, 106, 594, 1, 0, 0, 0, 108, 600, 1, 0, 0, 0, 110, 602, 1, 0, 0, 0, 112, 604, 1, 0, 0, 0,
-    114, 606, 1, 0, 0, 0, 116, 610, 1, 0, 0, 0, 118, 621, 1, 0, 0, 0, 120, 623, 1, 0, 0, 0, 122,
-    632, 1, 0, 0, 0, 124, 643, 1, 0, 0, 0, 126, 649, 1, 0, 0, 0, 128, 653, 1, 0, 0, 0, 130, 655, 1,
-    0, 0, 0, 132, 658, 1, 0, 0, 0, 134, 664, 1, 0, 0, 0, 136, 668, 1, 0, 0, 0, 138, 672, 1, 0, 0, 0,
-    140, 692, 1, 0, 0, 0, 142, 697, 1, 0, 0, 0, 144, 716, 1, 0, 0, 0, 146, 724, 1, 0, 0, 0, 148,
-    149, 3, 2, 1, 0, 149, 155, 3, 146, 73, 0, 150, 151, 3, 4, 2, 0, 151, 152, 3, 146, 73, 0, 152,
-    154, 1, 0, 0, 0, 153, 150, 1, 0, 0, 0, 154, 157, 1, 0, 0, 0, 155, 153, 1, 0, 0, 0, 155, 156, 1,
-    0, 0, 0, 156, 166, 1, 0, 0, 0, 157, 155, 1, 0, 0, 0, 158, 161, 3, 28, 14, 0, 159, 161, 3, 10, 5,
-    0, 160, 158, 1, 0, 0, 0, 160, 159, 1, 0, 0, 0, 161, 162, 1, 0, 0, 0, 162, 163, 3, 146, 73, 0,
-    163, 165, 1, 0, 0, 0, 164, 160, 1, 0, 0, 0, 165, 168, 1, 0, 0, 0, 166, 164, 1, 0, 0, 0, 166,
-    167, 1, 0, 0, 0, 167, 169, 1, 0, 0, 0, 168, 166, 1, 0, 0, 0, 169, 170, 5, 0, 0, 1, 170, 1, 1, 0,
-    0, 0, 171, 172, 5, 14, 0, 0, 172, 173, 5, 27, 0, 0, 173, 3, 1, 0, 0, 0, 174, 186, 5, 23, 0, 0,
-    175, 187, 3, 6, 3, 0, 176, 182, 5, 28, 0, 0, 177, 178, 3, 6, 3, 0, 178, 179, 3, 146, 73, 0, 179,
-    181, 1, 0, 0, 0, 180, 177, 1, 0, 0, 0, 181, 184, 1, 0, 0, 0, 182, 180, 1, 0, 0, 0, 182, 183, 1,
-    0, 0, 0, 183, 185, 1, 0, 0, 0, 184, 182, 1, 0, 0, 0, 185, 187, 5, 29, 0, 0, 186, 175, 1, 0, 0,
-    0, 186, 176, 1, 0, 0, 0, 187, 5, 1, 0, 0, 0, 188, 190, 7, 0, 0, 0, 189, 188, 1, 0, 0, 0, 189,
-    190, 1, 0, 0, 0, 190, 191, 1, 0, 0, 0, 191, 192, 3, 8, 4, 0, 192, 7, 1, 0, 0, 0, 193, 194, 3,
-    130, 65, 0, 194, 9, 1, 0, 0, 0, 195, 198, 3, 12, 6, 0, 196, 198, 3, 30, 15, 0, 197, 195, 1, 0,
-    0, 0, 197, 196, 1, 0, 0, 0, 198, 11, 1, 0, 0, 0, 199, 211, 5, 16, 0, 0, 200, 212, 3, 14, 7, 0,
-    201, 207, 5, 28, 0, 0, 202, 203, 3, 14, 7, 0, 203, 204, 3, 146, 73, 0, 204, 206, 1, 0, 0, 0,
-    205, 202, 1, 0, 0, 0, 206, 209, 1, 0, 0, 0, 207, 205, 1, 0, 0, 0, 207, 208, 1, 0, 0, 0, 208,
-    210, 1, 0, 0, 0, 209, 207, 1, 0, 0, 0, 210, 212, 5, 29, 0, 0, 211, 200, 1, 0, 0, 0, 211, 201, 1,
-    0, 0, 0, 212, 13, 1, 0, 0, 0, 213, 219, 3, 16, 8, 0, 214, 216, 3, 78, 39, 0, 215, 214, 1, 0, 0,
-    0, 215, 216, 1, 0, 0, 0, 216, 217, 1, 0, 0, 0, 217, 218, 5, 34, 0, 0, 218, 220, 3, 18, 9, 0,
-    219, 215, 1, 0, 0, 0, 219, 220, 1, 0, 0, 0, 220, 15, 1, 0, 0, 0, 221, 226, 5, 27, 0, 0, 222,
-    223, 5, 35, 0, 0, 223, 225, 5, 27, 0, 0, 224, 222, 1, 0, 0, 0, 225, 228, 1, 0, 0, 0, 226, 224,
-    1, 0, 0, 0, 226, 227, 1, 0, 0, 0, 227, 17, 1, 0, 0, 0, 228, 226, 1, 0, 0, 0, 229, 234, 3, 100,
-    50, 0, 230, 231, 5, 35, 0, 0, 231, 233, 3, 100, 50, 0, 232, 230, 1, 0, 0, 0, 233, 236, 1, 0, 0,
-    0, 234, 232, 1, 0, 0, 0, 234, 235, 1, 0, 0, 0, 235, 19, 1, 0, 0, 0, 236, 234, 1, 0, 0, 0, 237,
-    238, 5, 32, 0, 0, 238, 243, 3, 22, 11, 0, 239, 240, 5, 35, 0, 0, 240, 242, 3, 22, 11, 0, 241,
-    239, 1, 0, 0, 0, 242, 245, 1, 0, 0, 0, 243, 241, 1, 0, 0, 0, 243, 244, 1, 0, 0, 0, 244, 246, 1,
-    0, 0, 0, 245, 243, 1, 0, 0, 0, 246, 247, 5, 33, 0, 0, 247, 21, 1, 0, 0, 0, 248, 249, 3, 16, 8,
-    0, 249, 250, 3, 24, 12, 0, 250, 23, 1, 0, 0, 0, 251, 256, 3, 26, 13, 0, 252, 253, 5, 51, 0, 0,
-    253, 255, 3, 26, 13, 0, 254, 252, 1, 0, 0, 0, 255, 258, 1, 0, 0, 0, 256, 254, 1, 0, 0, 0, 256,
-    257, 1, 0, 0, 0, 257, 25, 1, 0, 0, 0, 258, 256, 1, 0, 0, 0, 259, 261, 5, 57, 0, 0, 260, 259, 1,
-    0, 0, 0, 260, 261, 1, 0, 0, 0, 261, 262, 1, 0, 0, 0, 262, 263, 3, 78, 39, 0, 263, 27, 1, 0, 0,
-    0, 264, 265, 5, 3, 0, 0, 265, 267, 5, 27, 0, 0, 266, 268, 3, 20, 10, 0, 267, 266, 1, 0, 0, 0,
-    267, 268, 1, 0, 0, 0, 268, 269, 1, 0, 0, 0, 269, 271, 3, 92, 46, 0, 270, 272, 3, 34, 17, 0, 271,
-    270, 1, 0, 0, 0, 271, 272, 1, 0, 0, 0, 272, 29, 1, 0, 0, 0, 273, 285, 5, 25, 0, 0, 274, 286, 3,
-    32, 16, 0, 275, 281, 5, 28, 0, 0, 276, 277, 3, 32, 16, 0, 277, 278, 3, 146, 73, 0, 278, 280, 1,
-    0, 0, 0, 279, 276, 1, 0, 0, 0, 280, 283, 1, 0, 0, 0, 281, 279, 1, 0, 0, 0, 281, 282, 1, 0, 0, 0,
-    282, 284, 1, 0, 0, 0, 283, 281, 1, 0, 0, 0, 284, 286, 5, 29, 0, 0, 285, 274, 1, 0, 0, 0, 285,
-    275, 1, 0, 0, 0, 286, 31, 1, 0, 0, 0, 287, 295, 3, 16, 8, 0, 288, 291, 3, 78, 39, 0, 289, 290,
-    5, 34, 0, 0, 290, 292, 3, 18, 9, 0, 291, 289, 1, 0, 0, 0, 291, 292, 1, 0, 0, 0, 292, 296, 1, 0,
-    0, 0, 293, 294, 5, 34, 0, 0, 294, 296, 3, 18, 9, 0, 295, 288, 1, 0, 0, 0, 295, 293, 1, 0, 0, 0,
-    296, 33, 1, 0, 0, 0, 297, 299, 5, 30, 0, 0, 298, 300, 3, 36, 18, 0, 299, 298, 1, 0, 0, 0, 299,
-    300, 1, 0, 0, 0, 300, 301, 1, 0, 0, 0, 301, 302, 5, 31, 0, 0, 302, 35, 1, 0, 0, 0, 303, 305, 5,
-    36, 0, 0, 304, 303, 1, 0, 0, 0, 304, 305, 1, 0, 0, 0, 305, 311, 1, 0, 0, 0, 306, 308, 5, 88, 0,
-    0, 307, 306, 1, 0, 0, 0, 307, 308, 1, 0, 0, 0, 308, 311, 1, 0, 0, 0, 309, 311, 4, 18, 0, 0, 310,
-    304, 1, 0, 0, 0, 310, 307, 1, 0, 0, 0, 310, 309, 1, 0, 0, 0, 311, 312, 1, 0, 0, 0, 312, 313, 3,
-    38, 19, 0, 313, 314, 3, 146, 73, 0, 314, 316, 1, 0, 0, 0, 315, 310, 1, 0, 0, 0, 316, 317, 1, 0,
-    0, 0, 317, 315, 1, 0, 0, 0, 317, 318, 1, 0, 0, 0, 318, 37, 1, 0, 0, 0, 319, 329, 3, 10, 5, 0,
-    320, 329, 3, 40, 20, 0, 321, 329, 3, 76, 38, 0, 322, 329, 3, 54, 27, 0, 323, 329, 3, 34, 17, 0,
-    324, 329, 3, 58, 29, 0, 325, 329, 3, 62, 31, 0, 326, 329, 3, 70, 35, 0, 327, 329, 3, 56, 28, 0,
-    328, 319, 1, 0, 0, 0, 328, 320, 1, 0, 0, 0, 328, 321, 1, 0, 0, 0, 328, 322, 1, 0, 0, 0, 328,
-    323, 1, 0, 0, 0, 328, 324, 1, 0, 0, 0, 328, 325, 1, 0, 0, 0, 328, 326, 1, 0, 0, 0, 328, 327, 1,
-    0, 0, 0, 329, 39, 1, 0, 0, 0, 330, 336, 3, 44, 22, 0, 331, 336, 3, 46, 23, 0, 332, 336, 3, 48,
-    24, 0, 333, 336, 3, 42, 21, 0, 334, 336, 3, 52, 26, 0, 335, 330, 1, 0, 0, 0, 335, 331, 1, 0, 0,
-    0, 335, 332, 1, 0, 0, 0, 335, 333, 1, 0, 0, 0, 335, 334, 1, 0, 0, 0, 336, 41, 1, 0, 0, 0, 337,
-    338, 3, 100, 50, 0, 338, 43, 1, 0, 0, 0, 339, 340, 3, 100, 50, 0, 340, 341, 5, 64, 0, 0, 341,
-    342, 3, 100, 50, 0, 342, 45, 1, 0, 0, 0, 343, 344, 3, 100, 50, 0, 344, 345, 7, 1, 0, 0, 345, 47,
-    1, 0, 0, 0, 346, 347, 3, 18, 9, 0, 347, 348, 3, 50, 25, 0, 348, 349, 3, 18, 9, 0, 349, 49, 1, 0,
-    0, 0, 350, 351, 5, 34, 0, 0, 351, 51, 1, 0, 0, 0, 352, 353, 3, 16, 8, 0, 353, 354, 5, 41, 0, 0,
-    354, 355, 3, 18, 9, 0, 355, 53, 1, 0, 0, 0, 356, 358, 5, 24, 0, 0, 357, 359, 3, 18, 9, 0, 358,
-    357, 1, 0, 0, 0, 358, 359, 1, 0, 0, 0, 359, 55, 1, 0, 0, 0, 360, 361, 5, 7, 0, 0, 361, 362, 3,
-    100, 50, 0, 362, 57, 1, 0, 0, 0, 363, 372, 5, 18, 0, 0, 364, 373, 3, 100, 50, 0, 365, 366, 3,
-    146, 73, 0, 366, 367, 3, 100, 50, 0, 367, 373, 1, 0, 0, 0, 368, 369, 3, 40, 20, 0, 369, 370, 3,
-    146, 73, 0, 370, 371, 3, 100, 50, 0, 371, 373, 1, 0, 0, 0, 372, 364, 1, 0, 0, 0, 372, 365, 1, 0,
-    0, 0, 372, 368, 1, 0, 0, 0, 373, 374, 1, 0, 0, 0, 374, 380, 3, 34, 17, 0, 375, 378, 5, 12, 0, 0,
-    376, 379, 3, 58, 29, 0, 377, 379, 3, 34, 17, 0, 378, 376, 1, 0, 0, 0, 378, 377, 1, 0, 0, 0, 379,
-    381, 1, 0, 0, 0, 380, 375, 1, 0, 0, 0, 380, 381, 1, 0, 0, 0, 381, 59, 1, 0, 0, 0, 382, 385, 3,
-    78, 39, 0, 383, 385, 5, 26, 0, 0, 384, 382, 1, 0, 0, 0, 384, 383, 1, 0, 0, 0, 385, 393, 1, 0, 0,
-    0, 386, 389, 5, 35, 0, 0, 387, 390, 3, 78, 39, 0, 388, 390, 5, 26, 0, 0, 389, 387, 1, 0, 0, 0,
-    389, 388, 1, 0, 0, 0, 390, 392, 1, 0, 0, 0, 391, 386, 1, 0, 0, 0, 392, 395, 1, 0, 0, 0, 393,
-    391, 1, 0, 0, 0, 393, 394, 1, 0, 0, 0, 394, 61, 1, 0, 0, 0, 395, 393, 1, 0, 0, 0, 396, 397, 5,
-    5, 0, 0, 397, 401, 5, 30, 0, 0, 398, 400, 3, 64, 32, 0, 399, 398, 1, 0, 0, 0, 400, 403, 1, 0, 0,
-    0, 401, 399, 1, 0, 0, 0, 401, 402, 1, 0, 0, 0, 402, 404, 1, 0, 0, 0, 403, 401, 1, 0, 0, 0, 404,
-    405, 5, 31, 0, 0, 405, 63, 1, 0, 0, 0, 406, 407, 3, 66, 33, 0, 407, 409, 5, 37, 0, 0, 408, 410,
-    3, 36, 18, 0, 409, 408, 1, 0, 0, 0, 409, 410, 1, 0, 0, 0, 410, 65, 1, 0, 0, 0, 411, 414, 5, 6,
-    0, 0, 412, 415, 3, 44, 22, 0, 413, 415, 3, 68, 34, 0, 414, 412, 1, 0, 0, 0, 414, 413, 1, 0, 0,
-    0, 415, 418, 1, 0, 0, 0, 416, 418, 5, 2, 0, 0, 417, 411, 1, 0, 0, 0, 417, 416, 1, 0, 0, 0, 418,
-    67, 1, 0, 0, 0, 419, 420, 3, 18, 9, 0, 420, 421, 5, 34, 0, 0, 421, 426, 1, 0, 0, 0, 422, 423, 3,
-    16, 8, 0, 423, 424, 5, 41, 0, 0, 424, 426, 1, 0, 0, 0, 425, 419, 1, 0, 0, 0, 425, 422, 1, 0, 0,
-    0, 425, 426, 1, 0, 0, 0, 426, 427, 1, 0, 0, 0, 427, 428, 3, 100, 50, 0, 428, 69, 1, 0, 0, 0,
-    429, 437, 5, 22, 0, 0, 430, 432, 3, 100, 50, 0, 431, 430, 1, 0, 0, 0, 431, 432, 1, 0, 0, 0, 432,
-    438, 1, 0, 0, 0, 433, 438, 3, 72, 36, 0, 434, 436, 3, 74, 37, 0, 435, 434, 1, 0, 0, 0, 435, 436,
-    1, 0, 0, 0, 436, 438, 1, 0, 0, 0, 437, 431, 1, 0, 0, 0, 437, 433, 1, 0, 0, 0, 437, 435, 1, 0, 0,
-    0, 438, 439, 1, 0, 0, 0, 439, 440, 3, 34, 17, 0, 440, 71, 1, 0, 0, 0, 441, 443, 3, 40, 20, 0,
-    442, 441, 1, 0, 0, 0, 442, 443, 1, 0, 0, 0, 443, 444, 1, 0, 0, 0, 444, 446, 3, 146, 73, 0, 445,
-    447, 3, 100, 50, 0, 446, 445, 1, 0, 0, 0, 446, 447, 1, 0, 0, 0, 447, 448, 1, 0, 0, 0, 448, 450,
-    3, 146, 73, 0, 449, 451, 3, 40, 20, 0, 450, 449, 1, 0, 0, 0, 450, 451, 1, 0, 0, 0, 451, 73, 1,
-    0, 0, 0, 452, 453, 3, 18, 9, 0, 453, 454, 5, 34, 0, 0, 454, 459, 1, 0, 0, 0, 455, 456, 3, 16, 8,
-    0, 456, 457, 5, 41, 0, 0, 457, 459, 1, 0, 0, 0, 458, 452, 1, 0, 0, 0, 458, 455, 1, 0, 0, 0, 458,
-    459, 1, 0, 0, 0, 459, 460, 1, 0, 0, 0, 460, 461, 5, 19, 0, 0, 461, 462, 3, 100, 50, 0, 462, 75,
-    1, 0, 0, 0, 463, 464, 5, 8, 0, 0, 464, 465, 3, 100, 50, 0, 465, 77, 1, 0, 0, 0, 466, 468, 3, 82,
-    41, 0, 467, 469, 3, 80, 40, 0, 468, 467, 1, 0, 0, 0, 468, 469, 1, 0, 0, 0, 469, 476, 1, 0, 0, 0,
-    470, 476, 3, 84, 42, 0, 471, 472, 5, 28, 0, 0, 472, 473, 3, 78, 39, 0, 473, 474, 5, 29, 0, 0,
-    474, 476, 1, 0, 0, 0, 475, 466, 1, 0, 0, 0, 475, 470, 1, 0, 0, 0, 475, 471, 1, 0, 0, 0, 476, 79,
-    1, 0, 0, 0, 477, 478, 5, 32, 0, 0, 478, 480, 3, 60, 30, 0, 479, 481, 5, 35, 0, 0, 480, 479, 1,
-    0, 0, 0, 480, 481, 1, 0, 0, 0, 481, 482, 1, 0, 0, 0, 482, 483, 5, 33, 0, 0, 483, 81, 1, 0, 0, 0,
-    484, 487, 3, 114, 57, 0, 485, 487, 5, 27, 0, 0, 486, 484, 1, 0, 0, 0, 486, 485, 1, 0, 0, 0, 487,
-    83, 1, 0, 0, 0, 488, 489, 3, 90, 45, 0, 489, 85, 1, 0, 0, 0, 490, 491, 3, 100, 50, 0, 491, 87,
-    1, 0, 0, 0, 492, 493, 3, 78, 39, 0, 493, 89, 1, 0, 0, 0, 494, 500, 5, 11, 0, 0, 495, 496, 5, 11,
-    0, 0, 496, 500, 5, 64, 0, 0, 497, 498, 5, 64, 0, 0, 498, 500, 5, 11, 0, 0, 499, 494, 1, 0, 0, 0,
-    499, 495, 1, 0, 0, 0, 499, 497, 1, 0, 0, 0, 500, 501, 1, 0, 0, 0, 501, 502, 3, 88, 44, 0, 502,
-    91, 1, 0, 0, 0, 503, 505, 3, 96, 48, 0, 504, 506, 3, 94, 47, 0, 505, 504, 1, 0, 0, 0, 505, 506,
-    1, 0, 0, 0, 506, 93, 1, 0, 0, 0, 507, 510, 3, 96, 48, 0, 508, 510, 3, 78, 39, 0, 509, 507, 1, 0,
-    0, 0, 509, 508, 1, 0, 0, 0, 510, 95, 1, 0, 0, 0, 511, 523, 5, 28, 0, 0, 512, 517, 3, 98, 49, 0,
-    513, 514, 5, 35, 0, 0, 514, 516, 3, 98, 49, 0, 515, 513, 1, 0, 0, 0, 516, 519, 1, 0, 0, 0, 517,
-    515, 1, 0, 0, 0, 517, 518, 1, 0, 0, 0, 518, 521, 1, 0, 0, 0, 519, 517, 1, 0, 0, 0, 520, 522, 5,
-    35, 0, 0, 521, 520, 1, 0, 0, 0, 521, 522, 1, 0, 0, 0, 522, 524, 1, 0, 0, 0, 523, 512, 1, 0, 0,
-    0, 523, 524, 1, 0, 0, 0, 524, 525, 1, 0, 0, 0, 525, 526, 5, 29, 0, 0, 526, 97, 1, 0, 0, 0, 527,
-    529, 3, 16, 8, 0, 528, 527, 1, 0, 0, 0, 528, 529, 1, 0, 0, 0, 529, 531, 1, 0, 0, 0, 530, 532, 5,
-    42, 0, 0, 531, 530, 1, 0, 0, 0, 531, 532, 1, 0, 0, 0, 532, 533, 1, 0, 0, 0, 533, 534, 3, 78, 39,
-    0, 534, 99, 1, 0, 0, 0, 535, 536, 6, 50, -1, 0, 536, 540, 3, 102, 51, 0, 537, 538, 7, 2, 0, 0,
-    538, 540, 3, 100, 50, 6, 539, 535, 1, 0, 0, 0, 539, 537, 1, 0, 0, 0, 540, 558, 1, 0, 0, 0, 541,
-    542, 10, 5, 0, 0, 542, 543, 7, 3, 0, 0, 543, 557, 3, 100, 50, 6, 544, 545, 10, 4, 0, 0, 545,
-    546, 7, 4, 0, 0, 546, 557, 3, 100, 50, 5, 547, 548, 10, 3, 0, 0, 548, 549, 7, 5, 0, 0, 549, 557,
-    3, 100, 50, 4, 550, 551, 10, 2, 0, 0, 551, 552, 5, 44, 0, 0, 552, 557, 3, 100, 50, 3, 553, 554,
-    10, 1, 0, 0, 554, 555, 5, 43, 0, 0, 555, 557, 3, 100, 50, 2, 556, 541, 1, 0, 0, 0, 556, 544, 1,
-    0, 0, 0, 556, 547, 1, 0, 0, 0, 556, 550, 1, 0, 0, 0, 556, 553, 1, 0, 0, 0, 557, 560, 1, 0, 0, 0,
-    558, 556, 1, 0, 0, 0, 558, 559, 1, 0, 0, 0, 559, 101, 1, 0, 0, 0, 560, 558, 1, 0, 0, 0, 561,
-    562, 6, 51, -1, 0, 562, 565, 3, 104, 52, 0, 563, 565, 3, 144, 72, 0, 564, 561, 1, 0, 0, 0, 564,
-    563, 1, 0, 0, 0, 565, 577, 1, 0, 0, 0, 566, 573, 10, 1, 0, 0, 567, 568, 5, 38, 0, 0, 568, 574,
-    5, 27, 0, 0, 569, 574, 3, 136, 68, 0, 570, 574, 3, 138, 69, 0, 571, 574, 3, 140, 70, 0, 572,
-    574, 3, 142, 71, 0, 573, 567, 1, 0, 0, 0, 573, 569, 1, 0, 0, 0, 573, 570, 1, 0, 0, 0, 573, 571,
-    1, 0, 0, 0, 573, 572, 1, 0, 0, 0, 574, 576, 1, 0, 0, 0, 575, 566, 1, 0, 0, 0, 576, 579, 1, 0, 0,
-    0, 577, 575, 1, 0, 0, 0, 577, 578, 1, 0, 0, 0, 578, 103, 1, 0, 0, 0, 579, 577, 1, 0, 0, 0, 580,
-    590, 3, 106, 53, 0, 581, 583, 3, 112, 56, 0, 582, 584, 3, 80, 40, 0, 583, 582, 1, 0, 0, 0, 583,
-    584, 1, 0, 0, 0, 584, 590, 1, 0, 0, 0, 585, 586, 5, 28, 0, 0, 586, 587, 3, 100, 50, 0, 587, 588,
-    5, 29, 0, 0, 588, 590, 1, 0, 0, 0, 589, 580, 1, 0, 0, 0, 589, 581, 1, 0, 0, 0, 589, 585, 1, 0,
-    0, 0, 590, 105, 1, 0, 0, 0, 591, 595, 3, 108, 54, 0, 592, 595, 3, 116, 58, 0, 593, 595, 3, 134,
-    67, 0, 594, 591, 1, 0, 0, 0, 594, 592, 1, 0, 0, 0, 594, 593, 1, 0, 0, 0, 595, 107, 1, 0, 0, 0,
-    596, 601, 5, 26, 0, 0, 597, 601, 3, 110, 55, 0, 598, 601, 3, 130, 65, 0, 599, 601, 5, 69, 0, 0,
-    600, 596, 1, 0, 0, 0, 600, 597, 1, 0, 0, 0, 600, 598, 1, 0, 0, 0, 600, 599, 1, 0, 0, 0, 601,
-    109, 1, 0, 0, 0, 602, 603, 7, 6, 0, 0, 603, 111, 1, 0, 0, 0, 604, 605, 5, 27, 0, 0, 605, 113, 1,
-    0, 0, 0, 606, 607, 5, 27, 0, 0, 607, 608, 5, 38, 0, 0, 608, 609, 5, 27, 0, 0, 609, 115, 1, 0, 0,
-    0, 610, 611, 3, 118, 59, 0, 611, 612, 3, 120, 60, 0, 612, 117, 1, 0, 0, 0, 613, 614, 5, 32, 0,
-    0, 614, 615, 5, 42, 0, 0, 615, 616, 5, 33, 0, 0, 616, 622, 3, 88, 44, 0, 617, 619, 3, 82, 41, 0,
-    618, 620, 3, 80, 40, 0, 619, 618, 1, 0, 0, 0, 619, 620, 1, 0, 0, 0, 620, 622, 1, 0, 0, 0, 621,
-    613, 1, 0, 0, 0, 621, 617, 1, 0, 0, 0, 622, 119, 1, 0, 0, 0, 623, 628, 5, 30, 0, 0, 624, 626, 3,
-    122, 61, 0, 625, 627, 5, 35, 0, 0, 626, 625, 1, 0, 0, 0, 626, 627, 1, 0, 0, 0, 627, 629, 1, 0,
-    0, 0, 628, 624, 1, 0, 0, 0, 628, 629, 1, 0, 0, 0, 629, 630, 1, 0, 0, 0, 630, 631, 5, 31, 0, 0,
-    631, 121, 1, 0, 0, 0, 632, 637, 3, 124, 62, 0, 633, 634, 5, 35, 0, 0, 634, 636, 3, 124, 62, 0,
-    635, 633, 1, 0, 0, 0, 636, 639, 1, 0, 0, 0, 637, 635, 1, 0, 0, 0, 637, 638, 1, 0, 0, 0, 638,
-    123, 1, 0, 0, 0, 639, 637, 1, 0, 0, 0, 640, 641, 3, 126, 63, 0, 641, 642, 5, 37, 0, 0, 642, 644,
-    1, 0, 0, 0, 643, 640, 1, 0, 0, 0, 643, 644, 1, 0, 0, 0, 644, 645, 1, 0, 0, 0, 645, 646, 3, 128,
-    64, 0, 646, 125, 1, 0, 0, 0, 647, 650, 3, 100, 50, 0, 648, 650, 3, 120, 60, 0, 649, 647, 1, 0,
-    0, 0, 649, 648, 1, 0, 0, 0, 650, 127, 1, 0, 0, 0, 651, 654, 3, 100, 50, 0, 652, 654, 3, 120, 60,
-    0, 653, 651, 1, 0, 0, 0, 653, 652, 1, 0, 0, 0, 654, 129, 1, 0, 0, 0, 655, 656, 7, 7, 0, 0, 656,
-    131, 1, 0, 0, 0, 657, 659, 5, 62, 0, 0, 658, 657, 1, 0, 0, 0, 658, 659, 1, 0, 0, 0, 659, 660, 1,
-    0, 0, 0, 660, 662, 3, 82, 41, 0, 661, 663, 3, 80, 40, 0, 662, 661, 1, 0, 0, 0, 662, 663, 1, 0,
-    0, 0, 663, 133, 1, 0, 0, 0, 664, 665, 5, 3, 0, 0, 665, 666, 3, 92, 46, 0, 666, 667, 3, 34, 17,
-    0, 667, 135, 1, 0, 0, 0, 668, 669, 5, 32, 0, 0, 669, 670, 3, 100, 50, 0, 670, 671, 5, 33, 0, 0,
-    671, 137, 1, 0, 0, 0, 672, 688, 5, 32, 0, 0, 673, 675, 3, 100, 50, 0, 674, 673, 1, 0, 0, 0, 674,
-    675, 1, 0, 0, 0, 675, 676, 1, 0, 0, 0, 676, 678, 5, 37, 0, 0, 677, 679, 3, 100, 50, 0, 678, 677,
-    1, 0, 0, 0, 678, 679, 1, 0, 0, 0, 679, 689, 1, 0, 0, 0, 680, 682, 3, 100, 50, 0, 681, 680, 1, 0,
-    0, 0, 681, 682, 1, 0, 0, 0, 682, 683, 1, 0, 0, 0, 683, 684, 5, 37, 0, 0, 684, 685, 3, 100, 50,
-    0, 685, 686, 5, 37, 0, 0, 686, 687, 3, 100, 50, 0, 687, 689, 1, 0, 0, 0, 688, 674, 1, 0, 0, 0,
-    688, 681, 1, 0, 0, 0, 689, 690, 1, 0, 0, 0, 690, 691, 5, 33, 0, 0, 691, 139, 1, 0, 0, 0, 692,
-    693, 5, 38, 0, 0, 693, 694, 5, 28, 0, 0, 694, 695, 3, 78, 39, 0, 695, 696, 5, 29, 0, 0, 696,
-    141, 1, 0, 0, 0, 697, 712, 5, 28, 0, 0, 698, 705, 3, 18, 9, 0, 699, 702, 3, 78, 39, 0, 700, 701,
-    5, 35, 0, 0, 701, 703, 3, 18, 9, 0, 702, 700, 1, 0, 0, 0, 702, 703, 1, 0, 0, 0, 703, 705, 1, 0,
-    0, 0, 704, 698, 1, 0, 0, 0, 704, 699, 1, 0, 0, 0, 705, 707, 1, 0, 0, 0, 706, 708, 5, 42, 0, 0,
-    707, 706, 1, 0, 0, 0, 707, 708, 1, 0, 0, 0, 708, 710, 1, 0, 0, 0, 709, 711, 5, 35, 0, 0, 710,
-    709, 1, 0, 0, 0, 710, 711, 1, 0, 0, 0, 711, 713, 1, 0, 0, 0, 712, 704, 1, 0, 0, 0, 712, 713, 1,
-    0, 0, 0, 713, 714, 1, 0, 0, 0, 714, 715, 5, 29, 0, 0, 715, 143, 1, 0, 0, 0, 716, 717, 3, 78, 39,
-    0, 717, 718, 5, 38, 0, 0, 718, 719, 5, 27, 0, 0, 719, 145, 1, 0, 0, 0, 720, 725, 5, 36, 0, 0,
-    721, 725, 5, 0, 0, 1, 722, 725, 5, 88, 0, 0, 723, 725, 4, 73, 7, 0, 724, 720, 1, 0, 0, 0, 724,
-    721, 1, 0, 0, 0, 724, 722, 1, 0, 0, 0, 724, 723, 1, 0, 0, 0, 725, 147, 1, 0, 0, 0, 90, 155, 160,
-    166, 182, 186, 189, 197, 207, 211, 215, 219, 226, 234, 243, 256, 260, 267, 271, 281, 285, 291,
-    295, 299, 304, 307, 310, 317, 328, 335, 358, 372, 378, 380, 384, 389, 393, 401, 409, 414, 417,
-    425, 431, 435, 437, 442, 446, 450, 458, 468, 475, 480, 486, 499, 505, 509, 517, 521, 523, 528,
-    531, 539, 556, 558, 564, 573, 577, 583, 589, 594, 600, 619, 621, 626, 628, 637, 643, 649, 653,
-    658, 662, 674, 678, 681, 688, 702, 704, 707, 710, 712, 724
+    2, 41, 7, 41, 2, 42, 7, 42, 2, 43, 7, 43, 2, 44, 7, 44, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 5, 0, 96,
+    8, 0, 10, 0, 12, 0, 99, 9, 0, 1, 0, 1, 0, 3, 0, 103, 8, 0, 1, 0, 1, 0, 5, 0, 107, 8, 0, 10, 0,
+    12, 0, 110, 9, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 5, 2, 123,
+    8, 2, 10, 2, 12, 2, 126, 9, 2, 1, 2, 3, 2, 129, 8, 2, 1, 3, 3, 3, 132, 8, 3, 1, 3, 1, 3, 1, 4,
+    1, 4, 1, 5, 1, 5, 1, 5, 5, 5, 141, 8, 5, 10, 5, 12, 5, 144, 9, 5, 1, 6, 1, 6, 1, 6, 5, 6, 149,
+    8, 6, 10, 6, 12, 6, 152, 9, 6, 1, 7, 1, 7, 1, 7, 1, 7, 3, 7, 158, 8, 7, 1, 8, 1, 8, 1, 8, 1, 8,
+    1, 8, 1, 8, 5, 8, 166, 8, 8, 10, 8, 12, 8, 169, 9, 8, 1, 8, 3, 8, 172, 8, 8, 1, 9, 1, 9, 1, 9,
+    1, 9, 3, 9, 178, 8, 9, 1, 9, 1, 9, 3, 9, 182, 8, 9, 1, 10, 1, 10, 3, 10, 186, 8, 10, 1, 10, 1,
+    10, 1, 11, 3, 11, 191, 8, 11, 1, 11, 3, 11, 194, 8, 11, 1, 11, 3, 11, 197, 8, 11, 1, 11, 1, 11,
+    1, 11, 4, 11, 202, 8, 11, 11, 11, 12, 11, 203, 1, 12, 1, 12, 1, 12, 1, 12, 1, 12, 1, 12, 1, 12,
+    1, 12, 3, 12, 214, 8, 12, 1, 13, 1, 13, 1, 13, 1, 13, 3, 13, 220, 8, 13, 1, 14, 1, 14, 1, 15, 1,
+    15, 1, 15, 1, 15, 1, 16, 1, 16, 1, 16, 1, 16, 1, 17, 1, 17, 1, 17, 1, 17, 1, 18, 1, 18, 3, 18,
+    238, 8, 18, 1, 19, 1, 19, 1, 19, 1, 20, 1, 20, 1, 20, 1, 20, 1, 20, 1, 20, 1, 20, 1, 20, 1, 20,
+    3, 20, 252, 8, 20, 1, 20, 1, 20, 1, 20, 1, 20, 3, 20, 258, 8, 20, 3, 20, 260, 8, 20, 1, 21, 1,
+    21, 1, 21, 1, 21, 1, 21, 1, 21, 3, 21, 268, 8, 21, 1, 21, 1, 21, 1, 22, 1, 22, 3, 22, 274, 8,
+    22, 1, 22, 1, 22, 3, 22, 278, 8, 22, 3, 22, 280, 8, 22, 1, 22, 1, 22, 1, 23, 3, 23, 285, 8, 23,
+    1, 23, 1, 23, 3, 23, 289, 8, 23, 1, 23, 1, 23, 3, 23, 293, 8, 23, 1, 24, 1, 24, 1, 24, 1, 24, 1,
+    24, 1, 24, 3, 24, 301, 8, 24, 1, 24, 1, 24, 1, 24, 1, 25, 1, 25, 1, 25, 1, 26, 1, 26, 3, 26,
+    311, 8, 26, 1, 27, 1, 27, 3, 27, 315, 8, 27, 1, 28, 1, 28, 1, 29, 1, 29, 1, 29, 1, 30, 1, 30, 3,
+    30, 324, 8, 30, 1, 31, 1, 31, 1, 31, 1, 31, 5, 31, 330, 8, 31, 10, 31, 12, 31, 333, 9, 31, 1,
+    31, 3, 31, 336, 8, 31, 3, 31, 338, 8, 31, 1, 31, 1, 31, 1, 32, 3, 32, 343, 8, 32, 1, 32, 1, 32,
+    1, 33, 1, 33, 1, 33, 1, 33, 3, 33, 351, 8, 33, 1, 33, 1, 33, 1, 33, 1, 33, 1, 33, 1, 33, 1, 33,
+    1, 33, 1, 33, 5, 33, 362, 8, 33, 10, 33, 12, 33, 365, 9, 33, 1, 34, 1, 34, 1, 34, 3, 34, 370, 8,
+    34, 1, 34, 1, 34, 1, 34, 1, 34, 3, 34, 376, 8, 34, 5, 34, 378, 8, 34, 10, 34, 12, 34, 381, 9,
+    34, 1, 35, 1, 35, 1, 35, 1, 35, 1, 35, 1, 35, 3, 35, 389, 8, 35, 1, 36, 1, 36, 3, 36, 393, 8,
+    36, 1, 37, 1, 37, 1, 37, 3, 37, 398, 8, 37, 1, 38, 1, 38, 1, 39, 1, 39, 1, 39, 1, 39, 1, 40, 1,
+    40, 1, 41, 1, 41, 1, 41, 1, 41, 1, 42, 1, 42, 3, 42, 414, 8, 42, 1, 42, 1, 42, 1, 43, 1, 43, 1,
+    43, 1, 43, 1, 44, 1, 44, 1, 44, 1, 44, 3, 44, 426, 8, 44, 1, 44, 0, 2, 66, 68, 45, 0, 2, 4, 6,
+    8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42, 44, 46, 48, 50, 52, 54,
+    56, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 0, 5, 2, 0, 27, 27, 38, 38,
+    2, 0, 52, 53, 62, 62, 1, 0, 59, 60, 1, 0, 45, 50, 1, 0, 79, 80, 450, 0, 90, 1, 0, 0, 0, 2, 113,
+    1, 0, 0, 0, 4, 116, 1, 0, 0, 0, 6, 131, 1, 0, 0, 0, 8, 135, 1, 0, 0, 0, 10, 137, 1, 0, 0, 0, 12,
+    145, 1, 0, 0, 0, 14, 153, 1, 0, 0, 0, 16, 159, 1, 0, 0, 0, 18, 173, 1, 0, 0, 0, 20, 183, 1, 0,
+    0, 0, 22, 201, 1, 0, 0, 0, 24, 213, 1, 0, 0, 0, 26, 219, 1, 0, 0, 0, 28, 221, 1, 0, 0, 0, 30,
+    223, 1, 0, 0, 0, 32, 227, 1, 0, 0, 0, 34, 231, 1, 0, 0, 0, 36, 235, 1, 0, 0, 0, 38, 239, 1, 0,
+    0, 0, 40, 242, 1, 0, 0, 0, 42, 267, 1, 0, 0, 0, 44, 271, 1, 0, 0, 0, 46, 284, 1, 0, 0, 0, 48,
+    300, 1, 0, 0, 0, 50, 305, 1, 0, 0, 0, 52, 310, 1, 0, 0, 0, 54, 314, 1, 0, 0, 0, 56, 316, 1, 0,
+    0, 0, 58, 318, 1, 0, 0, 0, 60, 321, 1, 0, 0, 0, 62, 325, 1, 0, 0, 0, 64, 342, 1, 0, 0, 0, 66,
+    350, 1, 0, 0, 0, 68, 369, 1, 0, 0, 0, 70, 388, 1, 0, 0, 0, 72, 392, 1, 0, 0, 0, 74, 397, 1, 0,
+    0, 0, 76, 399, 1, 0, 0, 0, 78, 401, 1, 0, 0, 0, 80, 405, 1, 0, 0, 0, 82, 407, 1, 0, 0, 0, 84,
+    411, 1, 0, 0, 0, 86, 417, 1, 0, 0, 0, 88, 425, 1, 0, 0, 0, 90, 91, 3, 2, 1, 0, 91, 97, 3, 88,
+    44, 0, 92, 93, 3, 4, 2, 0, 93, 94, 3, 88, 44, 0, 94, 96, 1, 0, 0, 0, 95, 92, 1, 0, 0, 0, 96, 99,
+    1, 0, 0, 0, 97, 95, 1, 0, 0, 0, 97, 98, 1, 0, 0, 0, 98, 108, 1, 0, 0, 0, 99, 97, 1, 0, 0, 0,
+    100, 103, 3, 14, 7, 0, 101, 103, 3, 16, 8, 0, 102, 100, 1, 0, 0, 0, 102, 101, 1, 0, 0, 0, 103,
+    104, 1, 0, 0, 0, 104, 105, 3, 88, 44, 0, 105, 107, 1, 0, 0, 0, 106, 102, 1, 0, 0, 0, 107, 110,
+    1, 0, 0, 0, 108, 106, 1, 0, 0, 0, 108, 109, 1, 0, 0, 0, 109, 111, 1, 0, 0, 0, 110, 108, 1, 0, 0,
+    0, 111, 112, 5, 0, 0, 1, 112, 1, 1, 0, 0, 0, 113, 114, 5, 14, 0, 0, 114, 115, 5, 27, 0, 0, 115,
+    3, 1, 0, 0, 0, 116, 128, 5, 23, 0, 0, 117, 129, 3, 6, 3, 0, 118, 124, 5, 28, 0, 0, 119, 120, 3,
+    6, 3, 0, 120, 121, 3, 88, 44, 0, 121, 123, 1, 0, 0, 0, 122, 119, 1, 0, 0, 0, 123, 126, 1, 0, 0,
+    0, 124, 122, 1, 0, 0, 0, 124, 125, 1, 0, 0, 0, 125, 127, 1, 0, 0, 0, 126, 124, 1, 0, 0, 0, 127,
+    129, 5, 29, 0, 0, 128, 117, 1, 0, 0, 0, 128, 118, 1, 0, 0, 0, 129, 5, 1, 0, 0, 0, 130, 132, 7,
+    0, 0, 0, 131, 130, 1, 0, 0, 0, 131, 132, 1, 0, 0, 0, 132, 133, 1, 0, 0, 0, 133, 134, 3, 8, 4, 0,
+    134, 7, 1, 0, 0, 0, 135, 136, 3, 80, 40, 0, 136, 9, 1, 0, 0, 0, 137, 142, 5, 27, 0, 0, 138, 139,
+    5, 35, 0, 0, 139, 141, 5, 27, 0, 0, 140, 138, 1, 0, 0, 0, 141, 144, 1, 0, 0, 0, 142, 140, 1, 0,
+    0, 0, 142, 143, 1, 0, 0, 0, 143, 11, 1, 0, 0, 0, 144, 142, 1, 0, 0, 0, 145, 150, 3, 66, 33, 0,
+    146, 147, 5, 35, 0, 0, 147, 149, 3, 66, 33, 0, 148, 146, 1, 0, 0, 0, 149, 152, 1, 0, 0, 0, 150,
+    148, 1, 0, 0, 0, 150, 151, 1, 0, 0, 0, 151, 13, 1, 0, 0, 0, 152, 150, 1, 0, 0, 0, 153, 154, 5,
+    3, 0, 0, 154, 155, 5, 27, 0, 0, 155, 157, 3, 60, 30, 0, 156, 158, 3, 20, 10, 0, 157, 156, 1, 0,
+    0, 0, 157, 158, 1, 0, 0, 0, 158, 15, 1, 0, 0, 0, 159, 171, 5, 25, 0, 0, 160, 172, 3, 18, 9, 0,
+    161, 167, 5, 28, 0, 0, 162, 163, 3, 18, 9, 0, 163, 164, 3, 88, 44, 0, 164, 166, 1, 0, 0, 0, 165,
+    162, 1, 0, 0, 0, 166, 169, 1, 0, 0, 0, 167, 165, 1, 0, 0, 0, 167, 168, 1, 0, 0, 0, 168, 170, 1,
+    0, 0, 0, 169, 167, 1, 0, 0, 0, 170, 172, 5, 29, 0, 0, 171, 160, 1, 0, 0, 0, 171, 161, 1, 0, 0,
+    0, 172, 17, 1, 0, 0, 0, 173, 181, 3, 10, 5, 0, 174, 177, 3, 52, 26, 0, 175, 176, 5, 34, 0, 0,
+    176, 178, 3, 12, 6, 0, 177, 175, 1, 0, 0, 0, 177, 178, 1, 0, 0, 0, 178, 182, 1, 0, 0, 0, 179,
+    180, 5, 34, 0, 0, 180, 182, 3, 12, 6, 0, 181, 174, 1, 0, 0, 0, 181, 179, 1, 0, 0, 0, 182, 19, 1,
+    0, 0, 0, 183, 185, 5, 30, 0, 0, 184, 186, 3, 22, 11, 0, 185, 184, 1, 0, 0, 0, 185, 186, 1, 0, 0,
+    0, 186, 187, 1, 0, 0, 0, 187, 188, 5, 31, 0, 0, 188, 21, 1, 0, 0, 0, 189, 191, 5, 36, 0, 0, 190,
+    189, 1, 0, 0, 0, 190, 191, 1, 0, 0, 0, 191, 197, 1, 0, 0, 0, 192, 194, 5, 88, 0, 0, 193, 192, 1,
+    0, 0, 0, 193, 194, 1, 0, 0, 0, 194, 197, 1, 0, 0, 0, 195, 197, 4, 11, 0, 0, 196, 190, 1, 0, 0,
+    0, 196, 193, 1, 0, 0, 0, 196, 195, 1, 0, 0, 0, 197, 198, 1, 0, 0, 0, 198, 199, 3, 24, 12, 0,
+    199, 200, 3, 88, 44, 0, 200, 202, 1, 0, 0, 0, 201, 196, 1, 0, 0, 0, 202, 203, 1, 0, 0, 0, 203,
+    201, 1, 0, 0, 0, 203, 204, 1, 0, 0, 0, 204, 23, 1, 0, 0, 0, 205, 214, 3, 16, 8, 0, 206, 214, 3,
+    26, 13, 0, 207, 214, 3, 50, 25, 0, 208, 214, 3, 36, 18, 0, 209, 214, 3, 20, 10, 0, 210, 214, 3,
+    40, 20, 0, 211, 214, 3, 44, 22, 0, 212, 214, 3, 38, 19, 0, 213, 205, 1, 0, 0, 0, 213, 206, 1, 0,
+    0, 0, 213, 207, 1, 0, 0, 0, 213, 208, 1, 0, 0, 0, 213, 209, 1, 0, 0, 0, 213, 210, 1, 0, 0, 0,
+    213, 211, 1, 0, 0, 0, 213, 212, 1, 0, 0, 0, 214, 25, 1, 0, 0, 0, 215, 220, 3, 30, 15, 0, 216,
+    220, 3, 32, 16, 0, 217, 220, 3, 28, 14, 0, 218, 220, 3, 34, 17, 0, 219, 215, 1, 0, 0, 0, 219,
+    216, 1, 0, 0, 0, 219, 217, 1, 0, 0, 0, 219, 218, 1, 0, 0, 0, 220, 27, 1, 0, 0, 0, 221, 222, 3,
+    66, 33, 0, 222, 29, 1, 0, 0, 0, 223, 224, 3, 66, 33, 0, 224, 225, 5, 64, 0, 0, 225, 226, 3, 66,
+    33, 0, 226, 31, 1, 0, 0, 0, 227, 228, 3, 12, 6, 0, 228, 229, 5, 34, 0, 0, 229, 230, 3, 12, 6, 0,
+    230, 33, 1, 0, 0, 0, 231, 232, 3, 10, 5, 0, 232, 233, 5, 41, 0, 0, 233, 234, 3, 12, 6, 0, 234,
+    35, 1, 0, 0, 0, 235, 237, 5, 24, 0, 0, 236, 238, 3, 12, 6, 0, 237, 236, 1, 0, 0, 0, 237, 238, 1,
+    0, 0, 0, 238, 37, 1, 0, 0, 0, 239, 240, 5, 7, 0, 0, 240, 241, 3, 66, 33, 0, 241, 39, 1, 0, 0, 0,
+    242, 251, 5, 18, 0, 0, 243, 252, 3, 66, 33, 0, 244, 245, 3, 88, 44, 0, 245, 246, 3, 66, 33, 0,
+    246, 252, 1, 0, 0, 0, 247, 248, 3, 26, 13, 0, 248, 249, 3, 88, 44, 0, 249, 250, 3, 66, 33, 0,
+    250, 252, 1, 0, 0, 0, 251, 243, 1, 0, 0, 0, 251, 244, 1, 0, 0, 0, 251, 247, 1, 0, 0, 0, 252,
+    253, 1, 0, 0, 0, 253, 259, 3, 20, 10, 0, 254, 257, 5, 12, 0, 0, 255, 258, 3, 40, 20, 0, 256,
+    258, 3, 20, 10, 0, 257, 255, 1, 0, 0, 0, 257, 256, 1, 0, 0, 0, 258, 260, 1, 0, 0, 0, 259, 254,
+    1, 0, 0, 0, 259, 260, 1, 0, 0, 0, 260, 41, 1, 0, 0, 0, 261, 262, 3, 12, 6, 0, 262, 263, 5, 34,
+    0, 0, 263, 268, 1, 0, 0, 0, 264, 265, 3, 10, 5, 0, 265, 266, 5, 41, 0, 0, 266, 268, 1, 0, 0, 0,
+    267, 261, 1, 0, 0, 0, 267, 264, 1, 0, 0, 0, 267, 268, 1, 0, 0, 0, 268, 269, 1, 0, 0, 0, 269,
+    270, 3, 66, 33, 0, 270, 43, 1, 0, 0, 0, 271, 279, 5, 22, 0, 0, 272, 274, 3, 66, 33, 0, 273, 272,
+    1, 0, 0, 0, 273, 274, 1, 0, 0, 0, 274, 280, 1, 0, 0, 0, 275, 280, 3, 46, 23, 0, 276, 278, 3, 48,
+    24, 0, 277, 276, 1, 0, 0, 0, 277, 278, 1, 0, 0, 0, 278, 280, 1, 0, 0, 0, 279, 273, 1, 0, 0, 0,
+    279, 275, 1, 0, 0, 0, 279, 277, 1, 0, 0, 0, 280, 281, 1, 0, 0, 0, 281, 282, 3, 20, 10, 0, 282,
+    45, 1, 0, 0, 0, 283, 285, 3, 26, 13, 0, 284, 283, 1, 0, 0, 0, 284, 285, 1, 0, 0, 0, 285, 286, 1,
+    0, 0, 0, 286, 288, 3, 88, 44, 0, 287, 289, 3, 66, 33, 0, 288, 287, 1, 0, 0, 0, 288, 289, 1, 0,
+    0, 0, 289, 290, 1, 0, 0, 0, 290, 292, 3, 88, 44, 0, 291, 293, 3, 26, 13, 0, 292, 291, 1, 0, 0,
+    0, 292, 293, 1, 0, 0, 0, 293, 47, 1, 0, 0, 0, 294, 295, 3, 12, 6, 0, 295, 296, 5, 34, 0, 0, 296,
+    301, 1, 0, 0, 0, 297, 298, 3, 10, 5, 0, 298, 299, 5, 41, 0, 0, 299, 301, 1, 0, 0, 0, 300, 294,
+    1, 0, 0, 0, 300, 297, 1, 0, 0, 0, 300, 301, 1, 0, 0, 0, 301, 302, 1, 0, 0, 0, 302, 303, 5, 19,
+    0, 0, 303, 304, 3, 66, 33, 0, 304, 49, 1, 0, 0, 0, 305, 306, 5, 8, 0, 0, 306, 307, 3, 66, 33, 0,
+    307, 51, 1, 0, 0, 0, 308, 311, 3, 54, 27, 0, 309, 311, 3, 58, 29, 0, 310, 308, 1, 0, 0, 0, 310,
+    309, 1, 0, 0, 0, 311, 53, 1, 0, 0, 0, 312, 315, 3, 78, 39, 0, 313, 315, 5, 27, 0, 0, 314, 312,
+    1, 0, 0, 0, 314, 313, 1, 0, 0, 0, 315, 55, 1, 0, 0, 0, 316, 317, 3, 52, 26, 0, 317, 57, 1, 0, 0,
+    0, 318, 319, 5, 11, 0, 0, 319, 320, 3, 56, 28, 0, 320, 59, 1, 0, 0, 0, 321, 323, 3, 62, 31, 0,
+    322, 324, 3, 52, 26, 0, 323, 322, 1, 0, 0, 0, 323, 324, 1, 0, 0, 0, 324, 61, 1, 0, 0, 0, 325,
+    337, 5, 28, 0, 0, 326, 331, 3, 64, 32, 0, 327, 328, 5, 35, 0, 0, 328, 330, 3, 64, 32, 0, 329,
+    327, 1, 0, 0, 0, 330, 333, 1, 0, 0, 0, 331, 329, 1, 0, 0, 0, 331, 332, 1, 0, 0, 0, 332, 335, 1,
+    0, 0, 0, 333, 331, 1, 0, 0, 0, 334, 336, 5, 35, 0, 0, 335, 334, 1, 0, 0, 0, 335, 336, 1, 0, 0,
+    0, 336, 338, 1, 0, 0, 0, 337, 326, 1, 0, 0, 0, 337, 338, 1, 0, 0, 0, 338, 339, 1, 0, 0, 0, 339,
+    340, 5, 29, 0, 0, 340, 63, 1, 0, 0, 0, 341, 343, 3, 10, 5, 0, 342, 341, 1, 0, 0, 0, 342, 343, 1,
+    0, 0, 0, 343, 344, 1, 0, 0, 0, 344, 345, 3, 52, 26, 0, 345, 65, 1, 0, 0, 0, 346, 347, 6, 33, -1,
+    0, 347, 351, 3, 68, 34, 0, 348, 349, 5, 64, 0, 0, 349, 351, 3, 66, 33, 4, 350, 346, 1, 0, 0, 0,
+    350, 348, 1, 0, 0, 0, 351, 363, 1, 0, 0, 0, 352, 353, 10, 3, 0, 0, 353, 354, 7, 1, 0, 0, 354,
+    362, 3, 66, 33, 4, 355, 356, 10, 2, 0, 0, 356, 357, 7, 2, 0, 0, 357, 362, 3, 66, 33, 3, 358,
+    359, 10, 1, 0, 0, 359, 360, 7, 3, 0, 0, 360, 362, 3, 66, 33, 2, 361, 352, 1, 0, 0, 0, 361, 355,
+    1, 0, 0, 0, 361, 358, 1, 0, 0, 0, 362, 365, 1, 0, 0, 0, 363, 361, 1, 0, 0, 0, 363, 364, 1, 0, 0,
+    0, 364, 67, 1, 0, 0, 0, 365, 363, 1, 0, 0, 0, 366, 367, 6, 34, -1, 0, 367, 370, 3, 70, 35, 0,
+    368, 370, 3, 86, 43, 0, 369, 366, 1, 0, 0, 0, 369, 368, 1, 0, 0, 0, 370, 379, 1, 0, 0, 0, 371,
+    375, 10, 1, 0, 0, 372, 373, 5, 38, 0, 0, 373, 376, 5, 27, 0, 0, 374, 376, 3, 84, 42, 0, 375,
+    372, 1, 0, 0, 0, 375, 374, 1, 0, 0, 0, 376, 378, 1, 0, 0, 0, 377, 371, 1, 0, 0, 0, 378, 381, 1,
+    0, 0, 0, 379, 377, 1, 0, 0, 0, 379, 380, 1, 0, 0, 0, 380, 69, 1, 0, 0, 0, 381, 379, 1, 0, 0, 0,
+    382, 389, 3, 72, 36, 0, 383, 389, 3, 76, 38, 0, 384, 385, 5, 28, 0, 0, 385, 386, 3, 66, 33, 0,
+    386, 387, 5, 29, 0, 0, 387, 389, 1, 0, 0, 0, 388, 382, 1, 0, 0, 0, 388, 383, 1, 0, 0, 0, 388,
+    384, 1, 0, 0, 0, 389, 71, 1, 0, 0, 0, 390, 393, 3, 74, 37, 0, 391, 393, 3, 82, 41, 0, 392, 390,
+    1, 0, 0, 0, 392, 391, 1, 0, 0, 0, 393, 73, 1, 0, 0, 0, 394, 398, 5, 26, 0, 0, 395, 398, 5, 65,
+    0, 0, 396, 398, 3, 80, 40, 0, 397, 394, 1, 0, 0, 0, 397, 395, 1, 0, 0, 0, 397, 396, 1, 0, 0, 0,
+    398, 75, 1, 0, 0, 0, 399, 400, 5, 27, 0, 0, 400, 77, 1, 0, 0, 0, 401, 402, 5, 27, 0, 0, 402,
+    403, 5, 38, 0, 0, 403, 404, 5, 27, 0, 0, 404, 79, 1, 0, 0, 0, 405, 406, 7, 4, 0, 0, 406, 81, 1,
+    0, 0, 0, 407, 408, 5, 3, 0, 0, 408, 409, 3, 60, 30, 0, 409, 410, 3, 20, 10, 0, 410, 83, 1, 0, 0,
+    0, 411, 413, 5, 28, 0, 0, 412, 414, 3, 12, 6, 0, 413, 412, 1, 0, 0, 0, 413, 414, 1, 0, 0, 0,
+    414, 415, 1, 0, 0, 0, 415, 416, 5, 29, 0, 0, 416, 85, 1, 0, 0, 0, 417, 418, 3, 52, 26, 0, 418,
+    419, 5, 38, 0, 0, 419, 420, 5, 27, 0, 0, 420, 87, 1, 0, 0, 0, 421, 426, 5, 36, 0, 0, 422, 426,
+    5, 0, 0, 1, 423, 426, 5, 88, 0, 0, 424, 426, 4, 44, 5, 0, 425, 421, 1, 0, 0, 0, 425, 422, 1, 0,
+    0, 0, 425, 423, 1, 0, 0, 0, 425, 424, 1, 0, 0, 0, 426, 89, 1, 0, 0, 0, 50, 97, 102, 108, 124,
+    128, 131, 142, 150, 157, 167, 171, 177, 181, 185, 190, 193, 196, 203, 213, 219, 237, 251, 257,
+    259, 267, 273, 277, 279, 284, 288, 292, 300, 310, 314, 323, 331, 335, 337, 342, 350, 361, 363,
+    369, 375, 379, 388, 392, 397, 413, 425
   ]
 
   private static __ATN: ATN
@@ -4301,11 +2702,11 @@ export class SourceFileContext extends ParserRuleContext {
   public functionDecl(i: number): FunctionDeclContext {
     return this.getTypedRuleContext(FunctionDeclContext, i) as FunctionDeclContext
   }
-  public declaration_list(): DeclarationContext[] {
-    return this.getTypedRuleContexts(DeclarationContext) as DeclarationContext[]
+  public varDecl_list(): VarDeclContext[] {
+    return this.getTypedRuleContexts(VarDeclContext) as VarDeclContext[]
   }
-  public declaration(i: number): DeclarationContext {
-    return this.getTypedRuleContext(DeclarationContext, i) as DeclarationContext
+  public varDecl(i: number): VarDeclContext {
+    return this.getTypedRuleContext(VarDeclContext, i) as VarDeclContext
   }
   public get ruleIndex(): number {
     return GoParser.RULE_sourceFile
@@ -4483,129 +2884,6 @@ export class ImportPathContext extends ParserRuleContext {
   }
 }
 
-export class DeclarationContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public constDecl(): ConstDeclContext {
-    return this.getTypedRuleContext(ConstDeclContext, 0) as ConstDeclContext
-  }
-  public varDecl(): VarDeclContext {
-    return this.getTypedRuleContext(VarDeclContext, 0) as VarDeclContext
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_declaration
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterDeclaration) {
-      listener.enterDeclaration(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitDeclaration) {
-      listener.exitDeclaration(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitDeclaration) {
-      return visitor.visitDeclaration(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class ConstDeclContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public CONST(): TerminalNode {
-    return this.getToken(GoParser.CONST, 0)
-  }
-  public constSpec_list(): ConstSpecContext[] {
-    return this.getTypedRuleContexts(ConstSpecContext) as ConstSpecContext[]
-  }
-  public constSpec(i: number): ConstSpecContext {
-    return this.getTypedRuleContext(ConstSpecContext, i) as ConstSpecContext
-  }
-  public L_PAREN(): TerminalNode {
-    return this.getToken(GoParser.L_PAREN, 0)
-  }
-  public R_PAREN(): TerminalNode {
-    return this.getToken(GoParser.R_PAREN, 0)
-  }
-  public eos_list(): EosContext[] {
-    return this.getTypedRuleContexts(EosContext) as EosContext[]
-  }
-  public eos(i: number): EosContext {
-    return this.getTypedRuleContext(EosContext, i) as EosContext
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_constDecl
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterConstDecl) {
-      listener.enterConstDecl(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitConstDecl) {
-      listener.exitConstDecl(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitConstDecl) {
-      return visitor.visitConstDecl(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class ConstSpecContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public identifierList(): IdentifierListContext {
-    return this.getTypedRuleContext(IdentifierListContext, 0) as IdentifierListContext
-  }
-  public ASSIGN(): TerminalNode {
-    return this.getToken(GoParser.ASSIGN, 0)
-  }
-  public expressionList(): ExpressionListContext {
-    return this.getTypedRuleContext(ExpressionListContext, 0) as ExpressionListContext
-  }
-  public type_(): Type_Context {
-    return this.getTypedRuleContext(Type_Context, 0) as Type_Context
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_constSpec
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterConstSpec) {
-      listener.enterConstSpec(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitConstSpec) {
-      listener.exitConstSpec(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitConstSpec) {
-      return visitor.visitConstSpec(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
 export class IdentifierListContext extends ParserRuleContext {
   constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
     super(parent, invokingState)
@@ -4686,160 +2964,6 @@ export class ExpressionListContext extends ParserRuleContext {
   }
 }
 
-export class TypeParametersContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public L_BRACKET(): TerminalNode {
-    return this.getToken(GoParser.L_BRACKET, 0)
-  }
-  public typeParameterDecl_list(): TypeParameterDeclContext[] {
-    return this.getTypedRuleContexts(TypeParameterDeclContext) as TypeParameterDeclContext[]
-  }
-  public typeParameterDecl(i: number): TypeParameterDeclContext {
-    return this.getTypedRuleContext(TypeParameterDeclContext, i) as TypeParameterDeclContext
-  }
-  public R_BRACKET(): TerminalNode {
-    return this.getToken(GoParser.R_BRACKET, 0)
-  }
-  public COMMA_list(): TerminalNode[] {
-    return this.getTokens(GoParser.COMMA)
-  }
-  public COMMA(i: number): TerminalNode {
-    return this.getToken(GoParser.COMMA, i)
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_typeParameters
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterTypeParameters) {
-      listener.enterTypeParameters(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitTypeParameters) {
-      listener.exitTypeParameters(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitTypeParameters) {
-      return visitor.visitTypeParameters(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class TypeParameterDeclContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public identifierList(): IdentifierListContext {
-    return this.getTypedRuleContext(IdentifierListContext, 0) as IdentifierListContext
-  }
-  public typeElement(): TypeElementContext {
-    return this.getTypedRuleContext(TypeElementContext, 0) as TypeElementContext
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_typeParameterDecl
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterTypeParameterDecl) {
-      listener.enterTypeParameterDecl(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitTypeParameterDecl) {
-      listener.exitTypeParameterDecl(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitTypeParameterDecl) {
-      return visitor.visitTypeParameterDecl(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class TypeElementContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public typeTerm_list(): TypeTermContext[] {
-    return this.getTypedRuleContexts(TypeTermContext) as TypeTermContext[]
-  }
-  public typeTerm(i: number): TypeTermContext {
-    return this.getTypedRuleContext(TypeTermContext, i) as TypeTermContext
-  }
-  public OR_list(): TerminalNode[] {
-    return this.getTokens(GoParser.OR)
-  }
-  public OR(i: number): TerminalNode {
-    return this.getToken(GoParser.OR, i)
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_typeElement
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterTypeElement) {
-      listener.enterTypeElement(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitTypeElement) {
-      listener.exitTypeElement(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitTypeElement) {
-      return visitor.visitTypeElement(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class TypeTermContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public type_(): Type_Context {
-    return this.getTypedRuleContext(Type_Context, 0) as Type_Context
-  }
-  public UNDERLYING(): TerminalNode {
-    return this.getToken(GoParser.UNDERLYING, 0)
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_typeTerm
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterTypeTerm) {
-      listener.enterTypeTerm(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitTypeTerm) {
-      listener.exitTypeTerm(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitTypeTerm) {
-      return visitor.visitTypeTerm(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
 export class FunctionDeclContext extends ParserRuleContext {
   constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
     super(parent, invokingState)
@@ -4853,9 +2977,6 @@ export class FunctionDeclContext extends ParserRuleContext {
   }
   public signature(): SignatureContext {
     return this.getTypedRuleContext(SignatureContext, 0) as SignatureContext
-  }
-  public typeParameters(): TypeParametersContext {
-    return this.getTypedRuleContext(TypeParametersContext, 0) as TypeParametersContext
   }
   public block(): BlockContext {
     return this.getTypedRuleContext(BlockContext, 0) as BlockContext
@@ -5066,8 +3187,8 @@ export class StatementContext extends ParserRuleContext {
     super(parent, invokingState)
     this.parser = parser
   }
-  public declaration(): DeclarationContext {
-    return this.getTypedRuleContext(DeclarationContext, 0) as DeclarationContext
+  public varDecl(): VarDeclContext {
+    return this.getTypedRuleContext(VarDeclContext, 0) as VarDeclContext
   }
   public simpleStmt(): SimpleStmtContext {
     return this.getTypedRuleContext(SimpleStmtContext, 0) as SimpleStmtContext
@@ -5083,9 +3204,6 @@ export class StatementContext extends ParserRuleContext {
   }
   public ifStmt(): IfStmtContext {
     return this.getTypedRuleContext(IfStmtContext, 0) as IfStmtContext
-  }
-  public selectStmt(): SelectStmtContext {
-    return this.getTypedRuleContext(SelectStmtContext, 0) as SelectStmtContext
   }
   public forStmt(): ForStmtContext {
     return this.getTypedRuleContext(ForStmtContext, 0) as ForStmtContext
@@ -5123,9 +3241,6 @@ export class SimpleStmtContext extends ParserRuleContext {
   }
   public sendStmt(): SendStmtContext {
     return this.getTypedRuleContext(SendStmtContext, 0) as SendStmtContext
-  }
-  public incDecStmt(): IncDecStmtContext {
-    return this.getTypedRuleContext(IncDecStmtContext, 0) as IncDecStmtContext
   }
   public assignment(): AssignmentContext {
     return this.getTypedRuleContext(AssignmentContext, 0) as AssignmentContext
@@ -5228,43 +3343,6 @@ export class SendStmtContext extends ParserRuleContext {
   }
 }
 
-export class IncDecStmtContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public expression(): ExpressionContext {
-    return this.getTypedRuleContext(ExpressionContext, 0) as ExpressionContext
-  }
-  public PLUS_PLUS(): TerminalNode {
-    return this.getToken(GoParser.PLUS_PLUS, 0)
-  }
-  public MINUS_MINUS(): TerminalNode {
-    return this.getToken(GoParser.MINUS_MINUS, 0)
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_incDecStmt
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterIncDecStmt) {
-      listener.enterIncDecStmt(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitIncDecStmt) {
-      listener.exitIncDecStmt(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitIncDecStmt) {
-      return visitor.visitIncDecStmt(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
 export class AssignmentContext extends ParserRuleContext {
   constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
     super(parent, invokingState)
@@ -5276,8 +3354,8 @@ export class AssignmentContext extends ParserRuleContext {
   public expressionList(i: number): ExpressionListContext {
     return this.getTypedRuleContext(ExpressionListContext, i) as ExpressionListContext
   }
-  public assign_op(): Assign_opContext {
-    return this.getTypedRuleContext(Assign_opContext, 0) as Assign_opContext
+  public ASSIGN(): TerminalNode {
+    return this.getToken(GoParser.ASSIGN, 0)
   }
   public get ruleIndex(): number {
     return GoParser.RULE_assignment
@@ -5296,37 +3374,6 @@ export class AssignmentContext extends ParserRuleContext {
   public accept<Result>(visitor: GoParserVisitor<Result>): Result {
     if (visitor.visitAssignment) {
       return visitor.visitAssignment(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class Assign_opContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public ASSIGN(): TerminalNode {
-    return this.getToken(GoParser.ASSIGN, 0)
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_assign_op
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterAssign_op) {
-      listener.enterAssign_op(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitAssign_op) {
-      listener.exitAssign_op(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitAssign_op) {
-      return visitor.visitAssign_op(this)
     } else {
       return visitor.visitChildren(this)
     }
@@ -5484,172 +3531,6 @@ export class IfStmtContext extends ParserRuleContext {
   public accept<Result>(visitor: GoParserVisitor<Result>): Result {
     if (visitor.visitIfStmt) {
       return visitor.visitIfStmt(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class TypeListContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public type__list(): Type_Context[] {
-    return this.getTypedRuleContexts(Type_Context) as Type_Context[]
-  }
-  public type_(i: number): Type_Context {
-    return this.getTypedRuleContext(Type_Context, i) as Type_Context
-  }
-  public NIL_LIT_list(): TerminalNode[] {
-    return this.getTokens(GoParser.NIL_LIT)
-  }
-  public NIL_LIT(i: number): TerminalNode {
-    return this.getToken(GoParser.NIL_LIT, i)
-  }
-  public COMMA_list(): TerminalNode[] {
-    return this.getTokens(GoParser.COMMA)
-  }
-  public COMMA(i: number): TerminalNode {
-    return this.getToken(GoParser.COMMA, i)
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_typeList
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterTypeList) {
-      listener.enterTypeList(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitTypeList) {
-      listener.exitTypeList(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitTypeList) {
-      return visitor.visitTypeList(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class SelectStmtContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public SELECT(): TerminalNode {
-    return this.getToken(GoParser.SELECT, 0)
-  }
-  public L_CURLY(): TerminalNode {
-    return this.getToken(GoParser.L_CURLY, 0)
-  }
-  public R_CURLY(): TerminalNode {
-    return this.getToken(GoParser.R_CURLY, 0)
-  }
-  public commClause_list(): CommClauseContext[] {
-    return this.getTypedRuleContexts(CommClauseContext) as CommClauseContext[]
-  }
-  public commClause(i: number): CommClauseContext {
-    return this.getTypedRuleContext(CommClauseContext, i) as CommClauseContext
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_selectStmt
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterSelectStmt) {
-      listener.enterSelectStmt(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitSelectStmt) {
-      listener.exitSelectStmt(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitSelectStmt) {
-      return visitor.visitSelectStmt(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class CommClauseContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public commCase(): CommCaseContext {
-    return this.getTypedRuleContext(CommCaseContext, 0) as CommCaseContext
-  }
-  public COLON(): TerminalNode {
-    return this.getToken(GoParser.COLON, 0)
-  }
-  public statementList(): StatementListContext {
-    return this.getTypedRuleContext(StatementListContext, 0) as StatementListContext
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_commClause
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterCommClause) {
-      listener.enterCommClause(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitCommClause) {
-      listener.exitCommClause(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitCommClause) {
-      return visitor.visitCommClause(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class CommCaseContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public CASE(): TerminalNode {
-    return this.getToken(GoParser.CASE, 0)
-  }
-  public sendStmt(): SendStmtContext {
-    return this.getTypedRuleContext(SendStmtContext, 0) as SendStmtContext
-  }
-  public recvStmt(): RecvStmtContext {
-    return this.getTypedRuleContext(RecvStmtContext, 0) as RecvStmtContext
-  }
-  public DEFAULT(): TerminalNode {
-    return this.getToken(GoParser.DEFAULT, 0)
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_commCase
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterCommCase) {
-      listener.enterCommCase(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitCommCase) {
-      listener.exitCommCase(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitCommCase) {
-      return visitor.visitCommCase(this)
     } else {
       return visitor.visitChildren(this)
     }
@@ -5876,20 +3757,8 @@ export class Type_Context extends ParserRuleContext {
   public typeName(): TypeNameContext {
     return this.getTypedRuleContext(TypeNameContext, 0) as TypeNameContext
   }
-  public typeArgs(): TypeArgsContext {
-    return this.getTypedRuleContext(TypeArgsContext, 0) as TypeArgsContext
-  }
-  public typeLit(): TypeLitContext {
-    return this.getTypedRuleContext(TypeLitContext, 0) as TypeLitContext
-  }
-  public L_PAREN(): TerminalNode {
-    return this.getToken(GoParser.L_PAREN, 0)
-  }
-  public type_(): Type_Context {
-    return this.getTypedRuleContext(Type_Context, 0) as Type_Context
-  }
-  public R_PAREN(): TerminalNode {
-    return this.getToken(GoParser.R_PAREN, 0)
+  public channelType(): ChannelTypeContext {
+    return this.getTypedRuleContext(ChannelTypeContext, 0) as ChannelTypeContext
   }
   public get ruleIndex(): number {
     return GoParser.RULE_type_
@@ -5908,46 +3777,6 @@ export class Type_Context extends ParserRuleContext {
   public accept<Result>(visitor: GoParserVisitor<Result>): Result {
     if (visitor.visitType_) {
       return visitor.visitType_(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class TypeArgsContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public L_BRACKET(): TerminalNode {
-    return this.getToken(GoParser.L_BRACKET, 0)
-  }
-  public typeList(): TypeListContext {
-    return this.getTypedRuleContext(TypeListContext, 0) as TypeListContext
-  }
-  public R_BRACKET(): TerminalNode {
-    return this.getToken(GoParser.R_BRACKET, 0)
-  }
-  public COMMA(): TerminalNode {
-    return this.getToken(GoParser.COMMA, 0)
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_typeArgs
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterTypeArgs) {
-      listener.enterTypeArgs(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitTypeArgs) {
-      listener.exitTypeArgs(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitTypeArgs) {
-      return visitor.visitTypeArgs(this)
     } else {
       return visitor.visitChildren(this)
     }
@@ -5982,68 +3811,6 @@ export class TypeNameContext extends ParserRuleContext {
   public accept<Result>(visitor: GoParserVisitor<Result>): Result {
     if (visitor.visitTypeName) {
       return visitor.visitTypeName(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class TypeLitContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public channelType(): ChannelTypeContext {
-    return this.getTypedRuleContext(ChannelTypeContext, 0) as ChannelTypeContext
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_typeLit
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterTypeLit) {
-      listener.enterTypeLit(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitTypeLit) {
-      listener.exitTypeLit(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitTypeLit) {
-      return visitor.visitTypeLit(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class ArrayLengthContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public expression(): ExpressionContext {
-    return this.getTypedRuleContext(ExpressionContext, 0) as ExpressionContext
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_arrayLength
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterArrayLength) {
-      listener.enterArrayLength(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitArrayLength) {
-      listener.exitArrayLength(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitArrayLength) {
-      return visitor.visitArrayLength(this)
     } else {
       return visitor.visitChildren(this)
     }
@@ -6086,14 +3853,11 @@ export class ChannelTypeContext extends ParserRuleContext {
     super(parent, invokingState)
     this.parser = parser
   }
-  public elementType(): ElementTypeContext {
-    return this.getTypedRuleContext(ElementTypeContext, 0) as ElementTypeContext
-  }
   public CHAN(): TerminalNode {
     return this.getToken(GoParser.CHAN, 0)
   }
-  public RECEIVE(): TerminalNode {
-    return this.getToken(GoParser.RECEIVE, 0)
+  public elementType(): ElementTypeContext {
+    return this.getTypedRuleContext(ElementTypeContext, 0) as ElementTypeContext
   }
   public get ruleIndex(): number {
     return GoParser.RULE_channelType
@@ -6119,6 +3883,7 @@ export class ChannelTypeContext extends ParserRuleContext {
 }
 
 export class SignatureContext extends ParserRuleContext {
+  public _result!: Type_Context
   constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
     super(parent, invokingState)
     this.parser = parser
@@ -6126,8 +3891,8 @@ export class SignatureContext extends ParserRuleContext {
   public parameters(): ParametersContext {
     return this.getTypedRuleContext(ParametersContext, 0) as ParametersContext
   }
-  public result(): ResultContext {
-    return this.getTypedRuleContext(ResultContext, 0) as ResultContext
+  public type_(): Type_Context {
+    return this.getTypedRuleContext(Type_Context, 0) as Type_Context
   }
   public get ruleIndex(): number {
     return GoParser.RULE_signature
@@ -6146,40 +3911,6 @@ export class SignatureContext extends ParserRuleContext {
   public accept<Result>(visitor: GoParserVisitor<Result>): Result {
     if (visitor.visitSignature) {
       return visitor.visitSignature(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class ResultContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public parameters(): ParametersContext {
-    return this.getTypedRuleContext(ParametersContext, 0) as ParametersContext
-  }
-  public type_(): Type_Context {
-    return this.getTypedRuleContext(Type_Context, 0) as Type_Context
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_result
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterResult) {
-      listener.enterResult(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitResult) {
-      listener.exitResult(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitResult) {
-      return visitor.visitResult(this)
     } else {
       return visitor.visitChildren(this)
     }
@@ -6243,9 +3974,6 @@ export class ParameterDeclContext extends ParserRuleContext {
   public identifierList(): IdentifierListContext {
     return this.getTypedRuleContext(IdentifierListContext, 0) as IdentifierListContext
   }
-  public ELLIPSIS(): TerminalNode {
-    return this.getToken(GoParser.ELLIPSIS, 0)
-  }
   public get ruleIndex(): number {
     return GoParser.RULE_parameterDecl
   }
@@ -6287,26 +4015,11 @@ export class ExpressionContext extends ParserRuleContext {
   public expression(i: number): ExpressionContext {
     return this.getTypedRuleContext(ExpressionContext, i) as ExpressionContext
   }
-  public PLUS(): TerminalNode {
-    return this.getToken(GoParser.PLUS, 0)
-  }
-  public MINUS(): TerminalNode {
-    return this.getToken(GoParser.MINUS, 0)
-  }
-  public EXCLAMATION(): TerminalNode {
-    return this.getToken(GoParser.EXCLAMATION, 0)
-  }
-  public CARET(): TerminalNode {
-    return this.getToken(GoParser.CARET, 0)
+  public RECEIVE(): TerminalNode {
+    return this.getToken(GoParser.RECEIVE, 0)
   }
   public STAR(): TerminalNode {
     return this.getToken(GoParser.STAR, 0)
-  }
-  public AMPERSAND(): TerminalNode {
-    return this.getToken(GoParser.AMPERSAND, 0)
-  }
-  public RECEIVE(): TerminalNode {
-    return this.getToken(GoParser.RECEIVE, 0)
   }
   public DIV(): TerminalNode {
     return this.getToken(GoParser.DIV, 0)
@@ -6314,17 +4027,11 @@ export class ExpressionContext extends ParserRuleContext {
   public MOD(): TerminalNode {
     return this.getToken(GoParser.MOD, 0)
   }
-  public LSHIFT(): TerminalNode {
-    return this.getToken(GoParser.LSHIFT, 0)
+  public PLUS(): TerminalNode {
+    return this.getToken(GoParser.PLUS, 0)
   }
-  public RSHIFT(): TerminalNode {
-    return this.getToken(GoParser.RSHIFT, 0)
-  }
-  public BIT_CLEAR(): TerminalNode {
-    return this.getToken(GoParser.BIT_CLEAR, 0)
-  }
-  public OR(): TerminalNode {
-    return this.getToken(GoParser.OR, 0)
+  public MINUS(): TerminalNode {
+    return this.getToken(GoParser.MINUS, 0)
   }
   public EQUALS(): TerminalNode {
     return this.getToken(GoParser.EQUALS, 0)
@@ -6343,12 +4050,6 @@ export class ExpressionContext extends ParserRuleContext {
   }
   public GREATER_OR_EQUALS(): TerminalNode {
     return this.getToken(GoParser.GREATER_OR_EQUALS, 0)
-  }
-  public LOGICAL_AND(): TerminalNode {
-    return this.getToken(GoParser.LOGICAL_AND, 0)
-  }
-  public LOGICAL_OR(): TerminalNode {
-    return this.getToken(GoParser.LOGICAL_OR, 0)
   }
   public get ruleIndex(): number {
     return GoParser.RULE_expression
@@ -6393,15 +4094,6 @@ export class PrimaryExprContext extends ParserRuleContext {
   public IDENTIFIER(): TerminalNode {
     return this.getToken(GoParser.IDENTIFIER, 0)
   }
-  public index(): IndexContext {
-    return this.getTypedRuleContext(IndexContext, 0) as IndexContext
-  }
-  public slice_(): Slice_Context {
-    return this.getTypedRuleContext(Slice_Context, 0) as Slice_Context
-  }
-  public typeAssertion(): TypeAssertionContext {
-    return this.getTypedRuleContext(TypeAssertionContext, 0) as TypeAssertionContext
-  }
   public arguments(): ArgumentsContext {
     return this.getTypedRuleContext(ArgumentsContext, 0) as ArgumentsContext
   }
@@ -6438,9 +4130,6 @@ export class OperandContext extends ParserRuleContext {
   }
   public operandName(): OperandNameContext {
     return this.getTypedRuleContext(OperandNameContext, 0) as OperandNameContext
-  }
-  public typeArgs(): TypeArgsContext {
-    return this.getTypedRuleContext(TypeArgsContext, 0) as TypeArgsContext
   }
   public L_PAREN(): TerminalNode {
     return this.getToken(GoParser.L_PAREN, 0)
@@ -6482,9 +4171,6 @@ export class LiteralContext extends ParserRuleContext {
   public basicLit(): BasicLitContext {
     return this.getTypedRuleContext(BasicLitContext, 0) as BasicLitContext
   }
-  public compositeLit(): CompositeLitContext {
-    return this.getTypedRuleContext(CompositeLitContext, 0) as CompositeLitContext
-  }
   public functionLit(): FunctionLitContext {
     return this.getTypedRuleContext(FunctionLitContext, 0) as FunctionLitContext
   }
@@ -6519,14 +4205,11 @@ export class BasicLitContext extends ParserRuleContext {
   public NIL_LIT(): TerminalNode {
     return this.getToken(GoParser.NIL_LIT, 0)
   }
-  public integer(): IntegerContext {
-    return this.getTypedRuleContext(IntegerContext, 0) as IntegerContext
+  public DECIMAL_LIT(): TerminalNode {
+    return this.getToken(GoParser.DECIMAL_LIT, 0)
   }
   public string_(): String_Context {
     return this.getTypedRuleContext(String_Context, 0) as String_Context
-  }
-  public FLOAT_LIT(): TerminalNode {
-    return this.getToken(GoParser.FLOAT_LIT, 0)
   }
   public get ruleIndex(): number {
     return GoParser.RULE_basicLit
@@ -6545,52 +4228,6 @@ export class BasicLitContext extends ParserRuleContext {
   public accept<Result>(visitor: GoParserVisitor<Result>): Result {
     if (visitor.visitBasicLit) {
       return visitor.visitBasicLit(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class IntegerContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public DECIMAL_LIT(): TerminalNode {
-    return this.getToken(GoParser.DECIMAL_LIT, 0)
-  }
-  public BINARY_LIT(): TerminalNode {
-    return this.getToken(GoParser.BINARY_LIT, 0)
-  }
-  public OCTAL_LIT(): TerminalNode {
-    return this.getToken(GoParser.OCTAL_LIT, 0)
-  }
-  public HEX_LIT(): TerminalNode {
-    return this.getToken(GoParser.HEX_LIT, 0)
-  }
-  public IMAGINARY_LIT(): TerminalNode {
-    return this.getToken(GoParser.IMAGINARY_LIT, 0)
-  }
-  public RUNE_LIT(): TerminalNode {
-    return this.getToken(GoParser.RUNE_LIT, 0)
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_integer
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterInteger) {
-      listener.enterInteger(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitInteger) {
-      listener.exitInteger(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitInteger) {
-      return visitor.visitInteger(this)
     } else {
       return visitor.visitChildren(this)
     }
@@ -6665,271 +4302,6 @@ export class QualifiedIdentContext extends ParserRuleContext {
   }
 }
 
-export class CompositeLitContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public literalType(): LiteralTypeContext {
-    return this.getTypedRuleContext(LiteralTypeContext, 0) as LiteralTypeContext
-  }
-  public literalValue(): LiteralValueContext {
-    return this.getTypedRuleContext(LiteralValueContext, 0) as LiteralValueContext
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_compositeLit
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterCompositeLit) {
-      listener.enterCompositeLit(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitCompositeLit) {
-      listener.exitCompositeLit(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitCompositeLit) {
-      return visitor.visitCompositeLit(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class LiteralTypeContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public L_BRACKET(): TerminalNode {
-    return this.getToken(GoParser.L_BRACKET, 0)
-  }
-  public ELLIPSIS(): TerminalNode {
-    return this.getToken(GoParser.ELLIPSIS, 0)
-  }
-  public R_BRACKET(): TerminalNode {
-    return this.getToken(GoParser.R_BRACKET, 0)
-  }
-  public elementType(): ElementTypeContext {
-    return this.getTypedRuleContext(ElementTypeContext, 0) as ElementTypeContext
-  }
-  public typeName(): TypeNameContext {
-    return this.getTypedRuleContext(TypeNameContext, 0) as TypeNameContext
-  }
-  public typeArgs(): TypeArgsContext {
-    return this.getTypedRuleContext(TypeArgsContext, 0) as TypeArgsContext
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_literalType
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterLiteralType) {
-      listener.enterLiteralType(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitLiteralType) {
-      listener.exitLiteralType(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitLiteralType) {
-      return visitor.visitLiteralType(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class LiteralValueContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public L_CURLY(): TerminalNode {
-    return this.getToken(GoParser.L_CURLY, 0)
-  }
-  public R_CURLY(): TerminalNode {
-    return this.getToken(GoParser.R_CURLY, 0)
-  }
-  public elementList(): ElementListContext {
-    return this.getTypedRuleContext(ElementListContext, 0) as ElementListContext
-  }
-  public COMMA(): TerminalNode {
-    return this.getToken(GoParser.COMMA, 0)
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_literalValue
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterLiteralValue) {
-      listener.enterLiteralValue(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitLiteralValue) {
-      listener.exitLiteralValue(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitLiteralValue) {
-      return visitor.visitLiteralValue(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class ElementListContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public keyedElement_list(): KeyedElementContext[] {
-    return this.getTypedRuleContexts(KeyedElementContext) as KeyedElementContext[]
-  }
-  public keyedElement(i: number): KeyedElementContext {
-    return this.getTypedRuleContext(KeyedElementContext, i) as KeyedElementContext
-  }
-  public COMMA_list(): TerminalNode[] {
-    return this.getTokens(GoParser.COMMA)
-  }
-  public COMMA(i: number): TerminalNode {
-    return this.getToken(GoParser.COMMA, i)
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_elementList
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterElementList) {
-      listener.enterElementList(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitElementList) {
-      listener.exitElementList(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitElementList) {
-      return visitor.visitElementList(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class KeyedElementContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public element(): ElementContext {
-    return this.getTypedRuleContext(ElementContext, 0) as ElementContext
-  }
-  public key(): KeyContext {
-    return this.getTypedRuleContext(KeyContext, 0) as KeyContext
-  }
-  public COLON(): TerminalNode {
-    return this.getToken(GoParser.COLON, 0)
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_keyedElement
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterKeyedElement) {
-      listener.enterKeyedElement(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitKeyedElement) {
-      listener.exitKeyedElement(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitKeyedElement) {
-      return visitor.visitKeyedElement(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class KeyContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public expression(): ExpressionContext {
-    return this.getTypedRuleContext(ExpressionContext, 0) as ExpressionContext
-  }
-  public literalValue(): LiteralValueContext {
-    return this.getTypedRuleContext(LiteralValueContext, 0) as LiteralValueContext
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_key
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterKey) {
-      listener.enterKey(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitKey) {
-      listener.exitKey(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitKey) {
-      return visitor.visitKey(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class ElementContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public expression(): ExpressionContext {
-    return this.getTypedRuleContext(ExpressionContext, 0) as ExpressionContext
-  }
-  public literalValue(): LiteralValueContext {
-    return this.getTypedRuleContext(LiteralValueContext, 0) as LiteralValueContext
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_element
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterElement) {
-      listener.enterElement(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitElement) {
-      listener.exitElement(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitElement) {
-      return visitor.visitElement(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
 export class String_Context extends ParserRuleContext {
   constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
     super(parent, invokingState)
@@ -6958,43 +4330,6 @@ export class String_Context extends ParserRuleContext {
   public accept<Result>(visitor: GoParserVisitor<Result>): Result {
     if (visitor.visitString_) {
       return visitor.visitString_(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class EmbeddedFieldContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public typeName(): TypeNameContext {
-    return this.getTypedRuleContext(TypeNameContext, 0) as TypeNameContext
-  }
-  public STAR(): TerminalNode {
-    return this.getToken(GoParser.STAR, 0)
-  }
-  public typeArgs(): TypeArgsContext {
-    return this.getTypedRuleContext(TypeArgsContext, 0) as TypeArgsContext
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_embeddedField
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterEmbeddedField) {
-      listener.enterEmbeddedField(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitEmbeddedField) {
-      listener.exitEmbeddedField(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitEmbeddedField) {
-      return visitor.visitEmbeddedField(this)
     } else {
       return visitor.visitChildren(this)
     }
@@ -7038,129 +4373,6 @@ export class FunctionLitContext extends ParserRuleContext {
   }
 }
 
-export class IndexContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public L_BRACKET(): TerminalNode {
-    return this.getToken(GoParser.L_BRACKET, 0)
-  }
-  public expression(): ExpressionContext {
-    return this.getTypedRuleContext(ExpressionContext, 0) as ExpressionContext
-  }
-  public R_BRACKET(): TerminalNode {
-    return this.getToken(GoParser.R_BRACKET, 0)
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_index
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterIndex) {
-      listener.enterIndex(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitIndex) {
-      listener.exitIndex(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitIndex) {
-      return visitor.visitIndex(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class Slice_Context extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public L_BRACKET(): TerminalNode {
-    return this.getToken(GoParser.L_BRACKET, 0)
-  }
-  public R_BRACKET(): TerminalNode {
-    return this.getToken(GoParser.R_BRACKET, 0)
-  }
-  public COLON_list(): TerminalNode[] {
-    return this.getTokens(GoParser.COLON)
-  }
-  public COLON(i: number): TerminalNode {
-    return this.getToken(GoParser.COLON, i)
-  }
-  public expression_list(): ExpressionContext[] {
-    return this.getTypedRuleContexts(ExpressionContext) as ExpressionContext[]
-  }
-  public expression(i: number): ExpressionContext {
-    return this.getTypedRuleContext(ExpressionContext, i) as ExpressionContext
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_slice_
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterSlice_) {
-      listener.enterSlice_(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitSlice_) {
-      listener.exitSlice_(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitSlice_) {
-      return visitor.visitSlice_(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
-export class TypeAssertionContext extends ParserRuleContext {
-  constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
-    super(parent, invokingState)
-    this.parser = parser
-  }
-  public DOT(): TerminalNode {
-    return this.getToken(GoParser.DOT, 0)
-  }
-  public L_PAREN(): TerminalNode {
-    return this.getToken(GoParser.L_PAREN, 0)
-  }
-  public type_(): Type_Context {
-    return this.getTypedRuleContext(Type_Context, 0) as Type_Context
-  }
-  public R_PAREN(): TerminalNode {
-    return this.getToken(GoParser.R_PAREN, 0)
-  }
-  public get ruleIndex(): number {
-    return GoParser.RULE_typeAssertion
-  }
-  public enterRule(listener: GoParserListener): void {
-    if (listener.enterTypeAssertion) {
-      listener.enterTypeAssertion(this)
-    }
-  }
-  public exitRule(listener: GoParserListener): void {
-    if (listener.exitTypeAssertion) {
-      listener.exitTypeAssertion(this)
-    }
-  }
-  // @Override
-  public accept<Result>(visitor: GoParserVisitor<Result>): Result {
-    if (visitor.visitTypeAssertion) {
-      return visitor.visitTypeAssertion(this)
-    } else {
-      return visitor.visitChildren(this)
-    }
-  }
-}
-
 export class ArgumentsContext extends ParserRuleContext {
   constructor(parser?: GoParser, parent?: ParserRuleContext, invokingState?: number) {
     super(parent, invokingState)
@@ -7174,18 +4386,6 @@ export class ArgumentsContext extends ParserRuleContext {
   }
   public expressionList(): ExpressionListContext {
     return this.getTypedRuleContext(ExpressionListContext, 0) as ExpressionListContext
-  }
-  public type_(): Type_Context {
-    return this.getTypedRuleContext(Type_Context, 0) as Type_Context
-  }
-  public ELLIPSIS(): TerminalNode {
-    return this.getToken(GoParser.ELLIPSIS, 0)
-  }
-  public COMMA_list(): TerminalNode[] {
-    return this.getTokens(GoParser.COMMA)
-  }
-  public COMMA(i: number): TerminalNode {
-    return this.getToken(GoParser.COMMA, i)
   }
   public get ruleIndex(): number {
     return GoParser.RULE_arguments
