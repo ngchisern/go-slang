@@ -2,8 +2,9 @@ import { CharStream, CommonTokenStream } from 'antlr4'
 import GoParser from '../lang/GoParser'
 import GoLexer from '../lang/GoLexer'
 import { CustomVisitor } from './customVisitor'
+import { AstNode } from './astNode'
 
-export function parseGoCode(source: string) {
+export function parseGoCode(source: string): AstNode {
   const charStream = new CharStream(source)
   const lexer = new GoLexer(charStream)
   const tokenStream = new CommonTokenStream(lexer)

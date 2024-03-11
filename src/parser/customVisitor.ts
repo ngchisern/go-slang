@@ -61,7 +61,11 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
 
   visitSourceFile: (ctx: SourceFileContext) => SourceFile = (ctx) => {
     const pkg = ctx.packageClause()._packageName.text;
-    const imports = ctx.importDecl_list().map((imp) => imp.importSpec_list().map((spec) => spec._alias.text)).flat();
+    const imports = ctx.importDecl_list().map((imp) => imp.importSpec_list().map((spec) => {
+      const ctx = spec.importPath().string_();
+      const path = (ctx.RAW_STRING_LIT() || ctx.INTERPRETED_STRING_LIT()).symbol.text;
+      return path;
+    })).flat();
 
     const funcDecls = ctx.functionDecl_list().map((decl) => decl.accept(this));
     const varDecls = ctx.varDecl_list().map((decl) => decl.accept(this));
@@ -91,12 +95,9 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
   }
 
   visitImportSpec: (ctx: ImportSpecContext) => AstNode = (ctx) => {
-    const alias = ctx._alias.text;
-    const path = ctx.importPath().accept(this);
     return {
       tag: 'importSpec',
-      alias: alias,
-      path: path,
+      path: ctx.importPath().accept(this),
     }
   }
 
@@ -332,11 +333,20 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
 
   visitSignature: (ctx: SignatureContext) => Signature = (ctx) => {
     const prms = ctx.parameters().accept(this);
-    const result = ctx._result.accept(this);
-    return {
-      tag: 'sig',
-      parameters: prms,
-      result: result,
+
+    if (ctx._result) {
+      const result = ctx._result.accept(this);
+      return {
+        tag: 'sig',
+        parameters: prms,
+        result: result,
+      }
+    } else {
+      return {
+        tag: 'sig',
+        parameters: prms,
+        result: null,
+      }
     }
   }
 
@@ -369,7 +379,7 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
     } else if (ctx._mul_op || ctx._add_op) {
       return {
         tag: 'binop',
-        sym: ctx._mul_op.text || ctx._add_op.text || ctx._rel_op.text,
+        sym: (ctx._mul_op || ctx._add_op).text,
         frst: ctx.expression(0).accept(this),
         scnd: ctx.expression(1).accept(this),
       };
@@ -429,7 +439,7 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
   }
 
   visitBasicLit: (ctx: BasicLitContext) => Literal = (ctx) => {
-    const value = (ctx.DECIMAL_LIT() || ctx.NIL_LIT() || ctx.string_()).symbol.text;
+    const value = (ctx.DECIMAL_LIT() || ctx.NIL_LIT() || ctx.string_().RAW_STRING_LIT() || ctx.string_().INTERPRETED_STRING_LIT()).symbol.text;
     return {
       tag: 'literal',
       value: value,

@@ -140,7 +140,7 @@ export interface FunctionDeclaration extends BaseNode {
 export interface Signature extends BaseNode {
   tag: 'sig'
   parameters: AstNode
-  result: AstNode
+  result: AstNode | null
 }
 
 export interface Parameters extends BaseNode {
