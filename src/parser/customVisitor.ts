@@ -1,13 +1,45 @@
 import GoParserVisitor from '../lang/GoParserVisitor'
-import { Arguments, Assignment, AstNode, Block, ChannelType, ConditionalStatement, DeferStatement, ForClause, ForStmt, FunctionDeclaration, FunctionLiteral, GoStatement, Identifier, Literal, MethodExpression, ParameterDeclaration, Parameters, QualifiedIdentifier, ReturnStatement, SendStatement, Sequence, ShortValDecl, Signature, SourceFile, Type, TypeName, VariableDeclaration, VariableSpecification } from './astNode'
+import {
+  Arguments,
+  Assignment,
+  AstNode,
+  Block,
+  ChannelType,
+  ConditionalStatement,
+  DeferStatement,
+  Expression,
+  ExpressionStatement,
+  ForClause,
+  ForStmt,
+  FunctionDeclaration,
+  FunctionLiteral,
+  GoStatement,
+  Identifier,
+  BasicLiteral,
+  MethodExpression,
+  Operand,
+  ParameterDeclaration,
+  PrimaryExpr,
+  QualifiedIdentifier,
+  ReturnStatement,
+  SendStatement,
+  Sequence,
+  ShortValDecl,
+  Signature,
+  SourceFile,
+  Type,
+  TypeName,
+  VariableDeclaration,
+  VariableSpecification,
+  Literal,
+  SimpleStatement
+} from './astNode'
 
 import { SourceFileContext } from '../lang/GoParser'
 import { PackageClauseContext } from '../lang/GoParser'
 import { ImportDeclContext } from '../lang/GoParser'
 import { ImportSpecContext } from '../lang/GoParser'
 import { ImportPathContext } from '../lang/GoParser'
-import { IdentifierListContext } from '../lang/GoParser'
-import { ExpressionListContext } from '../lang/GoParser'
 import { FunctionDeclContext } from '../lang/GoParser'
 import { VarDeclContext } from '../lang/GoParser'
 import { VarSpecContext } from '../lang/GoParser'
@@ -32,7 +64,6 @@ import { TypeNameContext } from '../lang/GoParser'
 import { ElementTypeContext } from '../lang/GoParser'
 import { ChannelTypeContext } from '../lang/GoParser'
 import { SignatureContext } from '../lang/GoParser'
-import { ParametersContext } from '../lang/GoParser'
 import { ParameterDeclContext } from '../lang/GoParser'
 import { ExpressionContext } from '../lang/GoParser'
 import { PrimaryExprContext } from '../lang/GoParser'
@@ -59,442 +90,460 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
 
   visitErrorNode: (node: ErrorNode) => AstNode
 
-  visitSourceFile: (ctx: SourceFileContext) => SourceFile = (ctx) => {
-    const pkg = ctx.packageClause()._packageName.text;
-    const imports = ctx.importDecl_list().map((imp) => imp.importSpec_list().map((spec) => {
-      const ctx = spec.importPath().string_();
-      const path = (ctx.RAW_STRING_LIT() || ctx.INTERPRETED_STRING_LIT()).symbol.text;
-      return path;
-    })).flat();
+  visitSourceFile: (ctx: SourceFileContext) => SourceFile = ctx => {
+    const pkg = ctx.packageClause()._packageName.text
+    const imports = ctx
+      .importDecl_list()
+      .map(imp =>
+        imp.importSpec_list().map(spec => {
+          const ctx = spec.importPath().string_()
+          const path = (ctx.RAW_STRING_LIT() || ctx.INTERPRETED_STRING_LIT()).symbol.text
+          return path
+        })
+      )
+      .flat()
 
-    const funcDecls = ctx.functionDecl_list().map((decl) => decl.accept(this));
-    const varDecls = ctx.varDecl_list().map((decl) => decl.accept(this));
-    const decls = funcDecls.concat(varDecls);
+    const funcDecls = ctx.functionDecl_list().map(decl => this.visitFunctionDecl(decl))
+    const varDecls = ctx.varDecl_list().map(decl => this.visitVarDecl(decl))
 
     return {
       tag: 'src',
       package: pkg,
       imports: imports,
-      decls: decls,
+      decls: [...funcDecls, ...varDecls]
     }
   }
 
-  visitPackageClause: (ctx: PackageClauseContext) => AstNode = (ctx) => {
+  visitPackageClause: (ctx: PackageClauseContext) => AstNode = ctx => {
     return {
       tag: 'package',
-      name: ctx._packageName.text,
+      name: ctx._packageName.text
     }
   }
 
-  visitImportDecl: (ctx: ImportDeclContext) => AstNode = (ctx) => {
-    const specs = ctx.importSpec_list().map((spec) => spec.accept(this));
+  visitImportDecl: (ctx: ImportDeclContext) => AstNode = ctx => {
+    const specs = ctx.importSpec_list().map(spec => spec.accept(this))
     return {
       tag: 'importDecl',
-      specs: specs,
+      specs: specs
     }
   }
 
-  visitImportSpec: (ctx: ImportSpecContext) => AstNode = (ctx) => {
+  visitImportSpec: (ctx: ImportSpecContext) => AstNode = ctx => {
     return {
       tag: 'importSpec',
-      path: ctx.importPath().accept(this),
+      path: ctx.importPath().accept(this)
     }
   }
 
-  visitImportPath: (ctx: ImportPathContext) => AstNode = (ctx) => {
+  visitImportPath: (ctx: ImportPathContext) => AstNode = ctx => {
     return {
       tag: 'importPath',
-      path: ctx.string_().accept(this),
+      path: ctx.string_().accept(this)
     }
   }
 
-  visitIdentifierList: (ctx: IdentifierListContext) => AstNode = (ctx) => {
-    return {
-      tag: 'identifierList',
-      names: ctx.IDENTIFIER_list().map((id) => id.symbol.text),
-    }
-  }
-
-
-  visitExpressionList: (ctx: ExpressionListContext) => Sequence = (ctx) => {
-    return {
-      tag: 'seq',
-      stmts: ctx.expression_list().map((exp) => exp.accept(this)),
-    }
-  }
-
-  visitFunctionDecl: (ctx: FunctionDeclContext) => FunctionDeclaration = (ctx) => {
-    const name = ctx.IDENTIFIER().symbol.text;
-    const sig = ctx.signature().accept(this);
-    const body = ctx.block().accept(this);
+  visitFunctionDecl: (ctx: FunctionDeclContext) => FunctionDeclaration = ctx => {
+    const name = ctx.IDENTIFIER().symbol.text
+    const sig = this.visitSignature(ctx.signature())
+    const body = this.visitBlock(ctx.block())
     return {
       tag: 'func',
       sym: name,
       sig: sig,
-      body: body,
+      body: body
     }
   }
 
-
-  visitVarDecl: (ctx: VarDeclContext) => VariableDeclaration = (ctx) => {
-    const specs = ctx.varSpec_list().map((spec) => spec.accept(this));
+  visitVarDecl: (ctx: VarDeclContext) => VariableDeclaration = ctx => {
+    const specs = ctx.varSpec_list().map(spec => spec.accept(this))
     return {
       tag: 'varDecl',
-      specs: specs,
+      specs: specs
     }
   }
 
-  visitVarSpec: (ctx: VarSpecContext) => VariableSpecification = (ctx) => {
+  visitVarSpec: (ctx: VarSpecContext) => VariableSpecification = ctx => {
     // ONLY SUPPORTS ASSIGNMENT NOW
-    const syms = ctx.identifierList().IDENTIFIER_list().map((id) => id.symbol.text);
-    const exprs = ctx.expressionList().expression_list().map((exp) => exp.accept(this));
+    const syms = ctx
+      .identifierList()
+      .IDENTIFIER_list()
+      .map(id => id.symbol.text)
+    const exprs = ctx
+      .expressionList()
+      .expression_list()
+      .map(exp => exp.accept(this))
     return {
       tag: 'varSpec',
       syms: syms,
-      exprs: exprs,
+      exprs: exprs
     }
   }
 
-  visitBlock: (ctx: BlockContext) => Block = (ctx) => {
-    const body = ctx.statementList().accept(this);
+  visitBlock: (ctx: BlockContext) => Block = ctx => {
+    const body = this.visitStatementList(ctx.statementList())
     return {
       tag: 'block',
       body: body
     }
   }
 
-  visitStatementList: (ctx: StatementListContext) => Sequence = (ctx) => {
+  visitStatementList: (ctx: StatementListContext) => Sequence = ctx => {
     return {
       tag: 'seq',
-      stmts: ctx.statement_list().map((stmt) => stmt.accept(this)),
+      stmts: ctx.statement_list().map(stmt => this.visitStatement(stmt))
     }
   }
 
-  visitStatement: (ctx: StatementContext) => AstNode = (ctx) => {
+  visitStatement: (ctx: StatementContext) => SimpleStatement = ctx => {
     if (ctx.simpleStmt()) {
-      return ctx.simpleStmt().accept(this);
-    } else if (ctx.varDecl()) {
-      return ctx.varDecl().accept(this);
-    } else if (ctx.goStmt()) {
-      return ctx.goStmt().accept(this);
-    } else if (ctx.returnStmt()) {
-      return ctx.returnStmt().accept(this);
-    } else if (ctx.block()) {
-      return ctx.block().accept(this);
-    } else if (ctx.ifStmt()) {
-      return ctx.ifStmt().accept(this);
-    } else if (ctx.forStmt()) {
-      return ctx.forStmt().accept(this);
-    } else if (ctx.deferStmt()) {
-      return ctx.deferStmt().accept(this);
+      return this.visitSimpleStmt(ctx.simpleStmt())
+      // TODO update ltr when supporting these constructs
+      // } else if (ctx.varDecl()) {
+      //   return ctx.varDecl().accept(this);
+      // } else if (ctx.goStmt()) {
+      //   return ctx.goStmt().accept(this);
+      // } else if (ctx.returnStmt()) {
+      //   return ctx.returnStmt().accept(this);
+      // } else if (ctx.block()) {
+      //   return ctx.block().accept(this);
+      // } else if (ctx.ifStmt()) {
+      //   return ctx.ifStmt().accept(this);
+      // } else if (ctx.forStmt()) {
+      //   return ctx.forStmt().accept(this);
+      // } else if (ctx.deferStmt()) {
+      //   return ctx.deferStmt().accept(this);
     } else {
-      throw new Error('Unknown statement type');
+      throw new Error('Unknown statement type')
     }
   }
 
-  visitSimpleStmt: (ctx: SimpleStmtContext) => AstNode = (ctx) => {
+  visitSimpleStmt: (ctx: SimpleStmtContext) => SimpleStatement = ctx => {
     if (ctx.expressionStmt()) {
-      return ctx.expressionStmt().accept(this);
-    } else if (ctx.sendStmt()) {
-      return ctx.sendStmt().accept(this);
+      return this.visitExpressionStmt(ctx.expressionStmt())
+      // TODO update ltr when supporting these constructs
+      // } else if (ctx.sendStmt()) {
+      //   return ctx.sendStmt().accept(this);
     } else if (ctx.assignment()) {
-      return ctx.assignment().accept(this);
+      return this.visitAssignment(ctx.assignment())
     } else if (ctx.shortVarDecl()) {
-      return ctx.shortVarDecl().accept(this);
+      return this.visitShortVarDecl(ctx.shortVarDecl())
     } else {
-      throw new Error('Unknown simple statement type');
+      throw new Error('Unknown simple statement type')
     }
   }
 
-  visitExpressionStmt: (ctx: ExpressionStmtContext) => AstNode = (ctx) => {
-    return ctx.expression().accept(this);
+  visitExpressionStmt: (ctx: ExpressionStmtContext) => ExpressionStatement = ctx => {
+    return {
+      tag: 'expStmt',
+      exp: this.visitExpression(ctx.expression())
+    }
   }
 
-
-  visitSendStmt: (ctx: SendStmtContext) => SendStatement = (ctx) => {
-    const chan = ctx.expression(0).accept(this);
-    const msg = ctx.expression(1).accept(this);
+  visitSendStmt: (ctx: SendStmtContext) => SendStatement = ctx => {
+    const chan = ctx.expression(0).accept(this)
+    const msg = ctx.expression(1).accept(this)
     return {
       tag: 'send',
       chan: chan,
-      msg: msg,
+      msg: msg
     }
   }
 
-  visitAssignment: (ctx: AssignmentContext) => Assignment = (ctx) => {
-    const syms = ctx.expressionList(0).expression_list().map((exp) => exp.accept(this));
-    const exprs = ctx.expressionList(1).expression_list().map((exp) => exp.accept(this));
+  visitAssignment: (ctx: AssignmentContext) => Assignment = ctx => {
+    const syms = ctx
+      .expressionList(0)
+      .expression_list()
+      .map(exp => this.visitExpression(exp))
+    const exprs = ctx
+      .expressionList(1)
+      .expression_list()
+      .map(exp => this.visitExpression(exp))
     return {
       tag: 'assmt',
       syms: syms,
-      exprs: exprs,
+      exprs: exprs
     }
   }
 
-  visitShortVarDecl: (ctx: ShortVarDeclContext) => ShortValDecl = (ctx) => {
-    const syms = ctx.identifierList().IDENTIFIER_list().map((id) => id.symbol.text);
-    const exprs = ctx.expressionList().expression_list().map((exp) => exp.accept(this));
+  visitShortVarDecl: (ctx: ShortVarDeclContext) => ShortValDecl = ctx => {
+    const syms = ctx
+      .identifierList()
+      .IDENTIFIER_list()
+      .map(id => id.symbol.text)
+    const exprs = ctx
+      .expressionList()
+      .expression_list()
+      .map(exp => this.visitExpression(exp))
     return {
       tag: 'shortValDecl',
       syms: syms,
-      exprs: exprs,
+      exprs: exprs
     }
   }
 
-  visitReturnStmt: (ctx: ReturnStmtContext) => ReturnStatement = (ctx) => {
-    const exprs = ctx.expressionList().expression_list().map((exp) => exp.accept(this));
+  visitReturnStmt: (ctx: ReturnStmtContext) => ReturnStatement = ctx => {
+    const exprs = ctx
+      .expressionList()
+      .expression_list()
+      .map(exp => exp.accept(this))
     return {
       tag: 'ret',
-      expr: exprs,
+      expr: exprs
     }
   }
 
-
-  visitDeferStmt: (ctx: DeferStmtContext) => DeferStatement = (ctx) => {
+  visitDeferStmt: (ctx: DeferStmtContext) => DeferStatement = ctx => {
     return {
       tag: 'defer',
-      expr: ctx.expression().accept(this),
+      expr: ctx.expression().accept(this)
     }
   }
 
-  visitIfStmt: (ctx: IfStmtContext) => ConditionalStatement = (ctx) => {
-    const cond = ctx.expression().accept(this);
-    const cons = ctx.block(0).accept(this);
-    const alt = ctx.block(1).accept(this);
+  visitIfStmt: (ctx: IfStmtContext) => ConditionalStatement = ctx => {
+    const cond = ctx.expression().accept(this)
+    const cons = ctx.block(0).accept(this)
+    const alt = ctx.block(1).accept(this)
     return {
       tag: 'cond',
       cond: cond,
       cons: cons,
-      alt: alt,
+      alt: alt
     }
   }
 
-  visitRecvStmt: (ctx: RecvStmtContext) => AstNode = (ctx) => {
-    throw new Error('Not implemented');
+  visitRecvStmt: (ctx: RecvStmtContext) => AstNode = ctx => {
+    throw new Error('Not implemented')
   }
 
-  visitForStmt: (ctx: ForStmtContext) => ForStmt = (ctx) => {
-    const clause = ctx.forClause().accept(this);
-    const body = ctx.block().accept(this);
+  visitForStmt: (ctx: ForStmtContext) => ForStmt = ctx => {
+    const clause = ctx.forClause().accept(this)
+    const body = ctx.block().accept(this)
 
     return {
       tag: 'for',
       clause: clause,
-      body: body,
+      body: body
     }
   }
 
-  visitForClause: (ctx: ForClauseContext) => ForClause = (ctx) => {
+  visitForClause: (ctx: ForClauseContext) => ForClause = ctx => {
     return {
       tag: 'forClause',
       init: ctx.simpleStmt(0).accept(this),
       cond: ctx.expression().accept(this),
-      post: ctx.simpleStmt(1).accept(this),
+      post: ctx.simpleStmt(1).accept(this)
     }
   }
 
-  visitRangeClause?: (ctx: RangeClauseContext) => AstNode = (ctx) => {
+  visitRangeClause?: (ctx: RangeClauseContext) => AstNode = ctx => {
     // Don't support range clause yet
-    throw new Error('Not implemented');
+    throw new Error('Not implemented')
   }
 
-  visitGoStmt: (ctx: GoStmtContext) => GoStatement = (ctx) => {
+  visitGoStmt: (ctx: GoStmtContext) => GoStatement = ctx => {
     return {
       tag: 'go',
-      expr: ctx.expression().accept(this),
+      expr: ctx.expression().accept(this)
     }
   }
 
-  visitType_: (ctx: Type_Context) => Type = (ctx) => {
+  visitType_: (ctx: Type_Context) => Type = ctx => {
     return {
       tag: 'type',
-      type: ctx.typeName().accept(this),
+      type: this.visitTypeName(ctx.typeName())
     }
   }
 
-  visitTypeName: (ctx: TypeNameContext) => TypeName = (ctx) => {
+  visitTypeName: (ctx: TypeNameContext) => TypeName = ctx => {
     // Don't support qualified ident yet
     return {
       tag: 'typeName',
-      name: ctx.IDENTIFIER().symbol.text,
+      name: ctx.IDENTIFIER().symbol.text
     }
   }
 
-  visitElementType: (ctx: ElementTypeContext) => Type = (ctx) => {
-    return this.visitType_(ctx.type_());
+  visitElementType: (ctx: ElementTypeContext) => Type = ctx => {
+    return this.visitType_(ctx.type_())
   }
 
-  visitChannelType: (ctx: ChannelTypeContext) => ChannelType = (ctx) => {
+  visitChannelType: (ctx: ChannelTypeContext) => ChannelType = ctx => {
     return {
       tag: 'chanType',
-      elem: ctx.elementType().accept(this),
+      elem: ctx.elementType().accept(this)
     }
   }
 
-  visitSignature: (ctx: SignatureContext) => Signature = (ctx) => {
-    const prms = ctx.parameters().accept(this);
-
-    if (ctx._result) {
-      const result = ctx._result.accept(this);
-      return {
-        tag: 'sig',
-        parameters: prms,
-        result: result,
-      }
-    } else {
-      return {
-        tag: 'sig',
-        parameters: prms,
-        result: null,
-      }
-    }
-  }
-
-  visitParameters: (ctx: ParametersContext) => Parameters = (ctx) => {
+  visitSignature: (ctx: SignatureContext) => Signature = ctx => {
+    const prms = ctx
+      .parameters()
+      .parameterDecl_list()
+      .map(decl => this.visitParameterDecl(decl))
+    const result = ctx._result ? this.visitType_(ctx._result) : undefined
     return {
-      tag: 'params',
-      list: ctx.parameterDecl_list().map((decl) => decl.accept(this)),
+      tag: 'sig',
+      parameters: prms,
+      result: result
     }
   }
 
-  visitParameterDecl: (ctx: ParameterDeclContext) => ParameterDeclaration = (ctx) => {
-    const syms = ctx.identifierList().IDENTIFIER_list().map((id) => id.symbol.text);
-    const type = ctx.type_().accept(this);
+  visitParameterDecl: (ctx: ParameterDeclContext) => ParameterDeclaration = ctx => {
+    const syms = ctx
+      .identifierList()
+      .IDENTIFIER_list()
+      .map(id => id.symbol.text)
+    const type = this.visitType_(ctx.type_())
     return {
       tag: 'param',
       syms: syms,
-      type: type,
+      type: type
     }
   }
 
-  visitExpression: (ctx: ExpressionContext) => AstNode = (ctx) => {
+  visitExpression: (ctx: ExpressionContext) => Expression = ctx => {
     if (ctx.primaryExpr()) {
-      return ctx.primaryExpr().accept(this);
+      return this.visitPrimaryExpr(ctx.primaryExpr())
     } else if (ctx._unary_op) {
       return {
         tag: 'unop',
         sym: ctx._unary_op.text,
-        expr: ctx.expression(0).accept(this),
-      };
+        expr: this.visitExpression(ctx.expression(0))
+      }
     } else if (ctx._mul_op || ctx._add_op) {
       return {
         tag: 'binop',
         sym: (ctx._mul_op || ctx._add_op).text,
-        frst: ctx.expression(0).accept(this),
-        scnd: ctx.expression(1).accept(this),
-      };
+        frst: this.visitExpression(ctx.expression(0)),
+        scnd: this.visitExpression(ctx.expression(1))
+      }
     } else if (ctx._rel_op) {
       return {
         tag: 'log',
         sym: ctx._rel_op.text,
-        frst: ctx.expression(0).accept(this),
-        scnd: ctx.expression(1).accept(this),
-      };
+        frst: this.visitExpression(ctx.expression(0)),
+        scnd: this.visitExpression(ctx.expression(1))
+      }
     } else {
-      throw new Error('Unknown expression type');
+      throw new Error('Unknown expression type')
     }
   }
 
-  visitPrimaryExpr: (ctx: PrimaryExprContext) => AstNode = (ctx) => {
+  visitPrimaryExpr: (ctx: PrimaryExprContext) => PrimaryExpr = ctx => {
     if (ctx.operand()) {
-      return ctx.operand().accept(this);
+      return this.visitOperand(ctx.operand())
     } else if (ctx.methodExpr()) {
-      return ctx.methodExpr().accept(this);
+      return this.visitMethodExpr(ctx.methodExpr())
     } else if (ctx.IDENTIFIER()) {
       return {
         tag: 'primSel',
-        ident: ctx.IDENTIFIER().symbol.text,
+        sel: this.visitPrimaryExpr(ctx.primaryExpr()),
+        ident: ctx.IDENTIFIER().symbol.text
       }
     } else if (ctx.arguments()) {
       return {
         tag: 'primArg',
-        expr: ctx.primaryExpr().accept(this),
-        args: ctx.arguments().expressionList().expression_list().map((arg) => arg.accept(this)),
+        expr: this.visitPrimaryExpr(ctx.primaryExpr()),
+        args: ctx
+          .arguments()
+          .expressionList()
+          .expression_list()
+          .map(arg => this.visitExpression(arg))
       }
     } else {
-      throw new Error('Unknown primary expression type');
+      throw new Error('Unknown primary expression type')
     }
   }
 
-  visitOperand?: (ctx: OperandContext) => AstNode = (ctx) => {
+  visitOperand: (ctx: OperandContext) => Operand = ctx => {
     if (ctx.literal()) {
-      return ctx.literal().accept(this);
+      return this.visitLiteral(ctx.literal())
     } else if (ctx.operandName()) {
-      return ctx.operandName().accept(this);
+      return this.visitOperandName(ctx.operandName())
     } else if (ctx.expression()) {
-      return ctx.expression().accept(this);
+      return {
+        tag: 'parenExp',
+        exp: this.visitExpression(ctx.expression())
+      }
     } else {
-      throw new Error('Unknown operand type');
+      throw new Error('Unknown operand type')
     }
   }
 
-  visitLiteral: (ctx: LiteralContext) => AstNode = (ctx) => {
+  visitLiteral: (ctx: LiteralContext) => Literal = ctx => {
     if (ctx.basicLit()) {
-      return ctx.basicLit().accept(this);
+      return this.visitBasicLit(ctx.basicLit())
     } else if (ctx.functionLit()) {
-      return ctx.functionLit().accept(this);
+      return this.visitFunctionLit(ctx.functionLit())
     } else {
-      throw new Error('Unknown literal type');
+      throw new Error('Unknown literal type')
     }
   }
 
-  visitBasicLit: (ctx: BasicLitContext) => Literal = (ctx) => {
-    const value = (ctx.DECIMAL_LIT() || ctx.NIL_LIT() || ctx.string_().RAW_STRING_LIT() || ctx.string_().INTERPRETED_STRING_LIT()).symbol.text;
+  visitBasicLit: (ctx: BasicLitContext) => BasicLiteral = ctx => {
+    const value = (
+      ctx.DECIMAL_LIT() ||
+      ctx.NIL_LIT() ||
+      ctx.string_().RAW_STRING_LIT() ||
+      ctx.string_().INTERPRETED_STRING_LIT()
+    ).symbol.text
     return {
       tag: 'literal',
-      value: value,
+      value: value
     }
   }
 
-  visitOperandName: (ctx: OperandNameContext) => Identifier = (ctx) => {
+  visitOperandName: (ctx: OperandNameContext) => Identifier = ctx => {
     return {
       tag: 'ident',
-      name: ctx.IDENTIFIER().symbol.text,
+      name: ctx.IDENTIFIER().symbol.text
     }
   }
 
-  visitQualifiedIdent: (ctx: QualifiedIdentContext) => QualifiedIdentifier = (ctx) => {
+  visitQualifiedIdent: (ctx: QualifiedIdentContext) => QualifiedIdentifier = ctx => {
     return {
       tag: 'qualIdent',
       pkg: ctx.IDENTIFIER(0).symbol.text,
-      ident: ctx.IDENTIFIER(1).symbol.text,
+      ident: ctx.IDENTIFIER(1).symbol.text
     }
   }
 
-  visitString_: (ctx: String_Context) => Literal = (ctx) => {
-    const value = (ctx.RAW_STRING_LIT() || ctx.INTERPRETED_STRING_LIT()).symbol.text;
+  visitString_: (ctx: String_Context) => BasicLiteral = ctx => {
+    const value = (ctx.RAW_STRING_LIT() || ctx.INTERPRETED_STRING_LIT()).symbol.text
     return {
       tag: 'literal',
-      value: value,
+      value: value
     }
   }
 
-  visitFunctionLit: (ctx: FunctionLitContext) => FunctionLiteral = (ctx) => {
-    const sig = ctx.signature().accept(this);
-    const body = ctx.block().accept(this);
+  visitFunctionLit: (ctx: FunctionLitContext) => FunctionLiteral = ctx => {
+    const sig = this.visitSignature(ctx.signature())
+    const body = this.visitBlock(ctx.block())
     return {
       tag: 'funcLit',
       sig: sig,
-      body: body,
+      body: body
     }
   }
 
-  visitArguments: (ctx: ArgumentsContext) => Arguments = (ctx) => {
+  visitArguments: (ctx: ArgumentsContext) => Arguments = ctx => {
     return {
       tag: 'args',
-      list: ctx.expressionList().expression_list().map((exp) => exp.accept(this)),
+      list: ctx
+        .expressionList()
+        .expression_list()
+        .map(exp => this.visitExpression(exp))
     }
   }
 
-  visitMethodExpr: (ctx: MethodExprContext) => MethodExpression = (ctx) => {
+  visitMethodExpr: (ctx: MethodExprContext) => MethodExpression = ctx => {
     return {
       tag: 'meth',
-      recv: ctx.type_().accept(this),
-      ident: ctx.IDENTIFIER().symbol.text,
+      recv: this.visitType_(ctx.type_()),
+      ident: ctx.IDENTIFIER().symbol.text
     }
   }
 
-  visitEos: (ctx: EosContext) => AstNode = (ctx) => {
-    throw new Error('Not implemented');
+  visitEos: (ctx: EosContext) => AstNode = ctx => {
+    throw new Error('Not implemented')
   }
 }

@@ -1,5 +1,16 @@
 // Type definitions for the AST nodes
 type LiteralType = string | number | boolean
+type Declaration = FunctionDeclaration | VariableDeclaration
+
+export type SimpleStatement = ShortValDecl | Assignment | ExpressionStatement
+export type Expression =
+  | PrimaryExpr
+  | UnaryExpression
+  | BinaryOperatorExpression
+  | LogicalExpression
+export type PrimaryExpr = Operand | MethodExpression | PrimaryExprSelector | PrimaryExprArgument
+export type Operand = Literal | Identifier | ParenExpression
+export type Literal = BasicLiteral | FunctionLiteral
 
 // AST Node types
 interface BaseNode {
@@ -10,18 +21,18 @@ export interface SourceFile extends BaseNode {
   tag: 'src'
   package: string
   imports: string[]
-  decls: AstNode[]
+  decls: Declaration[]
 }
 
-export interface Literal extends BaseNode {
+export interface BasicLiteral extends BaseNode {
   tag: 'literal'
   value: LiteralType
 }
 
 export interface FunctionLiteral extends BaseNode {
   tag: 'funcLit'
-  sig: AstNode
-  body: AstNode
+  sig: Signature
+  body: Block
 }
 
 export interface Identifier extends BaseNode {
@@ -38,37 +49,38 @@ export interface QualifiedIdentifier extends BaseNode {
 export interface LogicalExpression extends BaseNode {
   tag: 'log'
   sym: string
-  frst: AstNode
-  scnd: AstNode
+  frst: Expression
+  scnd: Expression
 }
 
 export interface BinaryOperatorExpression extends BaseNode {
   tag: 'binop'
   sym: string
-  frst: AstNode
-  scnd: AstNode
+  frst: Expression
+  scnd: Expression
 }
 
 export interface UnaryExpression extends BaseNode {
   tag: 'unop'
   sym: string
-  expr: AstNode
+  expr: Expression
 }
 
 export interface PrimaryExprArgument extends BaseNode {
   tag: 'primArg'
-  expr: AstNode
-  args: AstNode[]
+  expr: PrimaryExpr
+  args: Expression[]
 }
 
 export interface PrimaryExprSelector extends BaseNode {
   tag: 'primSel'
+  sel: PrimaryExpr
   ident: string
 }
 
 export interface MethodExpression extends BaseNode {
   tag: 'meth'
-  recv: AstNode
+  recv: Type
   ident: string
 }
 
@@ -79,12 +91,12 @@ export interface Arguments extends BaseNode {
 
 export interface Sequence extends BaseNode {
   tag: 'seq'
-  stmts: AstNode[]
+  stmts: SimpleStatement[]
 }
 
 export interface Block extends BaseNode {
   tag: 'block'
-  body: AstNode
+  body: Sequence
 }
 
 export interface VariableDeclaration extends BaseNode {
@@ -106,14 +118,24 @@ export interface SendStatement extends BaseNode {
 
 export interface Assignment extends BaseNode {
   tag: 'assmt'
-  syms: AstNode[]
-  exprs: AstNode[]
+  syms: Expression[]
+  exprs: Expression[]
 }
 
 export interface ShortValDecl extends BaseNode {
   tag: 'shortValDecl'
   syms: string[]
-  exprs: AstNode[]
+  exprs: Expression[]
+}
+
+export interface ExpressionStatement extends BaseNode {
+  tag: 'expStmt'
+  exp: Expression
+}
+
+export interface ParenExpression extends BaseNode {
+  tag: 'parenExp'
+  exp: Expression
 }
 
 export interface ConditionalExpression extends BaseNode {
@@ -133,25 +155,20 @@ export interface ConditionalStatement extends BaseNode {
 export interface FunctionDeclaration extends BaseNode {
   tag: 'func'
   sym: string
-  sig: AstNode
-  body: AstNode
+  sig: Signature
+  body: Block
 }
 
 export interface Signature extends BaseNode {
   tag: 'sig'
-  parameters: AstNode
-  result: AstNode | null
-}
-
-export interface Parameters extends BaseNode {
-  tag: 'params'
-  list: AstNode[]
+  parameters: ParameterDeclaration[]
+  result?: Type
 }
 
 export interface ParameterDeclaration extends BaseNode {
   tag: 'param'
   syms: string[]
-  type: AstNode
+  type: Type
 }
 
 export interface ReturnStatement extends BaseNode {
@@ -190,7 +207,7 @@ export interface GoStatement extends BaseNode {
 
 export interface Type extends BaseNode {
   tag: 'type'
-  type: AstNode
+  type: TypeName
 }
 
 export interface TypeName extends BaseNode {
