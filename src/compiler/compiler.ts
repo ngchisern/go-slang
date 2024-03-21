@@ -14,7 +14,7 @@ import {
   SourceFile,
   ExpressionStatement,
   BinaryOperatorExpression
-} from '../parser/astNode'
+} from '../../ common/astNode'
 
 let wc: number
 // TODO make instr types
