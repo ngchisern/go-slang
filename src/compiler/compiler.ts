@@ -15,10 +15,10 @@ import {
   ExpressionStatement,
   BinaryOperatorExpression
 } from '../common/astNode'
+import { Instruction, Goto } from '../common/instruction'
 
 let wc: number
-// TODO make instr types
-let instrs: any[]
+let instrs: Instruction[]
 
 const scan = (comp: AstNode): string[] =>
   comp.tag === 'seq'
@@ -61,6 +61,7 @@ const compile_comp: { [type: string]: (comp: AstNode) => void } = {
     // TODO not sure if Go scans declarations as per JS
     const locals = scan(comp.body)
     instrs[wc++] = { tag: 'ENTER_SCOPE', syms: locals }
+
     compile(comp.body)
     instrs[wc++] = { tag: 'EXIT_SCOPE' }
   },
@@ -89,7 +90,7 @@ const compile_comp: { [type: string]: (comp: AstNode) => void } = {
   funcLit: (comp: FunctionLiteral) => {
     instrs[wc++] = { tag: 'LDF', prms: comp.sig.parameters, addr: wc + 1 }
     // addr: -1 is dummy value.
-    const goto_instruction = { tag: 'GOTO', addr: -1 }
+    const goto_instruction: Goto = { tag: 'GOTO', addr: -1 }
     instrs[wc++] = goto_instruction
     compile(comp.body)
     // Functions that do not have a return value returns undefined.
