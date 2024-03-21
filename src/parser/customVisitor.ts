@@ -33,7 +33,7 @@ import {
   VariableSpecification,
   Literal,
   SimpleStatement
-} from '../../ common/astNode'
+} from '../common/astNode'
 
 import { SourceFileContext } from '../lang/GoParser'
 import { PackageClauseContext } from '../lang/GoParser'
