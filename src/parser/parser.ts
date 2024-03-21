@@ -3,6 +3,7 @@ import GoParser from '../lang/GoParser'
 import GoLexer from '../lang/GoLexer'
 import { CustomVisitor } from './customVisitor'
 import { SourceFile } from './astNode'
+import { CustomErrorListener } from './CustomErrorListener'
 
 export function parseGoCode(source: string): SourceFile {
   const charStream = new CharStream(source)
@@ -11,7 +12,17 @@ export function parseGoCode(source: string): SourceFile {
   const parser = new GoParser(tokenStream)
   parser.buildParseTrees = true
 
-  let tree = parser.sourceFile()
+  parser.removeErrorListeners()
+  parser.addErrorListener(new CustomErrorListener())
+
+  let tree
+  try {
+    tree = parser.sourceFile()
+  } catch (e) {
+    console.error(e.message)
+    process.exit(1)
+  }
+
   const visitor = new CustomVisitor()
   const program = visitor.visitSourceFile(tree)
 
