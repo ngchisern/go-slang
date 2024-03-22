@@ -1,6 +1,5 @@
-import { Expression, ParameterDeclaration } from './astNode'
+import { Expression, LiteralType, ParameterDeclaration } from './astNode'
 
-type LiteralType = string | number | boolean | undefined
 type AssignSymbol = string | Expression
 export type Instruction =
   | Done
@@ -44,7 +43,7 @@ export interface Pop extends InstructionBase {
 
 export interface Ldc extends InstructionBase {
   tag: 'LDC'
-  val: LiteralType
+  val: LiteralType | undefined
 }
 
 export interface Ldf extends InstructionBase {

@@ -1,7 +1,7 @@
 // Type definitions for the AST nodes
-type LiteralType = string | number | boolean
 type Declaration = FunctionDeclaration | VariableDeclaration
 
+export type LiteralType = string | number | boolean
 export type SimpleStatement = ShortValDecl | Assignment | ExpressionStatement
 export type Expression =
   | PrimaryExpr
