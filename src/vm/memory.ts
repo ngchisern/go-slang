@@ -84,7 +84,7 @@ export const is_Null = (address: number) => heap_get_tag(address) === Null_tag
 export const Unassigned = heap_allocate(Unassigned_tag, 1)
 export const is_Unassigned = (address: number) => heap_get_tag(address) === Unassigned_tag
 
-const Undefined = heap_allocate(Undefined_tag, 1)
+export const Undefined = heap_allocate(Undefined_tag, 1)
 export const is_Undefined = (address: number) => heap_get_tag(address) === Undefined_tag
 
 // builtins: builtin id is encoded in second byte
@@ -170,7 +170,7 @@ export const heap_allocate_Frame = (number_of_values: number) =>
 //  2 bytes #children, 1 byte unused]
 // followed by the addresses of its frames
 
-const heap_allocate_Environment = (number_of_frames: number) =>
+export const heap_allocate_Environment = (number_of_frames: number) =>
   heap_allocate(Environment_tag, number_of_frames + 1)
 
 const heap_empty_Environment = heap_allocate_Environment(0)
@@ -232,7 +232,7 @@ export const is_Pair = (address: number) => heap_get_tag(address) === Pair_tag
 // followed by the number, one word
 // note: #children is 0
 
-const heap_allocate_Number = (n: number) => {
+export const heap_allocate_Number = (n: number) => {
   const number_address = heap_allocate(Number_tag, 2)
   heap_set(number_address + 1, n)
   return number_address
@@ -267,7 +267,7 @@ export const address_to_JS_value = (x: number): any =>
                 ? '<closure>'
                 : is_Builtin(x)
                   ? '<builtin>'
-                  : 'unknown word tag during address to JS value conversion:'
+                  : error('unknown word tag during address to JS value conversion:')
 
 export const JS_value_to_address = (x: any): any =>
   is_boolean(x)
@@ -282,7 +282,7 @@ export const JS_value_to_address = (x: any): any =>
           ? Null
           : is_pair(x)
             ? heap_allocate_Pair(JS_value_to_address(head(x)), JS_value_to_address(tail(x)))
-            : 'unknown JS value during JS value to address conversion:'
+            : error('unknown JS value during JS value to address conversion:')
 
 const is_boolean = (x: any) => typeof x === 'boolean'
 
@@ -380,7 +380,7 @@ export const builtin_array: Array<any> = []
     primitive_object[key] = {
       tag: 'BUILTIN',
       id: i,
-      arity: 0 // all builtins take 0 arguments
+      arity: 1 // all builtins take 0 arguments
     }
     builtin_array[i++] = builtin_object[key]
   }

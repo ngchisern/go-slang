@@ -19,15 +19,19 @@ import {
   JS_value_to_address,
   True,
   Unassigned,
+  Undefined,
   address_to_JS_value,
   binop_microcode,
   builtin_array,
   builtin_object,
   heap_Environment_extend,
   heap_allocate_Blockframe,
+  heap_allocate_Builtin,
   heap_allocate_Callframe,
   heap_allocate_Closure,
+  heap_allocate_Environment,
   heap_allocate_Frame,
+  heap_allocate_Number,
   heap_allocate_Pair,
   heap_get_Blockframe_environment,
   heap_get_Builtin_id,
@@ -47,7 +51,8 @@ import {
   is_Number,
   is_Pair,
   is_Unassigned,
-  is_Undefined
+  is_Undefined,
+  primitive_object
 } from './memory'
 
 /* **************************
@@ -61,10 +66,34 @@ let PC: number
 
 let instrs: Instruction[]
 
+// creating global runtime environment
+const primitive_values = Object.values(primitive_object);
+const frame_address = heap_allocate_Frame(primitive_values.length);
+for (let i = 0; i < primitive_values.length; i++) {
+	const primitive_value = primitive_values[i];
+	if (
+		typeof primitive_value === "object" &&
+		primitive_value.hasOwnProperty("id")
+	) {
+		heap_set_child(frame_address, i, heap_allocate_Builtin(primitive_value.id));
+	} else if (typeof primitive_value === "undefined") {
+		heap_set_child(frame_address, i, Undefined);
+	} else {
+		error("constant value not supported");
+	}
+}
+
+const heap_empty_Environment = heap_allocate_Environment(0);
+
+const global_environment = heap_Environment_extend(
+	frame_address,
+	heap_empty_Environment,
+);
+
 export const run = (vm_instrs: Instruction[]) => {
   OS = []
   RTS = []
-  E = 0 // TOD: make global environment
+  E = global_environment
   PC = 0
 
   instrs = vm_instrs
