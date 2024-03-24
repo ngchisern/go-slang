@@ -67,28 +67,22 @@ let PC: number
 let instrs: Instruction[]
 
 // creating global runtime environment
-const primitive_values = Object.values(primitive_object);
-const frame_address = heap_allocate_Frame(primitive_values.length);
+const primitive_values = Object.values(primitive_object)
+const frame_address = heap_allocate_Frame(primitive_values.length)
 for (let i = 0; i < primitive_values.length; i++) {
-	const primitive_value = primitive_values[i];
-	if (
-		typeof primitive_value === "object" &&
-		primitive_value.hasOwnProperty("id")
-	) {
-		heap_set_child(frame_address, i, heap_allocate_Builtin(primitive_value.id));
-	} else if (typeof primitive_value === "undefined") {
-		heap_set_child(frame_address, i, Undefined);
-	} else {
-		error("constant value not supported");
-	}
+  const primitive_value = primitive_values[i]
+  if (typeof primitive_value === 'object' && primitive_value.hasOwnProperty('id')) {
+    heap_set_child(frame_address, i, heap_allocate_Builtin(primitive_value.id))
+  } else if (typeof primitive_value === 'undefined') {
+    heap_set_child(frame_address, i, Undefined)
+  } else {
+    error('constant value not supported')
+  }
 }
 
-const heap_empty_Environment = heap_allocate_Environment(0);
+const heap_empty_Environment = heap_allocate_Environment(0)
 
-const global_environment = heap_Environment_extend(
-	frame_address,
-	heap_empty_Environment,
-);
+const global_environment = heap_Environment_extend(frame_address, heap_empty_Environment)
 
 export const run = (vm_instrs: Instruction[]) => {
   OS = []
