@@ -1,4 +1,4 @@
-import { compielGoCode } from './compiler/compiler'
+import { compileGoCode } from './compiler/compiler'
 import { parseGoCode } from './parser/parser'
 
 const code = `
@@ -14,5 +14,5 @@ func main() {
 `
 
 const ast = parseGoCode(code)
-const instrs = compielGoCode(ast)
+const instrs = compileGoCode(ast)
 instrs.forEach((v, i) => console.log(`${i}:`, v))

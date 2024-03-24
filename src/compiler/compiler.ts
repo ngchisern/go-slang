@@ -27,7 +27,7 @@ const scan = (comp: AstNode): string[] =>
       ? [(comp as ShortValDecl).syms[0]]
       : []
 
-export const compielGoCode = (ast: AstNode) => {
+export const compileGoCode = (ast: AstNode) => {
   wc = 0
   instrs = []
   compile(ast)
