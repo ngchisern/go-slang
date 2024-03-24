@@ -1,6 +1,8 @@
 import { Expression, LiteralType, ParameterDeclaration } from './astNode'
 
-type AssignSymbol = string | Expression
+export type AssignSymbol = string | Expression
+export type LcdType = LiteralType | undefined
+
 export type Instruction =
   | Done
   | EnterScope
@@ -34,7 +36,7 @@ export interface ExitScope extends InstructionBase {
 
 export interface Assign extends InstructionBase {
   tag: 'ASSIGN'
-  sym: AssignSymbol
+  pos: [number, number]
 }
 
 export interface Pop extends InstructionBase {
@@ -43,7 +45,7 @@ export interface Pop extends InstructionBase {
 
 export interface Ldc extends InstructionBase {
   tag: 'LDC'
-  val: LiteralType | undefined
+  val: LcdType
 }
 
 export interface Ldf extends InstructionBase {
@@ -69,6 +71,7 @@ export interface Call extends InstructionBase {
 export interface Ld extends InstructionBase {
   tag: 'LD'
   sym: string
+  pos: [number, number]
 }
 
 export interface Binop extends InstructionBase {
