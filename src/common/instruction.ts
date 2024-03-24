@@ -1,6 +1,5 @@
 import { Expression, LiteralType, ParameterDeclaration } from './astNode'
 
-export type AssignSymbol = string | Expression
 export type LcdType = LiteralType | undefined
 
 export type Instruction =

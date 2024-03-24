@@ -13,7 +13,8 @@ import {
   ShortValDecl,
   SourceFile,
   ExpressionStatement,
-  BinaryOperatorExpression
+  BinaryOperatorExpression,
+  VariableDeclaration
 } from '../common/astNode'
 import { Instruction, Goto } from '../common/instruction'
 import { compile_time_environment_position, primitive_object } from '../vm/memory'
@@ -52,7 +53,12 @@ const compile = (comp: AstNode, ce: string[][]) => {
 
 const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } = {
   src: (comp: SourceFile, ce: string[][]) => {
-    comp.decls.map(decl => compile(decl, ce))
+    const names = comp.decls.map(decl =>
+      decl.tag === 'func' ? (decl as FunctionDeclaration).sym : 'not supported'
+    )
+    const new_env = compile_time_environment_extend(names, ce)
+
+    comp.decls.map(decl => compile(decl, new_env))
     compile(
       {
         tag: 'expStmt',
@@ -65,7 +71,7 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
           args: []
         } as PrimaryExprArgument
       } as ExpressionStatement,
-      ce
+      new_env
     )
   },
 
@@ -91,7 +97,7 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
 
   assmt: (comp: Assignment, ce: string[][]) => {
     compile(comp.exprs[0], ce)
-    instrs[wc++] = { tag: 'ASSIGN', pos: compile_time_environment_position(ce, comp.syms[0]) }
+    instrs[wc++] = { tag: 'ASSIGN', pos: compile_time_environment_position(ce, comp.syms[0].name) }
     instrs[wc++] = { tag: 'POP' }
   },
 

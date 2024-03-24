@@ -1,6 +1,4 @@
 import { error } from 'console'
-import { Expression } from '../common/astNode'
-import { AssignSymbol } from '../common/instruction'
 
 const word_size = 8
 const mega = 2 ** 20
@@ -311,16 +309,13 @@ const tail = (x: any) => x[1]
 // find the position [frame-index, value-index]
 // of a given symbol x
 // TODO: Change the type of x to string
-export const compile_time_environment_position = (
-  env: string[][],
-  x: AssignSymbol
-): [number, number] => {
+export const compile_time_environment_position = (env: string[][], x: string): [number, number] => {
   let frame_index = env.length
   while (value_index(env[--frame_index], x) === -1) {}
   return [frame_index, value_index(env[frame_index], x)]
 }
 
-const value_index = (frame: string[], x: AssignSymbol) => {
+const value_index = (frame: string[], x: string) => {
   for (let i = 0; i < frame.length; i++) {
     if (frame[i] === x) return i
   }
@@ -336,6 +331,11 @@ const value_index = (frame: string[], x: AssignSymbol) => {
 // argument array
 export const builtin_object: { [key: string]: (OS: Array<any>) => any } = {
   display: OS => {
+    const address = OS.pop()
+    console.log(address_to_JS_value(address))
+    return address
+  },
+  'fmt.Println': OS => {
     const address = OS.pop()
     console.log(address_to_JS_value(address))
     return address
