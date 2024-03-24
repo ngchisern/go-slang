@@ -311,7 +311,10 @@ const tail = (x: any) => x[1]
 // find the position [frame-index, value-index]
 // of a given symbol x
 // TODO: Change the type of x to string
-export const compile_time_environment_position = (env: string[][], x: AssignSymbol): [number, number] => {
+export const compile_time_environment_position = (
+  env: string[][],
+  x: AssignSymbol
+): [number, number] => {
   let frame_index = env.length
   while (value_index(env[--frame_index], x) === -1) {}
   return [frame_index, value_index(env[frame_index], x)]
@@ -400,4 +403,3 @@ export const binop_microcode: { [key: string]: (x: number, y: number) => any } =
   '===': (x: number, y: number) => x === y,
   '!==': (x: number, y: number) => x !== y
 }
-

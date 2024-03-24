@@ -24,8 +24,7 @@ const global_compile_environment = [global_compile_frame]
 
 const compile_time_environment_extend = (vs: string[], e: string[][]) => {
   return e.concat([vs])
-};
-
+}
 
 let wc: number
 let instrs: Instruction[]
@@ -54,17 +53,20 @@ const compile = (comp: AstNode, ce: string[][]) => {
 const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } = {
   src: (comp: SourceFile, ce: string[][]) => {
     comp.decls.map(decl => compile(decl, ce))
-    compile({
-      tag: 'expStmt',
-      exp: {
-        tag: 'primArg',
-        expr: {
-          tag: 'meth',
-          ident: 'main'
-        } as MethodExpression,
-        args: []
-      } as PrimaryExprArgument
-    } as ExpressionStatement, ce)
+    compile(
+      {
+        tag: 'expStmt',
+        exp: {
+          tag: 'primArg',
+          expr: {
+            tag: 'meth',
+            ident: 'main'
+          } as MethodExpression,
+          args: []
+        } as PrimaryExprArgument
+      } as ExpressionStatement,
+      ce
+    )
   },
 
   block: (comp: Block, ce: string[][]) => {
@@ -112,21 +114,24 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
 
   func: (comp: FunctionDeclaration, ce: string[][]) => {
     // Transform FunctionDeclaration to ShortValDecl.
-    compile({
-      tag: 'shortValDecl',
-      syms: [comp.sym],
-      exprs: [
-        {
-          tag: 'funcLit',
-          sig: {
-            tag: 'sig',
-            parameters: comp.sig.parameters,
-            result: comp.sig.result
-          },
-          body: comp.body
-        }
-      ]
-    } as ShortValDecl, ce)
+    compile(
+      {
+        tag: 'shortValDecl',
+        syms: [comp.sym],
+        exprs: [
+          {
+            tag: 'funcLit',
+            sig: {
+              tag: 'sig',
+              parameters: comp.sig.parameters,
+              result: comp.sig.result
+            },
+            body: comp.body
+          }
+        ]
+      } as ShortValDecl,
+      ce
+    )
   },
 
   primArg: (comp: PrimaryExprArgument, ce: string[][]) => {
@@ -136,17 +141,29 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
   },
 
   meth: (comp: MethodExpression, ce: string[][]) => {
-    instrs[wc++] = { tag: 'LD', sym: comp.ident, pos: compile_time_environment_position(ce, comp.ident) }
+    instrs[wc++] = {
+      tag: 'LD',
+      sym: comp.ident,
+      pos: compile_time_environment_position(ce, comp.ident)
+    }
   },
 
   primSel: (comp: PrimaryExprSelector, ce: string[][]) => {
     // TODO better way to get sel?
     const sel = comp.sel.tag === 'ident' ? comp.sel.name : (comp.sel as MethodExpression).ident
-    instrs[wc++] = { tag: 'LD', sym: `${sel}.${comp.ident}`, pos: compile_time_environment_position(ce, `${sel}.${comp.ident}`)}
+    instrs[wc++] = {
+      tag: 'LD',
+      sym: `${sel}.${comp.ident}`,
+      pos: compile_time_environment_position(ce, `${sel}.${comp.ident}`)
+    }
   },
 
   ident: (comp: Identifier, ce: string[][]) => {
-    instrs[wc++] = { tag: 'LD', sym: comp.name, pos: compile_time_environment_position(ce, comp.name) }
+    instrs[wc++] = {
+      tag: 'LD',
+      sym: comp.name,
+      pos: compile_time_environment_position(ce, comp.name)
+    }
   },
 
   expStmt: (comp: ExpressionStatement, ce: string[][]) => {
