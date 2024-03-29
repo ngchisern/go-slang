@@ -13,9 +13,10 @@ import {
   ShortValDecl,
   SourceFile,
   ExpressionStatement,
-  BinaryOperatorExpression
+  BinaryOperatorExpression,
+  GoStatement,
 } from '../common/astNode'
-import { Instruction, Goto } from '../common/instruction'
+import { Instruction, Goto, Call } from '../common/instruction'
 
 let wc: number
 let instrs: Instruction[]
@@ -122,6 +123,11 @@ const compile_comp: { [type: string]: (comp: AstNode) => void } = {
     compile(comp.expr)
     comp.args.forEach(arg => compile(arg))
     instrs[wc++] = { tag: 'CALL', arity: comp.args.length }
+  },
+
+  go: (comp: GoStatement) => {
+    compile(comp.expr)
+    instrs[wc - 1] = { tag: 'GO', arity: (instrs[wc - 1] as Call).arity }
   },
 
   meth: (comp: MethodExpression) => {

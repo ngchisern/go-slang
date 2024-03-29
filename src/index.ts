@@ -6,10 +6,14 @@ package main
 
 import "fmt"
 
-func main() {
+func hello() {
   x := "Hello, World";
   x = x + "!";
   fmt.Println(x);
+}
+
+func main() {
+  go hello();
 }
 `
 

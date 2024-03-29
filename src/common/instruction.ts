@@ -12,6 +12,7 @@ export type Instruction =
   | Goto
   | Reset
   | Call
+  | Go
   | Ld
   | Binop
 
@@ -63,6 +64,11 @@ export interface Reset extends InstructionBase {
 
 export interface Call extends InstructionBase {
   tag: 'CALL'
+  arity: number
+}
+
+export interface Go extends InstructionBase {
+  tag: 'GO'
   arity: number
 }
 

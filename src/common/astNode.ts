@@ -2,6 +2,7 @@
 type Declaration = FunctionDeclaration | VariableDeclaration
 
 export type LiteralType = string | number | boolean
+export type Statement = SimpleStatement | GoStatement
 export type SimpleStatement = ShortValDecl | Assignment | ExpressionStatement
 export type Expression =
   | PrimaryExpr
@@ -91,7 +92,7 @@ export interface Arguments extends BaseNode {
 
 export interface Sequence extends BaseNode {
   tag: 'seq'
-  stmts: SimpleStatement[]
+  stmts: Statement[]
 }
 
 export interface Block extends BaseNode {
@@ -202,7 +203,7 @@ export interface ForClause extends BaseNode {
 
 export interface GoStatement extends BaseNode {
   tag: 'go'
-  expr: AstNode
+  expr: Expression
 }
 
 export interface Type extends BaseNode {

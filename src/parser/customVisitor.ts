@@ -32,7 +32,8 @@ import {
   VariableDeclaration,
   VariableSpecification,
   Literal,
-  SimpleStatement
+  SimpleStatement,
+  Statement,
 } from '../common/astNode'
 
 import { SourceFileContext } from '../lang/GoParser'
@@ -195,14 +196,14 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
     }
   }
 
-  visitStatement: (ctx: StatementContext) => SimpleStatement = ctx => {
+  visitStatement: (ctx: StatementContext) => Statement = ctx => {
     if (ctx.simpleStmt()) {
       return this.visitSimpleStmt(ctx.simpleStmt())
+    } else if (ctx.goStmt()) {
+      return this.visitGoStmt(ctx.goStmt());
       // TODO update ltr when supporting these constructs
       // } else if (ctx.varDecl()) {
       //   return ctx.varDecl().accept(this);
-      // } else if (ctx.goStmt()) {
-      //   return ctx.goStmt().accept(this);
       // } else if (ctx.returnStmt()) {
       //   return ctx.returnStmt().accept(this);
       // } else if (ctx.block()) {
@@ -344,7 +345,7 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
   visitGoStmt: (ctx: GoStmtContext) => GoStatement = ctx => {
     return {
       tag: 'go',
-      expr: ctx.expression().accept(this)
+      expr: this.visitExpression(ctx.expression())
     }
   }
 
@@ -440,14 +441,13 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
         ident: ctx.IDENTIFIER().symbol.text
       }
     } else if (ctx.arguments()) {
+      const args = ctx.arguments().expressionList()
+        ? ctx.arguments().expressionList().expression_list().map(arg => this.visitExpression(arg))
+        : [];
       return {
         tag: 'primArg',
         expr: this.visitPrimaryExpr(ctx.primaryExpr()),
-        args: ctx
-          .arguments()
-          .expressionList()
-          .expression_list()
-          .map(arg => this.visitExpression(arg))
+        args
       }
     } else {
       throw new Error('Unknown primary expression type')
