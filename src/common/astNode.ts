@@ -2,7 +2,8 @@
 type Declaration = FunctionDeclaration | VariableDeclaration
 
 export type LiteralType = string | number | boolean
-export type SimpleStatement = ShortValDecl | Assignment | ExpressionStatement
+export type Statement = SimpleStatement | GoStatement | VariableDeclaration
+export type SimpleStatement = ShortVarDecl | Assignment | ExpressionStatement | SendStatement
 export type Expression =
   | PrimaryExpr
   | UnaryExpression
@@ -40,12 +41,6 @@ export interface Identifier extends BaseNode {
   name: string
 }
 
-export interface QualifiedIdentifier extends BaseNode {
-  tag: 'qualIdent'
-  pkg: string
-  ident: string
-}
-
 export interface LogicalExpression extends BaseNode {
   tag: 'log'
   sym: string
@@ -69,7 +64,7 @@ export interface UnaryExpression extends BaseNode {
 export interface PrimaryExprArgument extends BaseNode {
   tag: 'primArg'
   expr: PrimaryExpr
-  args: Expression[]
+  args: (Expression | Type)[]
 }
 
 export interface PrimaryExprSelector extends BaseNode {
@@ -84,14 +79,9 @@ export interface MethodExpression extends BaseNode {
   ident: string
 }
 
-export interface Arguments extends BaseNode {
-  tag: 'args'
-  list: AstNode[]
-}
-
 export interface Sequence extends BaseNode {
   tag: 'seq'
-  stmts: SimpleStatement[]
+  stmts: Statement[]
 }
 
 export interface Block extends BaseNode {
@@ -101,19 +91,20 @@ export interface Block extends BaseNode {
 
 export interface VariableDeclaration extends BaseNode {
   tag: 'varDecl'
-  specs: AstNode[]
+  specs: VariableSpecification[]
 }
 
 export interface VariableSpecification extends BaseNode {
   tag: 'varSpec'
   syms: string[]
-  exprs: AstNode[]
+  exprs: Expression[]
+  type: Type
 }
 
 export interface SendStatement extends BaseNode {
   tag: 'send'
-  chan: AstNode
-  msg: AstNode
+  chan: Identifier
+  msg: Expression
 }
 
 export interface Assignment extends BaseNode {
@@ -122,8 +113,8 @@ export interface Assignment extends BaseNode {
   exprs: Expression[]
 }
 
-export interface ShortValDecl extends BaseNode {
-  tag: 'shortValDecl'
+export interface ShortVarDecl extends BaseNode {
+  tag: 'shortVarDecl'
   syms: string[]
   exprs: Expression[]
 }
@@ -202,12 +193,12 @@ export interface ForClause extends BaseNode {
 
 export interface GoStatement extends BaseNode {
   tag: 'go'
-  expr: AstNode
+  expr: Expression
 }
 
 export interface Type extends BaseNode {
   tag: 'type'
-  type: TypeName
+  type: TypeName | ChannelType
 }
 
 export interface TypeName extends BaseNode {
@@ -217,7 +208,7 @@ export interface TypeName extends BaseNode {
 
 export interface ChannelType extends BaseNode {
   tag: 'chanType'
-  elem: AstNode
+  elem: Type
 }
 
 export type AstNode = BaseNode

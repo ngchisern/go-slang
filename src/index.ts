@@ -7,9 +7,22 @@ package main
 
 import "fmt"
 
+// func minus(c chan string, wg sync.waitGroup) {
+//   x := 42
+//   y := <-c
+//   x = x - y
+//   fmt.Println(x)
+//   wg.Done()
+// }
+
 func main() {
-  // x := "Hello, World";
-  // x = x + "!";
+  // c := make(chan int)
+  // var wg sync.waitGroup
+  // wg.Add(1)
+  // go minus(c, wg)
+  // c <- 21
+  // close(c)
+  // wg.Wait()
   x := 42;
   x = x - 21;
   fmt.Println(x);
