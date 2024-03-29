@@ -109,7 +109,7 @@ export interface SendStatement extends BaseNode {
 
 export interface Assignment extends BaseNode {
   tag: 'assmt'
-  syms: Expression[]
+  syms: Identifier[]
   exprs: Expression[]
 }
 

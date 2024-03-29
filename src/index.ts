@@ -1,30 +1,35 @@
-import { compielGoCode } from './compiler/compiler'
+import { compileGoCode } from './compiler/compiler'
 import { parseGoCode } from './parser/parser'
+import { run } from './vm/run'
 
 const code = `
 package main
 
 import "fmt"
 
-func hello(c chan string, wg sync.waitGroup) {
-  x := "Hello, ";
-  world := <-c
-  x = x + world;
-  fmt.Println(x);
-  wg.Done()
-}
+// func minus(c chan string, wg sync.waitGroup) {
+//   x := 42
+//   y := <-c
+//   x = x - y
+//   fmt.Println(x)
+//   wg.Done()
+// }
 
 func main() {
-  c := make(chan string)
-  var wg sync.waitGroup
-  wg.Add(1)
-  go hello(c, wg)
-  c <- "World"
-  close(c)
-  wg.Wait()
+  // c := make(chan int)
+  // var wg sync.waitGroup
+  // wg.Add(1)
+  // go minus(c, wg)
+  // c <- 21
+  // close(c)
+  // wg.Wait()
+  x := 42;
+  x = x - 21;
+  fmt.Println(x);
 }
 `
 
 const ast = parseGoCode(code)
-const instrs = compielGoCode(ast)
-instrs.forEach((v, i) => console.log(`${i}:`, v))
+const instrs = compileGoCode(ast)
+// instrs.forEach((v, i) => console.log(`${i}:`, v))
+run(instrs)
