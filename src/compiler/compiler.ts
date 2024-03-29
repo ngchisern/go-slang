@@ -13,9 +13,19 @@ import {
   ShortValDecl,
   SourceFile,
   ExpressionStatement,
-  BinaryOperatorExpression
+  BinaryOperatorExpression,
+  VariableDeclaration
 } from '../common/astNode'
 import { Instruction, Goto } from '../common/instruction'
+import { compile_time_environment_position, primitive_object } from '../vm/memory'
+
+// compile-time frames only need synbols (keys), no values
+const global_compile_frame = Object.keys(primitive_object)
+const global_compile_environment = [global_compile_frame]
+
+const compile_time_environment_extend = (vs: string[], e: string[][]) => {
+  return e.concat([vs])
+}
 
 let wc: number
 let instrs: Instruction[]
@@ -27,125 +37,146 @@ const scan = (comp: AstNode): string[] =>
       ? [(comp as ShortValDecl).syms[0]]
       : []
 
-export const compielGoCode = (ast: AstNode) => {
+export const compileGoCode = (ast: AstNode) => {
   wc = 0
   instrs = []
-  compile(ast)
+  compile(ast, global_compile_environment)
   return instrs
 }
 
-const compile = (comp: AstNode) => {
+const compile = (comp: AstNode, ce: string[][]) => {
   // For debugging.
   // console.log("compiling", comp.tag)
-  compile_comp[comp.tag](comp)
+  compile_comp[comp.tag](comp, ce)
   instrs[wc] = { tag: 'DONE' }
 }
 
-const compile_comp: { [type: string]: (comp: AstNode) => void } = {
-  src: (comp: SourceFile) => {
-    comp.decls.map(decl => compile(decl))
-    compile({
-      tag: 'expStmt',
-      exp: {
-        tag: 'primArg',
-        expr: {
-          tag: 'meth',
-          ident: 'main'
-        } as MethodExpression,
-        args: []
-      } as PrimaryExprArgument
-    } as ExpressionStatement)
+const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } = {
+  src: (comp: SourceFile, ce: string[][]) => {
+    const names = comp.decls.map(decl =>
+      decl.tag === 'func' ? (decl as FunctionDeclaration).sym : 'not supported'
+    )
+    const new_env = compile_time_environment_extend(names, ce)
+
+    comp.decls.map(decl => compile(decl, new_env))
+    compile(
+      {
+        tag: 'expStmt',
+        exp: {
+          tag: 'primArg',
+          expr: {
+            tag: 'meth',
+            ident: 'main'
+          } as MethodExpression,
+          args: []
+        } as PrimaryExprArgument
+      } as ExpressionStatement,
+      new_env
+    )
   },
 
-  block: (comp: Block) => {
+  block: (comp: Block, ce: string[][]) => {
     // TODO not sure if Go scans declarations as per JS
     const locals = scan(comp.body)
     instrs[wc++] = { tag: 'ENTER_SCOPE', syms: locals }
 
-    compile(comp.body)
+    compile(comp.body, compile_time_environment_extend(locals, ce))
     instrs[wc++] = { tag: 'EXIT_SCOPE' }
   },
 
-  seq: (comp: Sequence) => {
+  seq: (comp: Sequence, ce: string[][]) => {
     // Value producing stmts are responsible for popping their unused value.
-    comp.stmts.forEach(stmt => compile(stmt))
+    comp.stmts.forEach(stmt => compile(stmt, ce))
   },
 
-  shortValDecl: (comp: ShortValDecl) => {
-    compile(comp.exprs[0])
-    instrs[wc++] = { tag: 'ASSIGN', sym: comp.syms[0] }
+  shortValDecl: (comp: ShortValDecl, ce: string[][]) => {
+    compile(comp.exprs[0], ce)
+    instrs[wc++] = { tag: 'ASSIGN', pos: compile_time_environment_position(ce, comp.syms[0]) }
     instrs[wc++] = { tag: 'POP' }
   },
 
-  assmt: (comp: Assignment) => {
-    compile(comp.exprs[0])
-    instrs[wc++] = { tag: 'ASSIGN', sym: comp.syms[0] }
+  assmt: (comp: Assignment, ce: string[][]) => {
+    compile(comp.exprs[0], ce)
+    instrs[wc++] = { tag: 'ASSIGN', pos: compile_time_environment_position(ce, comp.syms[0].name) }
     instrs[wc++] = { tag: 'POP' }
   },
 
-  literal: (comp: BasicLiteral) => {
+  literal: (comp: BasicLiteral, ce: string[][]) => {
     instrs[wc++] = { tag: 'LDC', val: comp.value }
   },
 
-  funcLit: (comp: FunctionLiteral) => {
+  funcLit: (comp: FunctionLiteral, ce: string[][]) => {
     instrs[wc++] = { tag: 'LDF', prms: comp.sig.parameters, addr: wc + 1 }
     // addr: -1 is dummy value.
     const goto_instruction: Goto = { tag: 'GOTO', addr: -1 }
     instrs[wc++] = goto_instruction
-    compile(comp.body)
+    const parameters = comp.sig.parameters.map(p => p.syms).reduce((acc, x) => acc.concat(x), [])
+    compile(comp.body, compile_time_environment_extend(parameters, ce))
     // Functions that do not have a return value returns undefined.
     instrs[wc++] = { tag: 'LDC', val: undefined }
     instrs[wc++] = { tag: 'RESET' }
     goto_instruction.addr = wc
   },
 
-  func: (comp: FunctionDeclaration) => {
+  func: (comp: FunctionDeclaration, ce: string[][]) => {
     // Transform FunctionDeclaration to ShortValDecl.
-    compile({
-      tag: 'shortValDecl',
-      syms: [comp.sym],
-      exprs: [
-        {
-          tag: 'funcLit',
-          sig: {
-            tag: 'sig',
-            parameters: comp.sig.parameters,
-            result: comp.sig.result
-          },
-          body: comp.body
-        }
-      ]
-    } as ShortValDecl)
+    compile(
+      {
+        tag: 'shortValDecl',
+        syms: [comp.sym],
+        exprs: [
+          {
+            tag: 'funcLit',
+            sig: {
+              tag: 'sig',
+              parameters: comp.sig.parameters,
+              result: comp.sig.result
+            },
+            body: comp.body
+          }
+        ]
+      } as ShortValDecl,
+      ce
+    )
   },
 
-  primArg: (comp: PrimaryExprArgument) => {
-    compile(comp.expr)
-    comp.args.forEach(arg => compile(arg))
+  primArg: (comp: PrimaryExprArgument, ce: string[][]) => {
+    compile(comp.expr, ce)
+    comp.args.forEach(arg => compile(arg, ce))
     instrs[wc++] = { tag: 'CALL', arity: comp.args.length }
   },
 
-  meth: (comp: MethodExpression) => {
-    instrs[wc++] = { tag: 'LD', sym: comp.ident }
+  meth: (comp: MethodExpression, ce: string[][]) => {
+    instrs[wc++] = {
+      tag: 'LD',
+      pos: compile_time_environment_position(ce, comp.ident)
+    }
   },
 
-  primSel: (comp: PrimaryExprSelector) => {
+  primSel: (comp: PrimaryExprSelector, ce: string[][]) => {
     // TODO better way to get sel?
     const sel = comp.sel.tag === 'ident' ? comp.sel.name : (comp.sel as MethodExpression).ident
-    instrs[wc++] = { tag: 'LD', sym: `${sel}.${comp.ident}` }
+    instrs[wc++] = {
+      tag: 'LD',
+      pos: compile_time_environment_position(ce, `${sel}.${comp.ident}`)
+    }
   },
 
-  ident: (comp: Identifier) => {
-    instrs[wc++] = { tag: 'LD', sym: comp.name }
+  ident: (comp: Identifier, ce: string[][]) => {
+    instrs[wc++] = {
+      tag: 'LD',
+      pos: compile_time_environment_position(ce, comp.name)
+    }
   },
 
-  expStmt: (comp: ExpressionStatement) => {
-    compile(comp.exp)
+  expStmt: (comp: ExpressionStatement, ce: string[][]) => {
+    compile(comp.exp, ce)
     instrs[wc++] = { tag: 'POP' }
   },
 
-  binop: (comp: BinaryOperatorExpression) => {
-    compile(comp.frst)
-    compile(comp.scnd)
+  binop: (comp: BinaryOperatorExpression, ce: string[][]) => {
+    compile(comp.frst, ce)
+    compile(comp.scnd, ce)
     instrs[wc++] = { tag: 'BINOP', sym: comp.sym }
   }
 }

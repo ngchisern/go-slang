@@ -1,5 +1,6 @@
-import { compielGoCode } from './compiler/compiler'
+import { compileGoCode } from './compiler/compiler'
 import { parseGoCode } from './parser/parser'
+import { run } from './vm/run'
 
 const code = `
 package main
@@ -7,12 +8,15 @@ package main
 import "fmt"
 
 func main() {
-  x := "Hello, World";
-  x = x + "!";
+  // x := "Hello, World";
+  // x = x + "!";
+  x := 42;
+  x = x - 21;
   fmt.Println(x);
 }
 `
 
 const ast = parseGoCode(code)
-const instrs = compielGoCode(ast)
-instrs.forEach((v, i) => console.log(`${i}:`, v))
+const instrs = compileGoCode(ast)
+// instrs.forEach((v, i) => console.log(`${i}:`, v))
+run(instrs)

@@ -254,7 +254,7 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
     const syms = ctx
       .expressionList(0)
       .expression_list()
-      .map(exp => this.visitExpression(exp))
+      .map(exp => this.visitExpression(exp)) as Identifier[]
     const exprs = ctx
       .expressionList(1)
       .expression_list()
@@ -486,9 +486,10 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
       ctx.string_().RAW_STRING_LIT() ||
       ctx.string_().INTERPRETED_STRING_LIT()
     ).symbol.text
+
     return {
       tag: 'literal',
-      value: value
+      value: ctx.DECIMAL_LIT() ? Number(value) : value
     }
   }
 
