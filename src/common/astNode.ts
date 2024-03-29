@@ -3,7 +3,7 @@ type Declaration = FunctionDeclaration | VariableDeclaration
 
 export type LiteralType = string | number | boolean
 export type Statement = SimpleStatement | GoStatement | VariableDeclaration
-export type SimpleStatement = ShortValDecl | Assignment | ExpressionStatement | SendStatement
+export type SimpleStatement = ShortVarDecl | Assignment | ExpressionStatement | SendStatement
 export type Expression =
   | PrimaryExpr
   | UnaryExpression
@@ -113,8 +113,8 @@ export interface Assignment extends BaseNode {
   exprs: Expression[]
 }
 
-export interface ShortValDecl extends BaseNode {
-  tag: 'shortValDecl'
+export interface ShortVarDecl extends BaseNode {
+  tag: 'shortVarDecl'
   syms: string[]
   exprs: Expression[]
 }

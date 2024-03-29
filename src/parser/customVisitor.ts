@@ -22,7 +22,7 @@ import {
   ReturnStatement,
   SendStatement,
   Sequence,
-  ShortValDecl,
+  ShortVarDecl,
   Signature,
   SourceFile,
   Type,
@@ -264,7 +264,7 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
     }
   }
 
-  visitShortVarDecl: (ctx: ShortVarDeclContext) => ShortValDecl = ctx => {
+  visitShortVarDecl: (ctx: ShortVarDeclContext) => ShortVarDecl = ctx => {
     const syms = ctx
       .identifierList()
       .IDENTIFIER_list()
@@ -274,7 +274,7 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
       .expression_list()
       .map(exp => this.visitExpression(exp))
     return {
-      tag: 'shortValDecl',
+      tag: 'shortVarDecl',
       syms: syms,
       exprs: exprs
     }

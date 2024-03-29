@@ -10,7 +10,7 @@ import {
   PrimaryExprArgument,
   PrimaryExprSelector,
   Sequence,
-  ShortValDecl,
+  ShortVarDecl,
   SourceFile,
   ExpressionStatement,
   BinaryOperatorExpression,
@@ -30,8 +30,8 @@ let instrs: Instruction[]
 const scan = (comp: AstNode): string[] =>
   comp.tag === 'seq'
     ? (comp as Sequence).stmts.reduce((acc, x) => acc.concat(scan(x)), [] as string[])
-    : comp.tag === 'shortValDecl'
-      ? [(comp as ShortValDecl).syms[0]]
+    : comp.tag === 'shortVarDecl'
+      ? [(comp as ShortVarDecl).syms[0]]
       : []
 
 export const compielGoCode = (ast: AstNode) => {
@@ -90,7 +90,7 @@ const compile_comp: { [type: string]: (comp: AstNode) => void } = {
     })
   },
 
-  shortValDecl: (comp: ShortValDecl) => {
+  shortVarDecl: (comp: ShortVarDecl) => {
     compile(comp.exprs[0])
     instrs[wc++] = { tag: 'ASSIGN', sym: comp.syms[0] }
     instrs[wc++] = { tag: 'POP' }
@@ -125,9 +125,9 @@ const compile_comp: { [type: string]: (comp: AstNode) => void } = {
   },
 
   func: (comp: FunctionDeclaration) => {
-    // Transform FunctionDeclaration to ShortValDecl.
+    // Transform FunctionDeclaration to ShortVarDecl.
     compile({
-      tag: 'shortValDecl',
+      tag: 'shortVarDecl',
       syms: [comp.sym],
       exprs: [
         {
@@ -140,7 +140,7 @@ const compile_comp: { [type: string]: (comp: AstNode) => void } = {
           body: comp.body
         }
       ]
-    } as ShortValDecl)
+    } as ShortVarDecl)
   },
 
   primArg: (comp: PrimaryExprArgument) => {
