@@ -2,7 +2,7 @@
 type Declaration = FunctionDeclaration | VariableDeclaration
 
 export type LiteralType = string | number | boolean
-export type Statement = SimpleStatement | GoStatement
+export type Statement = SimpleStatement | GoStatement | VariableDeclaration
 export type SimpleStatement = ShortValDecl | Assignment | ExpressionStatement | SendStatement
 export type Expression =
   | PrimaryExpr
@@ -39,12 +39,6 @@ export interface FunctionLiteral extends BaseNode {
 export interface Identifier extends BaseNode {
   tag: 'ident'
   name: string
-}
-
-export interface QualifiedIdentifier extends BaseNode {
-  tag: 'qualIdent'
-  pkg: string
-  ident: string
 }
 
 export interface LogicalExpression extends BaseNode {
@@ -97,13 +91,14 @@ export interface Block extends BaseNode {
 
 export interface VariableDeclaration extends BaseNode {
   tag: 'varDecl'
-  specs: AstNode[]
+  specs: VariableSpecification[]
 }
 
 export interface VariableSpecification extends BaseNode {
   tag: 'varSpec'
   syms: string[]
-  exprs: AstNode[]
+  exprs: Expression[]
+  type: Type
 }
 
 export interface SendStatement extends BaseNode {

@@ -19,7 +19,8 @@ import {
   UnaryExpression,
   Type,
   ChannelType,
-  TypeName
+  TypeName,
+  VariableDeclaration,
 } from '../common/astNode'
 import { Instruction, Goto, Call } from '../common/instruction'
 
@@ -75,6 +76,18 @@ const compile_comp: { [type: string]: (comp: AstNode) => void } = {
   seq: (comp: Sequence) => {
     // Value producing stmts are responsible for popping their unused value.
     comp.stmts.forEach(stmt => compile(stmt))
+  },
+
+  varDecl: (comp: VariableDeclaration) => {
+    comp.specs.forEach(spec => {
+      // TODO spec.type should be stored and needed somewhere.
+      for (let i = 0; i < spec.syms.length; i++) {
+        // varDecl without expr has undefined as expr.
+        spec.exprs[i] ? compile(spec.exprs[i]) : (instrs[wc++] = { tag: 'LDC', val: undefined })
+        instrs[wc++] = { tag: 'ASSIGN', sym: spec.syms[i] }
+        instrs[wc++] = { tag: 'POP' }
+      }
+    })
   },
 
   shortValDecl: (comp: ShortValDecl) => {

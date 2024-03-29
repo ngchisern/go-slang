@@ -19,7 +19,6 @@ import {
   Operand,
   ParameterDeclaration,
   PrimaryExpr,
-  QualifiedIdentifier,
   ReturnStatement,
   SendStatement,
   Sequence,
@@ -156,7 +155,7 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
   }
 
   visitVarDecl: (ctx: VarDeclContext) => VariableDeclaration = ctx => {
-    const specs = ctx.varSpec_list().map(spec => spec.accept(this))
+    const specs = ctx.varSpec_list().map(spec => this.visitVarSpec(spec))
     return {
       tag: 'varDecl',
       specs: specs
@@ -169,14 +168,14 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
       .identifierList()
       .IDENTIFIER_list()
       .map(id => id.symbol.text)
-    const exprs = ctx
-      .expressionList()
-      .expression_list()
-      .map(exp => exp.accept(this))
+    const exprs = ctx.expressionList()
+      ? ctx.expressionList().expression_list().map(exp => this.visitExpression(exp))
+      : []
     return {
       tag: 'varSpec',
       syms: syms,
-      exprs: exprs
+      exprs: exprs,
+      type: this.visitType_(ctx.type_())
     }
   }
 
@@ -200,9 +199,9 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
       return this.visitSimpleStmt(ctx.simpleStmt())
     } else if (ctx.goStmt()) {
       return this.visitGoStmt(ctx.goStmt());
+    } else if (ctx.varDecl()) {
+      return this.visitVarDecl(ctx.varDecl())
       // TODO update ltr when supporting these constructs
-      // } else if (ctx.varDecl()) {
-      //   return ctx.varDecl().accept(this);
       // } else if (ctx.returnStmt()) {
       //   return ctx.returnStmt().accept(this);
       // } else if (ctx.block()) {
@@ -359,9 +358,12 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
 
   visitTypeName: (ctx: TypeNameContext) => TypeName = ctx => {
     // Don't support qualified ident yet
+    const name = ctx.qualifiedIdent()
+      ? ctx.qualifiedIdent().IDENTIFIER_list().join('.')
+      : ctx.IDENTIFIER().symbol.text
     return {
       tag: 'typeName',
-      name: ctx.IDENTIFIER().symbol.text
+      name
     }
   }
 
@@ -501,14 +503,6 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
     return {
       tag: 'ident',
       name: ctx.IDENTIFIER().symbol.text
-    }
-  }
-
-  visitQualifiedIdent: (ctx: QualifiedIdentContext) => QualifiedIdentifier = ctx => {
-    return {
-      tag: 'qualIdent',
-      pkg: ctx.IDENTIFIER(0).symbol.text,
-      ident: ctx.IDENTIFIER(1).symbol.text
     }
   }
 
