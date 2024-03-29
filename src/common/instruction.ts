@@ -69,7 +69,6 @@ export interface Call extends InstructionBase {
 
 export interface Ld extends InstructionBase {
   tag: 'LD'
-  sym: string
   pos: [number, number]
 }
 

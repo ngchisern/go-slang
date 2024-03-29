@@ -149,7 +149,6 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
   meth: (comp: MethodExpression, ce: string[][]) => {
     instrs[wc++] = {
       tag: 'LD',
-      sym: comp.ident,
       pos: compile_time_environment_position(ce, comp.ident)
     }
   },
@@ -159,7 +158,6 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
     const sel = comp.sel.tag === 'ident' ? comp.sel.name : (comp.sel as MethodExpression).ident
     instrs[wc++] = {
       tag: 'LD',
-      sym: `${sel}.${comp.ident}`,
       pos: compile_time_environment_position(ce, `${sel}.${comp.ident}`)
     }
   },
@@ -167,7 +165,6 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
   ident: (comp: Identifier, ce: string[][]) => {
     instrs[wc++] = {
       tag: 'LD',
-      sym: comp.name,
       pos: compile_time_environment_position(ce, comp.name)
     }
   },

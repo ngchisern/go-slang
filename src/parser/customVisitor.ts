@@ -487,16 +487,9 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
       ctx.string_().INTERPRETED_STRING_LIT()
     ).symbol.text
 
-    if (ctx.DECIMAL_LIT()) {
-      return {
-        tag: 'literal',
-        value: Number(value)
-      }
-    }
-
     return {
       tag: 'literal',
-      value: value
+      value: ctx.DECIMAL_LIT() ? Number(value) : value
     }
   }
 
