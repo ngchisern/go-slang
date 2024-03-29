@@ -1,6 +1,5 @@
 import GoParserVisitor from '../lang/GoParserVisitor'
 import {
-  Arguments,
   Assignment,
   AstNode,
   Block,
@@ -222,9 +221,8 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
   visitSimpleStmt: (ctx: SimpleStmtContext) => SimpleStatement = ctx => {
     if (ctx.expressionStmt()) {
       return this.visitExpressionStmt(ctx.expressionStmt())
-      // TODO update ltr when supporting these constructs
-      // } else if (ctx.sendStmt()) {
-      //   return ctx.sendStmt().accept(this);
+    } else if (ctx.sendStmt()) {
+      return this.visitSendStmt(ctx.sendStmt())
     } else if (ctx.assignment()) {
       return this.visitAssignment(ctx.assignment())
     } else if (ctx.shortVarDecl()) {
@@ -242,8 +240,8 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
   }
 
   visitSendStmt: (ctx: SendStmtContext) => SendStatement = ctx => {
-    const chan = ctx.expression(0).accept(this)
-    const msg = ctx.expression(1).accept(this)
+    const chan = this.visitExpression(ctx.expression(0)) as Identifier
+    const msg = this.visitExpression(ctx.expression(1))
     return {
       tag: 'send',
       chan: chan,
@@ -350,9 +348,12 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
   }
 
   visitType_: (ctx: Type_Context) => Type = ctx => {
+    const type = ctx.channelType()
+      ? this.visitChannelType(ctx.channelType())
+      : this.visitTypeName(ctx.typeName())
     return {
       tag: 'type',
-      type: this.visitTypeName(ctx.typeName())
+      type
     }
   }
 
@@ -371,7 +372,7 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
   visitChannelType: (ctx: ChannelTypeContext) => ChannelType = ctx => {
     return {
       tag: 'chanType',
-      elem: ctx.elementType().accept(this)
+      elem: this.visitElementType(ctx.elementType())
     }
   }
 
@@ -441,9 +442,13 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
         ident: ctx.IDENTIFIER().symbol.text
       }
     } else if (ctx.arguments()) {
-      const args = ctx.arguments().expressionList()
-        ? ctx.arguments().expressionList().expression_list().map(arg => this.visitExpression(arg))
-        : [];
+      const args = []
+      if (ctx.arguments().type_()) {
+        args.push(this.visitType_(ctx.arguments().type_()))
+      }
+      if (ctx.arguments().expressionList()) {
+        ctx.arguments().expressionList().expression_list().map(arg => args.push(this.visitExpression(arg)))
+      }
       return {
         tag: 'primArg',
         expr: this.visitPrimaryExpr(ctx.primaryExpr()),
@@ -522,16 +527,6 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
       tag: 'funcLit',
       sig: sig,
       body: body
-    }
-  }
-
-  visitArguments: (ctx: ArgumentsContext) => Arguments = ctx => {
-    return {
-      tag: 'args',
-      list: ctx
-        .expressionList()
-        .expression_list()
-        .map(exp => this.visitExpression(exp))
     }
   }
 

@@ -14,7 +14,10 @@ export type Instruction =
   | Call
   | Go
   | Ld
+  | Unop
   | Binop
+  | Send
+  | Type
 
 interface InstructionBase {
   tag: string
@@ -36,6 +39,11 @@ export interface ExitScope extends InstructionBase {
 export interface Assign extends InstructionBase {
   tag: 'ASSIGN'
   sym: AssignSymbol
+}
+
+export interface Send extends InstructionBase {
+  tag: 'SEND'
+  chan: string
 }
 
 export interface Pop extends InstructionBase {
@@ -77,7 +85,17 @@ export interface Ld extends InstructionBase {
   sym: string
 }
 
+export interface Unop extends InstructionBase {
+  tag: 'UNOP'
+  sym: string
+}
+
 export interface Binop extends InstructionBase {
   tag: 'BINOP'
   sym: string
+}
+
+export interface Type extends InstructionBase {
+  tag: 'TYPE'
+  type: string
 }

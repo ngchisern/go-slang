@@ -15,6 +15,11 @@ import {
   ExpressionStatement,
   BinaryOperatorExpression,
   GoStatement,
+  SendStatement,
+  UnaryExpression,
+  Type,
+  ChannelType,
+  TypeName
 } from '../common/astNode'
 import { Instruction, Goto, Call } from '../common/instruction'
 
@@ -84,6 +89,12 @@ const compile_comp: { [type: string]: (comp: AstNode) => void } = {
     instrs[wc++] = { tag: 'POP' }
   },
 
+  send: (comp: SendStatement) => {
+    compile(comp.chan)
+    compile(comp.msg)
+    instrs[wc++] = { tag: 'SEND', chan: comp.chan.name }
+  },
+
   literal: (comp: BasicLiteral) => {
     instrs[wc++] = { tag: 'LDC', val: comp.value }
   },
@@ -149,9 +160,23 @@ const compile_comp: { [type: string]: (comp: AstNode) => void } = {
     instrs[wc++] = { tag: 'POP' }
   },
 
+  unop: (comp: UnaryExpression) => {
+    compile(comp.expr)
+    instrs[wc++] = { tag: 'UNOP', sym: comp.sym }
+  },
+
   binop: (comp: BinaryOperatorExpression) => {
     compile(comp.frst)
     compile(comp.scnd)
     instrs[wc++] = { tag: 'BINOP', sym: comp.sym }
+  },
+
+  type: (comp: Type) => {
+    const getTypeStr = (type: TypeName | ChannelType): string => {
+      return type.tag === "typeName"
+        ? type.name
+        : `chan ${getTypeStr(type.elem.type)}`
+    }
+    instrs[wc++] = { tag: 'TYPE', type: getTypeStr(comp.type) }
   }
 }

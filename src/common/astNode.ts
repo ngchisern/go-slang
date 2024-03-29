@@ -3,7 +3,7 @@ type Declaration = FunctionDeclaration | VariableDeclaration
 
 export type LiteralType = string | number | boolean
 export type Statement = SimpleStatement | GoStatement
-export type SimpleStatement = ShortValDecl | Assignment | ExpressionStatement
+export type SimpleStatement = ShortValDecl | Assignment | ExpressionStatement | SendStatement
 export type Expression =
   | PrimaryExpr
   | UnaryExpression
@@ -70,7 +70,7 @@ export interface UnaryExpression extends BaseNode {
 export interface PrimaryExprArgument extends BaseNode {
   tag: 'primArg'
   expr: PrimaryExpr
-  args: Expression[]
+  args: (Expression | Type)[]
 }
 
 export interface PrimaryExprSelector extends BaseNode {
@@ -83,11 +83,6 @@ export interface MethodExpression extends BaseNode {
   tag: 'meth'
   recv: Type
   ident: string
-}
-
-export interface Arguments extends BaseNode {
-  tag: 'args'
-  list: AstNode[]
 }
 
 export interface Sequence extends BaseNode {
@@ -113,8 +108,8 @@ export interface VariableSpecification extends BaseNode {
 
 export interface SendStatement extends BaseNode {
   tag: 'send'
-  chan: AstNode
-  msg: AstNode
+  chan: Identifier
+  msg: Expression
 }
 
 export interface Assignment extends BaseNode {
@@ -208,7 +203,7 @@ export interface GoStatement extends BaseNode {
 
 export interface Type extends BaseNode {
   tag: 'type'
-  type: TypeName
+  type: TypeName | ChannelType
 }
 
 export interface TypeName extends BaseNode {
@@ -218,7 +213,7 @@ export interface TypeName extends BaseNode {
 
 export interface ChannelType extends BaseNode {
   tag: 'chanType'
-  elem: AstNode
+  elem: Type
 }
 
 export type AstNode = BaseNode

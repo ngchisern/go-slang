@@ -6,14 +6,18 @@ package main
 
 import "fmt"
 
-func hello() {
-  x := "Hello, World";
-  x = x + "!";
+func hello(c chan string) {
+  x := "Hello, ";
+  world := <-c
+  x = x + world;
   fmt.Println(x);
 }
 
 func main() {
-  go hello();
+  c := make(chan string)
+  go hello(c);
+  c <- "World"
+  close(c)
 }
 `
 
