@@ -15,6 +15,10 @@ import "fmt"
 //   wg.Done()
 // }
 
+func simple(x int) {
+  fmt.Println(x);
+}
+
 func main() {
   // c := make(chan int)
   // var wg sync.waitGroup
@@ -25,7 +29,7 @@ func main() {
   // wg.Wait()
   x := 42;
   x = x - 21;
-  fmt.Println(x);
+  simple(x);
 }
 `
 

@@ -11,7 +11,7 @@ export interface Block {
 
 const size_offset = 5
 const mem_allocate = (block: Block, tag: number, size: number): number => {
-  if (block.free >= block.size) {
+  if (block.free + size >= block.size) {
     throw new Error('Out of memory')
   }
 

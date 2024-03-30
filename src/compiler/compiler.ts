@@ -63,7 +63,9 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
       decl.tag === 'func' ? (decl as FunctionDeclaration).sym : 'not supported'
     )
     const new_env = compile_time_environment_extend(names, ce)
-
+    
+    // ENTER SCOPE first
+    instrs[wc++] = { tag: 'ENTER_SCOPE', syms: names }
     comp.decls.map(decl => compile(decl, new_env))
     compile(
       {
@@ -79,6 +81,7 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
       } as ExpressionStatement,
       new_env
     )
+    instrs[wc++] = { tag: 'EXIT_SCOPE' }
   },
 
   block: (comp: Block, ce: string[][]) => {

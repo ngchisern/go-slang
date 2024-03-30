@@ -46,7 +46,7 @@ const mem_make = (bytes: number): DataView => {
  * STACK blocks start at the end of the memory and grow upwards.
  */
 export let memory: DataView
-const memory_size = 125000
+const memory_size = 2000
 
 let blocks: Array<Block | null> = []
 const block_size = 1000 // (in words); dummy value
@@ -56,8 +56,9 @@ let builtin_frame: number
 export const initialize_memory = (): void => {
   memory = mem_make(memory_size * word_size)
 
+  let block_num = memory_size / block_size
   // initialize the memory with empty blocks
-  for (let i = 0; i < memory_size / block_size; i++) {
+  for (let i = 0; i < block_num; i++) {
     blocks.push(null)
   }
 

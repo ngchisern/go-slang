@@ -135,22 +135,24 @@ const microcode: { [type: string]: (instr: Instruction) => void } = {
     PC = mem_get_Closure_pc(fun)
   },
   RESET: (instr: Reset) => {
-    PC--
     // keep popping...
     const top_frame = RTS.pop()
     if (is_Callframe(top_frame)) {
       // ...until top frame is a call frame
       PC = mem_get_Callframe_pc(top_frame)
       E = mem_get_Callframe_environment(top_frame)
+    } else {
+      PC--
     }
   }
 }
 
-const apply_binop = (op: string, v2: number, v1: number) =>
+const apply_binop = (op: string, v2: number, v1: number) => 
   JS_value_to_address(
     current_thread,
     binop_microcode[op](address_to_JS_value(v1), address_to_JS_value(v2))
   )
+
 
 const apply_builtin = (builtin_id: number) => {
   const result = builtin_array[builtin_id](OS)
