@@ -48,7 +48,7 @@ export class TimeSliceGoScheduler implements Scheduler {
   }
 
   postLoopUpdate() {
-    this.timeSlice--;
+    this.timeSlice--
   }
 
   resetTimeSlice() {

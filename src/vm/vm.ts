@@ -18,7 +18,6 @@ import { Memory } from './memory'
 import { Scheduler } from './scheduler'
 import { stringify } from 'querystring'
 
-
 export interface VirtualMachine {
   instrs: Instruction[]
 
@@ -56,7 +55,7 @@ export class GoVM implements VirtualMachine {
       PC: 0
     }
 
-    return new Goroutine(threadId, "main", context)
+    return new Goroutine(threadId, 'main', context)
   }
 
   switch(task: Task) {
@@ -157,9 +156,9 @@ export class GoVM implements VirtualMachine {
   }
 
   spawn_goroutine = () => {
-    // TODO: need to deep copy the memory instead 
+    // TODO: need to deep copy the memory instead
     // const threadId = this.threadCount++
-    return new Goroutine(this.currentThread, "worker " + String(this.threadCount++), {
+    return new Goroutine(this.currentThread, 'worker ' + String(this.threadCount++), {
       OS: [],
       RTS: [...this.RTS],
       E: this.E,
