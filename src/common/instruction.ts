@@ -78,7 +78,6 @@ export interface Call extends InstructionBase {
 
 export interface Go extends InstructionBase {
   tag: 'GO'
-  arity: number
 }
 
 export interface Ld extends InstructionBase {

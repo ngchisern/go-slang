@@ -29,7 +29,7 @@ func main() {
   // wg.Wait()
   x := 42;
   x = x - 21;
-  simple(x);
+  go simple(x);
 }
 `
 
