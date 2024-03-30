@@ -20,10 +20,10 @@ import {
   Type,
   ChannelType,
   TypeName,
-  VariableDeclaration,
+  VariableDeclaration
 } from '../common/astNode'
 import { Instruction, Goto, Call } from '../common/instruction'
-import { compile_time_environment_position, primitive_object } from '../vm/memory'
+import { compile_time_environment_position, primitive_object } from '../vm/block'
 
 // compile-time frames only need synbols (keys), no values
 const global_compile_frame = Object.keys(primitive_object)
@@ -216,9 +216,7 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
 
   type: (comp: Type) => {
     const getTypeStr = (type: TypeName | ChannelType): string => {
-      return type.tag === "typeName"
-        ? type.name
-        : `chan ${getTypeStr(type.elem.type)}`
+      return type.tag === 'typeName' ? type.name : `chan ${getTypeStr(type.elem.type)}`
     }
     instrs[wc++] = { tag: 'TYPE', type: getTypeStr(comp.type) }
   }
