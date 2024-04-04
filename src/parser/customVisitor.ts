@@ -1,6 +1,5 @@
 import GoParserVisitor from '../lang/GoParserVisitor'
 import {
-  Arguments,
   Assignment,
   AstNode,
   Block,
@@ -20,11 +19,10 @@ import {
   Operand,
   ParameterDeclaration,
   PrimaryExpr,
-  QualifiedIdentifier,
   ReturnStatement,
   SendStatement,
   Sequence,
-  ShortValDecl,
+  ShortVarDecl,
   Signature,
   SourceFile,
   Type,
@@ -32,7 +30,8 @@ import {
   VariableDeclaration,
   VariableSpecification,
   Literal,
-  SimpleStatement
+  SimpleStatement,
+  Statement
 } from '../common/astNode'
 
 import { SourceFileContext } from '../lang/GoParser'
@@ -156,7 +155,7 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
   }
 
   visitVarDecl: (ctx: VarDeclContext) => VariableDeclaration = ctx => {
-    const specs = ctx.varSpec_list().map(spec => spec.accept(this))
+    const specs = ctx.varSpec_list().map(spec => this.visitVarSpec(spec))
     return {
       tag: 'varDecl',
       specs: specs
@@ -169,14 +168,17 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
       .identifierList()
       .IDENTIFIER_list()
       .map(id => id.symbol.text)
-    const exprs = ctx
-      .expressionList()
-      .expression_list()
-      .map(exp => exp.accept(this))
+    const exprs = ctx.expressionList()
+      ? ctx
+          .expressionList()
+          .expression_list()
+          .map(exp => this.visitExpression(exp))
+      : []
     return {
       tag: 'varSpec',
       syms: syms,
-      exprs: exprs
+      exprs: exprs,
+      type: this.visitType_(ctx.type_())
     }
   }
 
@@ -195,14 +197,14 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
     }
   }
 
-  visitStatement: (ctx: StatementContext) => SimpleStatement = ctx => {
+  visitStatement: (ctx: StatementContext) => Statement = ctx => {
     if (ctx.simpleStmt()) {
       return this.visitSimpleStmt(ctx.simpleStmt())
+    } else if (ctx.goStmt()) {
+      return this.visitGoStmt(ctx.goStmt())
+    } else if (ctx.varDecl()) {
+      return this.visitVarDecl(ctx.varDecl())
       // TODO update ltr when supporting these constructs
-      // } else if (ctx.varDecl()) {
-      //   return ctx.varDecl().accept(this);
-      // } else if (ctx.goStmt()) {
-      //   return ctx.goStmt().accept(this);
       // } else if (ctx.returnStmt()) {
       //   return ctx.returnStmt().accept(this);
       // } else if (ctx.block()) {
@@ -221,9 +223,8 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
   visitSimpleStmt: (ctx: SimpleStmtContext) => SimpleStatement = ctx => {
     if (ctx.expressionStmt()) {
       return this.visitExpressionStmt(ctx.expressionStmt())
-      // TODO update ltr when supporting these constructs
-      // } else if (ctx.sendStmt()) {
-      //   return ctx.sendStmt().accept(this);
+    } else if (ctx.sendStmt()) {
+      return this.visitSendStmt(ctx.sendStmt())
     } else if (ctx.assignment()) {
       return this.visitAssignment(ctx.assignment())
     } else if (ctx.shortVarDecl()) {
@@ -241,8 +242,8 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
   }
 
   visitSendStmt: (ctx: SendStmtContext) => SendStatement = ctx => {
-    const chan = ctx.expression(0).accept(this)
-    const msg = ctx.expression(1).accept(this)
+    const chan = this.visitExpression(ctx.expression(0)) as Identifier
+    const msg = this.visitExpression(ctx.expression(1))
     return {
       tag: 'send',
       chan: chan,
@@ -266,7 +267,7 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
     }
   }
 
-  visitShortVarDecl: (ctx: ShortVarDeclContext) => ShortValDecl = ctx => {
+  visitShortVarDecl: (ctx: ShortVarDeclContext) => ShortVarDecl = ctx => {
     const syms = ctx
       .identifierList()
       .IDENTIFIER_list()
@@ -276,7 +277,7 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
       .expression_list()
       .map(exp => this.visitExpression(exp))
     return {
-      tag: 'shortValDecl',
+      tag: 'shortVarDecl',
       syms: syms,
       exprs: exprs
     }
@@ -344,22 +345,28 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
   visitGoStmt: (ctx: GoStmtContext) => GoStatement = ctx => {
     return {
       tag: 'go',
-      expr: ctx.expression().accept(this)
+      expr: this.visitExpression(ctx.expression())
     }
   }
 
   visitType_: (ctx: Type_Context) => Type = ctx => {
+    const type = ctx.channelType()
+      ? this.visitChannelType(ctx.channelType())
+      : this.visitTypeName(ctx.typeName())
     return {
       tag: 'type',
-      type: this.visitTypeName(ctx.typeName())
+      type
     }
   }
 
   visitTypeName: (ctx: TypeNameContext) => TypeName = ctx => {
     // Don't support qualified ident yet
+    const name = ctx.qualifiedIdent()
+      ? ctx.qualifiedIdent().IDENTIFIER_list().join('.')
+      : ctx.IDENTIFIER().symbol.text
     return {
       tag: 'typeName',
-      name: ctx.IDENTIFIER().symbol.text
+      name
     }
   }
 
@@ -370,7 +377,7 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
   visitChannelType: (ctx: ChannelTypeContext) => ChannelType = ctx => {
     return {
       tag: 'chanType',
-      elem: ctx.elementType().accept(this)
+      elem: this.visitElementType(ctx.elementType())
     }
   }
 
@@ -440,14 +447,21 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
         ident: ctx.IDENTIFIER().symbol.text
       }
     } else if (ctx.arguments()) {
-      return {
-        tag: 'primArg',
-        expr: this.visitPrimaryExpr(ctx.primaryExpr()),
-        args: ctx
+      const args = []
+      if (ctx.arguments().type_()) {
+        args.push(this.visitType_(ctx.arguments().type_()))
+      }
+      if (ctx.arguments().expressionList()) {
+        ctx
           .arguments()
           .expressionList()
           .expression_list()
-          .map(arg => this.visitExpression(arg))
+          .map(arg => args.push(this.visitExpression(arg)))
+      }
+      return {
+        tag: 'primArg',
+        expr: this.visitPrimaryExpr(ctx.primaryExpr()),
+        args
       }
     } else {
       throw new Error('Unknown primary expression type')
@@ -500,14 +514,6 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
     }
   }
 
-  visitQualifiedIdent: (ctx: QualifiedIdentContext) => QualifiedIdentifier = ctx => {
-    return {
-      tag: 'qualIdent',
-      pkg: ctx.IDENTIFIER(0).symbol.text,
-      ident: ctx.IDENTIFIER(1).symbol.text
-    }
-  }
-
   visitString_: (ctx: String_Context) => BasicLiteral = ctx => {
     const value = (ctx.RAW_STRING_LIT() || ctx.INTERPRETED_STRING_LIT()).symbol.text
     return {
@@ -523,16 +529,6 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
       tag: 'funcLit',
       sig: sig,
       body: body
-    }
-  }
-
-  visitArguments: (ctx: ArgumentsContext) => Arguments = ctx => {
-    return {
-      tag: 'args',
-      list: ctx
-        .expressionList()
-        .expression_list()
-        .map(exp => this.visitExpression(exp))
     }
   }
 

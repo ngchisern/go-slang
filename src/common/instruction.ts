@@ -1,4 +1,4 @@
-import { Expression, LiteralType, ParameterDeclaration } from './astNode'
+import { LiteralType, ParameterDeclaration } from './astNode'
 
 export type LcdType = LiteralType | undefined
 
@@ -13,8 +13,12 @@ export type Instruction =
   | Goto
   | Reset
   | Call
+  | Go
   | Ld
+  | Unop
   | Binop
+  | Send
+  | Type
 
 interface InstructionBase {
   tag: string
@@ -35,6 +39,11 @@ export interface ExitScope extends InstructionBase {
 
 export interface Assign extends InstructionBase {
   tag: 'ASSIGN'
+  pos: [number, number]
+}
+
+export interface Send extends InstructionBase {
+  tag: 'SEND'
   pos: [number, number]
 }
 
@@ -67,12 +76,26 @@ export interface Call extends InstructionBase {
   arity: number
 }
 
+export interface Go extends InstructionBase {
+  tag: 'GO'
+}
+
 export interface Ld extends InstructionBase {
   tag: 'LD'
   pos: [number, number]
 }
 
+export interface Unop extends InstructionBase {
+  tag: 'UNOP'
+  sym: string
+}
+
 export interface Binop extends InstructionBase {
   tag: 'BINOP'
   sym: string
+}
+
+export interface Type extends InstructionBase {
+  tag: 'TYPE'
+  type: string
 }

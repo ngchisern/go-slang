@@ -241,7 +241,7 @@ functionLit
     ; // function
 
 arguments
-    : L_PAREN expressionList? R_PAREN
+    : L_PAREN (expressionList | type_ (COMMA expressionList)?)? R_PAREN
     ;
 
 methodExpr
