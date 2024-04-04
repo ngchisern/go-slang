@@ -20,13 +20,14 @@ import {
   Type,
   ChannelType,
   TypeName,
-  VariableDeclaration,
+  VariableDeclaration
 } from '../common/astNode'
 import { Instruction, Goto, Call } from '../common/instruction'
-import { compile_time_environment_position, primitive_object } from '../vm/memory'
+import { compile_time_environment_position } from '../vm/utils'
+import { Memory } from '../vm/memory'
 
 // compile-time frames only need synbols (keys), no values
-const global_compile_frame = Object.keys(primitive_object)
+const global_compile_frame = Object.keys(new Memory().primitive_object)
 const global_compile_environment = [global_compile_frame]
 
 const compile_time_environment_extend = (vs: string[], e: string[][]) => {
@@ -64,6 +65,8 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
     )
     const new_env = compile_time_environment_extend(names, ce)
 
+    // ENTER SCOPE first
+    instrs[wc++] = { tag: 'ENTER_SCOPE', syms: names }
     comp.decls.map(decl => compile(decl, new_env))
     compile(
       {
@@ -79,6 +82,7 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
       } as ExpressionStatement,
       new_env
     )
+    instrs[wc++] = { tag: 'EXIT_SCOPE' }
   },
 
   block: (comp: Block, ce: string[][]) => {
@@ -171,8 +175,12 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
   },
 
   go: (comp: GoStatement, ce: string[][]) => {
+    instrs[wc++] = { tag: 'GO' }
+    const goto: Goto = { tag: 'GOTO', addr: -1 }
+    instrs[wc++] = goto
     compile(comp.expr, ce)
-    instrs[wc - 1] = { tag: 'GO', arity: (instrs[wc - 1] as Call).arity }
+    instrs[wc++] = { tag: 'DONE' }
+    goto.addr = wc
   },
 
   meth: (comp: MethodExpression, ce: string[][]) => {
@@ -216,9 +224,7 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
 
   type: (comp: Type) => {
     const getTypeStr = (type: TypeName | ChannelType): string => {
-      return type.tag === "typeName"
-        ? type.name
-        : `chan ${getTypeStr(type.elem.type)}`
+      return type.tag === 'typeName' ? type.name : `chan ${getTypeStr(type.elem.type)}`
     }
     instrs[wc++] = { tag: 'TYPE', type: getTypeStr(comp.type) }
   }

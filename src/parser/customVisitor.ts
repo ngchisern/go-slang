@@ -31,7 +31,7 @@ import {
   VariableSpecification,
   Literal,
   SimpleStatement,
-  Statement,
+  Statement
 } from '../common/astNode'
 
 import { SourceFileContext } from '../lang/GoParser'
@@ -169,7 +169,10 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
       .IDENTIFIER_list()
       .map(id => id.symbol.text)
     const exprs = ctx.expressionList()
-      ? ctx.expressionList().expression_list().map(exp => this.visitExpression(exp))
+      ? ctx
+          .expressionList()
+          .expression_list()
+          .map(exp => this.visitExpression(exp))
       : []
     return {
       tag: 'varSpec',
@@ -198,7 +201,7 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
     if (ctx.simpleStmt()) {
       return this.visitSimpleStmt(ctx.simpleStmt())
     } else if (ctx.goStmt()) {
-      return this.visitGoStmt(ctx.goStmt());
+      return this.visitGoStmt(ctx.goStmt())
     } else if (ctx.varDecl()) {
       return this.visitVarDecl(ctx.varDecl())
       // TODO update ltr when supporting these constructs
@@ -449,7 +452,11 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
         args.push(this.visitType_(ctx.arguments().type_()))
       }
       if (ctx.arguments().expressionList()) {
-        ctx.arguments().expressionList().expression_list().map(arg => args.push(this.visitExpression(arg)))
+        ctx
+          .arguments()
+          .expressionList()
+          .expression_list()
+          .map(arg => args.push(this.visitExpression(arg)))
       }
       return {
         tag: 'primArg',
