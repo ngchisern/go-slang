@@ -16,7 +16,9 @@ func main() {
 }
 `
 
-const ast = parseGoCode(code)
-const instrs = compileGoCode(ast)
-// instrs.forEach((v, i) => console.log(`${i}:`, v))
-run(instrs)
+export const compileAndRunGoCode = (code: string) => {
+  const ast = parseGoCode(code)
+  const instrs = compileGoCode(ast)
+  // instrs.forEach((v, i) => console.log(`${i}:`, v))
+  run(instrs)
+}
