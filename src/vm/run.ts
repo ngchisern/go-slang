@@ -1,4 +1,3 @@
-import { error } from 'console'
 import {
   Instruction,
   Goto,
@@ -76,7 +75,7 @@ for (let i = 0; i < primitive_values.length; i++) {
   } else if (typeof primitive_value === 'undefined') {
     heap_set_child(frame_address, i, Undefined)
   } else {
-    error('constant value not supported')
+    console.error('constant value not supported')
   }
 }
 
@@ -117,7 +116,7 @@ const microcode: { [type: string]: (instr: Instruction) => void } = {
   EXIT_SCOPE: (instr: ExitScope) => (E = heap_get_Blockframe_environment(RTS.pop())),
   LD: (instr: Ld) => {
     const val = heap_get_Environment_value(E, instr.pos)
-    if (is_Unassigned(val)) error('access of unassigned variable')
+    if (is_Unassigned(val)) console.error('access of unassigned variable')
     OS.push(val)
   },
   ASSIGN: (instr: Assign) => heap_set_Environment_value(E, instr.pos, OS[OS.length - 1]),

@@ -1,11 +1,9 @@
-import { error } from 'console'
-
 const word_size = 8
 const mega = 2 ** 20
 
 const heap_make = (bytes: number): DataView => {
   if (bytes % 8 !== 0) {
-    error('heap bytes must be divisible by 8')
+    console.error('heap bytes must be divisible by 8')
   }
   const data = new ArrayBuffer(bytes)
   const view = new DataView(data)
@@ -267,7 +265,7 @@ export const address_to_JS_value = (x: number): any =>
                 ? '<closure>'
                 : is_Builtin(x)
                   ? '<builtin>'
-                  : error('unknown word tag during address to JS value conversion:')
+                  : console.error('unknown word tag during address to JS value conversion:')
 
 export const JS_value_to_address = (x: any): any =>
   is_boolean(x)
@@ -282,7 +280,7 @@ export const JS_value_to_address = (x: any): any =>
           ? Null
           : is_pair(x)
             ? heap_allocate_Pair(JS_value_to_address(head(x)), JS_value_to_address(tail(x)))
-            : error('unknown JS value during JS value to address conversion:')
+            : console.error('unknown JS value during JS value to address conversion:')
 
 const is_boolean = (x: any) => typeof x === 'boolean'
 
@@ -340,7 +338,7 @@ export const builtin_object: { [key: string]: (OS: Array<any>) => any } = {
     console.log(address_to_JS_value(address))
     return address
   },
-  error: OS => error(address_to_JS_value(OS.pop())),
+  error: OS => console.error(address_to_JS_value(OS.pop())),
   is_number: OS => (is_Number(OS.pop()) ? True : False),
   is_boolean: OS => (is_Boolean(OS.pop()) ? True : False),
   is_undefined: OS => (is_Undefined(OS.pop()) ? True : False),
