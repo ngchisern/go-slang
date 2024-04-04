@@ -1,4 +1,3 @@
-import { error } from 'console'
 import {
   Blockframe_tag,
   Builtin_tag,
@@ -88,7 +87,7 @@ export class Memory {
   get_block = (blockId: number): Block => {
     const idx = this.blocks.length - blockId
     if (this.blocks[idx] === null) {
-      error('block not allocated')
+      console.error('block not allocated')
     }
     return this.blocks[idx] as Block
   }
@@ -383,7 +382,7 @@ export class Memory {
                   ? '<closure>'
                   : this.is_Builtin(x)
                     ? '<builtin>'
-                    : error('unknown word tag during address to JS value conversion:')
+                    : console.error('unknown word tag during address to JS value conversion:')
 
   JS_value_to_address = (block_id: number, x: any): any =>
     is_boolean(x)
@@ -402,7 +401,7 @@ export class Memory {
                   this.JS_value_to_address(block_id, head(x)),
                   this.JS_value_to_address(block_id, tail(x))
                 )
-              : error('unknown JS value during JS value to address conversion:')
+              : console.error('unknown JS value during JS value to address conversion:')
 
   /**
    * Builtins

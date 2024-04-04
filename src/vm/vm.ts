@@ -1,5 +1,4 @@
 import { Goroutine, Task } from './goroutine'
-import { error } from 'console'
 import {
   Instruction,
   Goto,
@@ -107,7 +106,7 @@ export class GoVM implements VirtualMachine {
       (this.E = this.memory.mem_get_Blockframe_environment(this.RTS.pop())),
     LD: (instr: Ld) => {
       const val = this.memory.mem_get_Environment_value(this.E, instr.pos)
-      if (this.memory.is_Unassigned(val)) error('access of unassigned variable')
+      if (this.memory.is_Unassigned(val)) console.error('access of unassigned variable')
       this.OS.push(val)
     },
     ASSIGN: (instr: Assign) =>
