@@ -1,4 +1,3 @@
-import { error } from 'console'
 import { Builtin, Memory } from './memory'
 
 export const False_tag = 0
@@ -17,7 +16,7 @@ export const Builtin_tag = 12
 
 export const mem_make = (bytes: number): DataView => {
   if (bytes % 8 !== 0) {
-    error('mem bytes must be divisible by 8')
+    console.error('mem bytes must be divisible by 8')
   }
   const data = new ArrayBuffer(bytes)
   const view = new DataView(data)
