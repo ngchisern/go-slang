@@ -11,7 +11,7 @@
       "es2018",
       "es2021.string",
     ],
-    "module": "commonjs",
+    "module": "ES2020",
     "moduleResolution": "node",
     "noImplicitAny": true,
     "noImplicitThis": true,
