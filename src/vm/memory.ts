@@ -26,13 +26,6 @@ export const word_size = 8
 const mega = 2 ** 20
 
 const memory_size = 3000
-const block_size = 1000
-
-export interface Block {
-  position: number // in word
-  free: number
-  size: number
-}
 
 const size_offset = 5
 
@@ -52,8 +45,8 @@ export interface Builtin {
  */
 export class Memory {
   private data: DataView
-  private blocks: Array<Block | null>
   private builtin_frame: number
+  private free: number
 
   // literal values
   False: number
@@ -67,49 +60,20 @@ export class Memory {
 
   constructor() {
     this.data = mem_make(memory_size * word_size)
-    this.blocks = []
     this.builtin_frame = 0
+    this.free = 0
 
-    const block_num = memory_size / block_size
-    // initialize the memory with empty blocks
-    for (let i = 0; i < block_num; i++) {
-      this.blocks.push(null)
-    }
-
-    // HEAP block
-    this.blocks[0] = { position: 0, size: block_size, free: 0 }
-
-    this.allocate_literal_values(this.blocks[0])
-    this.allocate_builtin_frame(this.blocks[0])
+    this.allocate_literal_values()
+    this.allocate_builtin_frame()
     // TODO: constants
   }
 
-  get_block = (blockId: number): Block => {
-    const idx = this.blocks.length - blockId
-    if (this.blocks[idx] === null) {
-      console.error('block not allocated')
-    }
-    return this.blocks[idx] as Block
+  create_new_environment = (): number => {
+    const non_empty_env = this.mem_allocate_Environment(0)
+    return this.mem_Environment_extend(this.builtin_frame, non_empty_env)
   }
 
-  copy_block = (from: number, to: number): Block => {
-    const from_idx = this.blocks.length - from
-    const to_idx = this.blocks.length - to
-    this.blocks[to_idx] = this.blocks[from_idx]
-    return this.blocks[to_idx] as Block
-  }
-
-  create_new_environment = (blockId: number): number => {
-    const idx = this.blocks.length - blockId
-    const addr = idx * block_size
-    this.blocks[idx] = { position: addr, size: block_size, free: 0 }
-    const block = this.blocks[idx] as Block
-
-    const non_empty_env = this.mem_allocate_Environment(block, 0)
-    return this.mem_Environment_extend(block, this.builtin_frame, non_empty_env)
-  }
-
-  allocate_builtin_frame = (block: Block) => {
+  allocate_builtin_frame = () => {
     this.primitive_object = {}
     this.builtin_array = []
     {
@@ -125,23 +89,23 @@ export class Memory {
     }
 
     const primitive_values = Object.values(this.primitive_object)
-    const frame_address = this.mem_allocate_Frame(block, primitive_values.length)
+    const frame_address = this.mem_allocate_Frame(primitive_values.length)
 
     for (let i = 0; i < primitive_values.length; i++) {
       const builtin = primitive_values[i]
-      this.mem_set_child(frame_address, i, this.mem_allocate_Builtin(block, builtin.id))
+      this.mem_set_child(frame_address, i, this.mem_allocate_Builtin(builtin.id))
     }
 
     this.builtin_frame = frame_address
   }
 
-  mem_allocate = (block: Block, tag: number, size: number): number => {
-    if (block.free + size >= block.size) {
+  mem_allocate = (tag: number, size: number): number => {
+    if (this.free + size >= this.data.byteLength / word_size) {
       throw new Error('Out of memory')
     }
 
-    const address = block.position + block.free
-    block.free += size
+    const address = this.free
+    this.free += size
 
     this.data.setUint8(address * word_size, tag)
     this.data.setUint16(address * word_size + size_offset, size)
@@ -191,12 +155,12 @@ export class Memory {
 
   is_Undefined = (address: number) => this.mem_get_tag(address) === Undefined_tag
 
-  allocate_literal_values = (block: Block) => {
-    this.False = this.mem_allocate(block, False_tag, 1)
-    this.True = this.mem_allocate(block, True_tag, 1)
-    this.Null = this.mem_allocate(block, Null_tag, 1)
-    this.Unassigned = this.mem_allocate(block, Unassigned_tag, 1)
-    this.Undefined = this.mem_allocate(block, Undefined_tag, 1)
+  allocate_literal_values = () => {
+    this.False = this.mem_allocate(False_tag, 1)
+    this.True = this.mem_allocate(True_tag, 1)
+    this.Null = this.mem_allocate(Null_tag, 1)
+    this.Unassigned = this.mem_allocate(Unassigned_tag, 1)
+    this.Undefined = this.mem_allocate(Undefined_tag, 1)
   }
 
   // builtins: builtin id is encoded in second byte
@@ -205,8 +169,8 @@ export class Memory {
   // Note: #children is 0
   is_Builtin = (address: number) => this.mem_get_tag(address) === Builtin_tag
 
-  mem_allocate_Builtin = (block: Block, id: number) => {
-    const address = this.mem_allocate(block, Builtin_tag, 1)
+  mem_allocate_Builtin = (id: number) => {
+    const address = this.mem_allocate(Builtin_tag, 1)
     this.mem_set_byte_at_offset(address, 1, id)
     return address
   }
@@ -220,8 +184,8 @@ export class Memory {
   // note: currently bytes at offset 4 and 7 are not used;
   //   they could be used to increase pc and #children range
 
-  mem_allocate_Closure = (block: Block, arity: number, pc: number, env: number) => {
-    const address = this.mem_allocate(block, Closure_tag, 2)
+  mem_allocate_Closure = (arity: number, pc: number, env: number) => {
+    const address = this.mem_allocate(Closure_tag, 2)
     this.mem_set_byte_at_offset(address, 1, arity)
     this.mem_set_2_bytes_at_offset(address, 2, pc)
     this.mem_set(address + 1, env)
@@ -240,8 +204,8 @@ export class Memory {
   // [1 byte tag, 4 bytes unused,
   //  2 bytes #children, 1 byte unused]
 
-  mem_allocate_Blockframe = (block: Block, env: number) => {
-    const address = this.mem_allocate(block, Blockframe_tag, 2)
+  mem_allocate_Blockframe = (env: number) => {
+    const address = this.mem_allocate(Blockframe_tag, 2)
     this.mem_set(address + 1, env)
     return address
   }
@@ -255,8 +219,8 @@ export class Memory {
   //  1 byte unused, 2 bytes #children, 1 byte unused]
   // followed by the address of env
 
-  mem_allocate_Callframe = (block: Block, env: number, pc: number) => {
-    const address = this.mem_allocate(block, Callframe_tag, 2)
+  mem_allocate_Callframe = (env: number, pc: number) => {
+    const address = this.mem_allocate(Callframe_tag, 2)
     this.mem_set_2_bytes_at_offset(address, 2, pc)
     this.mem_set(address + 1, env)
     return address
@@ -273,16 +237,16 @@ export class Memory {
   //  2 bytes #children, 1 byte unused]
   // followed by the addresses of its values
 
-  mem_allocate_Frame = (block: Block, number_of_values: number) =>
-    this.mem_allocate(block, Frame_tag, number_of_values + 1)
+  mem_allocate_Frame = (number_of_values: number) =>
+    this.mem_allocate(Frame_tag, number_of_values + 1)
 
   // environment
   // [1 byte tag, 4 bytes unused,
   //  2 bytes #children, 1 byte unused]
   // followed by the addresses of its frames
 
-  mem_allocate_Environment = (block: Block, number_of_frames: number) =>
-    this.mem_allocate(block, Environment_tag, number_of_frames + 1)
+  mem_allocate_Environment = (number_of_frames: number) =>
+    this.mem_allocate(Environment_tag, number_of_frames + 1)
 
   // access environment given by address
   // using a "position", i.e. a pair of
@@ -307,9 +271,9 @@ export class Memory {
   // environment to the new environment.
   // enter the address of the new frame to end
   // of the new environment
-  mem_Environment_extend = (block: Block, frame_address: number, env_address: number) => {
+  mem_Environment_extend = (frame_address: number, env_address: number) => {
     const old_size = this.mem_get_size(env_address)
-    const new_env_address = this.mem_allocate_Environment(block, old_size)
+    const new_env_address = this.mem_allocate_Environment(old_size)
     let i
     for (i = 0; i < old_size - 1; i++) {
       this.mem_set_child(new_env_address, i, this.mem_get_child(env_address, i))
@@ -322,8 +286,8 @@ export class Memory {
   // [1 byte tag, 4 bytes unused,
   //  2 bytes #children, 1 byte unused]
   // followed by head and tail addresses, one word each
-  mem_allocate_Pair = (block: Block, hd: number, tl: number) => {
-    const pair_address = this.mem_allocate(block, Pair_tag, 3)
+  mem_allocate_Pair = (hd: number, tl: number) => {
+    const pair_address = this.mem_allocate(Pair_tag, 3)
     this.mem_set_child(pair_address, 0, hd)
     this.mem_set_child(pair_address, 1, tl)
     return pair_address
@@ -337,8 +301,8 @@ export class Memory {
   // followed by the number, one word
   // note: #children is 0
 
-  mem_allocate_Number = (block: Block, n: number) => {
-    const number_address = this.mem_allocate(block, Number_tag, 2)
+  mem_allocate_Number = (n: number) => {
+    const number_address = this.mem_allocate(Number_tag, 2)
     this.mem_set(number_address + 1, n)
     return number_address
   }
@@ -384,22 +348,21 @@ export class Memory {
                     ? '<builtin>'
                     : console.error('unknown word tag during address to JS value conversion:')
 
-  JS_value_to_address = (block_id: number, x: any): any =>
+  JS_value_to_address = (x: any): any =>
     is_boolean(x)
       ? x
         ? this.True
         : this.False
       : is_number(x)
-        ? this.mem_allocate_Number(this.get_block(block_id), x)
+        ? this.mem_allocate_Number(x)
         : is_undefined(x)
           ? this.is_Undefined
           : is_null(x)
             ? this.Null
             : is_pair(x)
               ? this.mem_allocate_Pair(
-                  this.get_block(block_id),
-                  this.JS_value_to_address(block_id, head(x)),
-                  this.JS_value_to_address(block_id, tail(x))
+                  this.JS_value_to_address(head(x)),
+                  this.JS_value_to_address(tail(x))
                 )
               : console.error('unknown JS value during JS value to address conversion:')
 

@@ -50,7 +50,7 @@ export class GoVM implements VirtualMachine {
     const context = {
       OS: [],
       RTS: [],
-      E: this.memory.create_new_environment(threadId),
+      E: this.memory.create_new_environment(),
       PC: 0
     }
 
@@ -77,6 +77,7 @@ export class GoVM implements VirtualMachine {
 
   run = (scheduler: Scheduler) => {
     this.scheduler = scheduler
+    console.log('running', this.currentThreadName)
     while (!(this.instrs[this.PC].tag === 'DONE') && this.scheduler.checkCondition()) {
       console.log(this.PC, this.instrs[this.PC], this.OS, this.currentThreadName)
       const instr = this.instrs[this.PC++]
@@ -86,17 +87,15 @@ export class GoVM implements VirtualMachine {
   }
 
   microcode: { [type: string]: (instr: Instruction) => void } = {
-    LDC: (instr: Ldc) =>
-      this.OS.push(this.memory.JS_value_to_address(this.currentThread, instr.val)),
+    LDC: (instr: Ldc) => this.OS.push(this.memory.JS_value_to_address(instr.val)),
     BINOP: (instr: Binop) =>
       this.OS.push(this.apply_binop(instr.sym, this.OS.pop(), this.OS.pop())),
     POP: (instr: Pop) => this.OS.pop(),
     GOTO: (instr: Goto) => (this.PC = instr.addr),
     ENTER_SCOPE: (instr: EnterScope) => {
-      const block = this.memory.get_block(this.currentThread)
-      this.RTS.push(this.memory.mem_allocate_Blockframe(block, this.E))
-      const frame_address = this.memory.mem_allocate_Frame(block, instr.syms.length)
-      this.E = this.memory.mem_Environment_extend(block, frame_address, this.E)
+      this.RTS.push(this.memory.mem_allocate_Blockframe(this.E))
+      const frame_address = this.memory.mem_allocate_Frame(instr.syms.length)
+      this.E = this.memory.mem_Environment_extend(frame_address, this.E)
       const locals = instr.syms
       for (let i = 0; i < locals.length; i++) {
         this.memory.mem_set_child(frame_address, i, this.memory.Unassigned)
@@ -113,8 +112,7 @@ export class GoVM implements VirtualMachine {
       this.memory.mem_set_Environment_value(this.E, instr.pos, this.OS[this.OS.length - 1]),
     LDF: (instr: Ldf) => {
       const arity = instr.prms.length
-      const block = this.memory.get_block(this.currentThread)
-      const closure_address = this.memory.mem_allocate_Closure(block, arity, instr.addr, this.E)
+      const closure_address = this.memory.mem_allocate_Closure(arity, instr.addr, this.E)
       this.OS.push(closure_address)
     },
     CALL: (instr: Call) => {
@@ -123,15 +121,13 @@ export class GoVM implements VirtualMachine {
       if (this.memory.is_Builtin(fun)) {
         return this.apply_builtin(this.memory.mem_get_Builtin_id(fun))
       }
-      const block = this.memory.get_block(this.currentThread)
-      const frame_address = this.memory.mem_allocate_Frame(block, arity)
+      const frame_address = this.memory.mem_allocate_Frame(arity)
       for (let i = arity - 1; i >= 0; i--) {
         this.memory.mem_set_child(frame_address, i, this.OS.pop())
       }
       this.OS.pop() // pop fun
-      this.RTS.push(this.memory.mem_allocate_Callframe(block, this.E, this.PC))
+      this.RTS.push(this.memory.mem_allocate_Callframe(this.E, this.PC))
       this.E = this.memory.mem_Environment_extend(
-        block,
         frame_address,
         this.memory.mem_get_Closure_environment(fun)
       )
@@ -167,7 +163,6 @@ export class GoVM implements VirtualMachine {
 
   apply_binop = (op: string, v2: number, v1: number) =>
     this.memory.JS_value_to_address(
-      this.currentThread,
       this.memory.binop_microcode[op](
         this.memory.address_to_JS_value(v1),
         this.memory.address_to_JS_value(v2)
