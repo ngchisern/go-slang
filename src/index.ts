@@ -15,8 +15,16 @@ import "fmt"
 //   wg.Done()
 // }
 
+// counter with mutex
+var counter int = 0
+var mu sync.Mutex
+// var channel chan int
+
 func simple(x int) {
-  fmt.Println(x);
+  mu.Lock();
+  counter = counter + x;
+  fmt.Println(counter);
+  mu.Unlock();
 }
 
 func main() {
@@ -30,6 +38,9 @@ func main() {
   x := 42;
   x = x - 21;
   go simple(x);
+  go simple(x);
+  x = x - 3;
+  simple(x);
 }
 `
 
@@ -39,3 +50,5 @@ export const compileAndRunGoCode = (code: string) => {
   // instrs.forEach((v, i) => console.log(`${i}:`, v))
   run(instrs)
 }
+
+// compileAndRunGoCode(code)

@@ -22,7 +22,7 @@ import {
   TypeName,
   VariableDeclaration
 } from '../common/astNode'
-import { Instruction, Goto, Call } from '../common/instruction'
+import { Instruction, Goto, Call, Ldc, Ld } from '../common/instruction'
 import { compile_time_environment_position, is_boolean, is_number } from '../vm/utils'
 import { Memory } from '../vm/memory'
 import { GoLit, GoTag } from '../common/types'
@@ -63,6 +63,7 @@ const compile = (comp: AstNode, ce: string[][]) => {
 const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } = {
   src: (comp: SourceFile, ce: string[][]) => {
     const names: string[] = []
+    comp.imports.forEach(name => names.push(name.substring(1, name.length - 1)))
 
     comp.decls.forEach(decl => {
       if (decl.tag === 'func') {
@@ -77,6 +78,13 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
 
     // ENTER SCOPE first
     instrs[wc++] = { tag: 'ENTER_SCOPE', syms: names }
+
+    comp.imports.forEach(name => {
+      const val = name.substring(1, name.length - 1)
+      instrs[wc++] = { tag: 'LDC', val: { tag: GoTag.Boolean, val: true } } // TODO: string is not supported: dunmy value
+      instrs[wc++] = { tag: 'ASSIGN', pos: compile_time_environment_position(new_env, val) }
+    })
+
     comp.decls.map(decl => compile(decl, new_env))
     compile(
       {
@@ -114,7 +122,6 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
       // TODO spec.type should be stored and needed somewhere.
       for (let i = 0; i < spec.syms.length; i++) {
         // varDecl without expr has undefined as expr.
-        console.log('compiling', spec.type)
         spec.exprs[i]
           ? compile(spec.exprs[i], ce)
           : spec.type
@@ -207,6 +214,7 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
   meth: (comp: MethodExpression, ce: string[][]) => {
     instrs[wc++] = {
       tag: 'LD',
+      sel: undefined,
       pos: compile_time_environment_position(ce, comp.ident)
     }
   },
@@ -216,13 +224,15 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
     const sel = comp.sel.tag === 'ident' ? comp.sel.name : (comp.sel as MethodExpression).ident
     instrs[wc++] = {
       tag: 'LD',
-      pos: compile_time_environment_position(ce, `${sel}.${comp.ident}`)
+      sel: compile_time_environment_position(ce, sel),
+      pos: compile_time_environment_position(ce, comp.ident)
     }
   },
 
   ident: (comp: Identifier, ce: string[][]) => {
     instrs[wc++] = {
       tag: 'LD',
+      sel: undefined,
       pos: compile_time_environment_position(ce, comp.name)
     }
   },

@@ -13,6 +13,9 @@ export const Frame_tag = 9
 export const Environment_tag = 10
 export const Pair_tag = 11
 export const Builtin_tag = 12
+export const Mutex_tag = 13
+export const WaitGroup_tag = 14
+export const Channel_tag = 15
 
 export const mem_make = (bytes: number): DataView => {
   if (bytes % 8 !== 0) {

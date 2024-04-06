@@ -23,6 +23,7 @@ import {
   mem_make,
   tail
 } from './utils'
+import { VMState } from './vm'
 
 export const word_size = 8
 const mega = 2 ** 20
@@ -311,6 +312,21 @@ export class Memory {
 
   is_Number = (address: number) => this.mem_get_tag(address) === Number_tag
 
+  // Mutex
+  // [1 byte tag, 4 bytes unused,
+  //  2 bytes #children, 1 byte unused]
+  // followed by 1 boolean (locked), 1 owner (addr)
+  // note: #children is 0
+
+  mem_allocate_Mutex = () => {
+    const mutex_address = this.mem_allocate(Number_tag, 3)
+    this.mem_set(mutex_address + 1, 0)
+    this.mem_set(mutex_address + 2, 0)
+    return mutex_address
+  }
+
+  is_Mutex = (address: number) => this.mem_get_tag(address) === Number_tag
+
   binop_microcode: { [key: string]: (x: number, y: number) => GoLit } = {
     '+': (x: number, y: number) => ({ tag: GoTag.Int, val: x + y }),
     '*': (x: number, y: number) => ({ tag: GoTag.Int, val: x * y }),
@@ -359,7 +375,9 @@ export class Memory {
           : this.False
         : x.tag === GoTag.Int
           ? this.mem_allocate_Number(x.val ? x.val : 0)
-          : console.error('unknown JS value during JS value to address conversion:' + x)
+          : x.tag == GoTag.Mutex
+            ? this.mem_allocate_Mutex()
+            : console.error('unknown JS value during JS value to address conversion:' + x)
 
   /**
    * Builtins
@@ -368,10 +386,50 @@ export class Memory {
   // arguments directly from the operand stack,
   // to save the creation of an intermediate
   // argument array
-  builtin_object: { [key: string]: (OS: Array<any>) => any } = {
-    'fmt.Println': OS => {
-      const address = OS.pop()
+  builtin_object: { [key: string]: (state: VMState) => any } = {
+    Println: state => {
+      const address = state.OS.pop()
       console.log(this.address_to_JS_value(address))
+      return address
+    },
+    Lock: state => {
+      const address = state.OS[state.OS.length - 2]
+
+      if (!this.is_Mutex(address)) {
+        console.error('not a mutex')
+      }
+
+      const locked = this.mem_get(address + 1)
+      if (locked === 1) {
+        // handle state where mutex is already locked
+        state.PC--
+        state.blocked = true
+        return
+      }
+
+      this.mem_set(address + 1, 1)
+      this.mem_set(address + 2, state.currentThread as number)
+
+      state.OS.pop() // pop the fun; apply builtin will pop the method name
+      return address
+    },
+    Unlock: state => {
+      // pop the second last element
+      const address = state.OS[state.OS.length - 2]
+
+      if (!this.is_Mutex(address)) {
+        console.error('not a mutex')
+      }
+
+      const locked = this.mem_get(address + 1)
+      const owner = this.mem_get(address + 2)
+
+      if (locked === 0 || owner !== state.currentThread) {
+        console.error('Error unlocking mutex')
+      }
+
+      this.mem_set(address + 1, 0)
+      state.OS.pop()
       return address
     }
   }
