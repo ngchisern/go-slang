@@ -48,7 +48,6 @@ export interface Assign extends InstructionBase {
 
 export interface Send extends InstructionBase {
   tag: 'SEND'
-  pos: [number, number]
 }
 
 export interface Pop extends InstructionBase {

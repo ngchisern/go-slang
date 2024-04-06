@@ -11,10 +11,13 @@ import {
   Assign,
   Ldf,
   Call,
-  Reset
+  Reset,
+  Unop
 } from '../common/instruction'
 import { Memory } from './memory'
 import { Scheduler } from './scheduler'
+import { GoTag } from '../common/types'
+import { Channel_tag, Null_tag, Number_tag, True_tag } from './utils'
 
 export interface VirtualMachine {
   instrs: Instruction[]
@@ -94,6 +97,7 @@ export class GoVM implements VirtualMachine {
     // console.log('running', this.state.currentThreadName)
     while (this.should_continue()) {
       const instr = this.instrs[this.state.PC++]
+      // console.log(this.state.PC, instr)
       this.microcode[instr.tag](instr)
       this.scheduler.postLoopUpdate()
     }
@@ -110,6 +114,7 @@ export class GoVM implements VirtualMachine {
 
   microcode: { [type: string]: (instr: Instruction) => void } = {
     LDC: (instr: Ldc) => this.state.OS.push(this.memory.JS_value_to_address(instr.val)),
+    UNOP: (instr: Unop) => this.apply_unop(instr.sym),
     BINOP: (instr: Binop) =>
       this.state.OS.push(this.apply_binop(instr.sym, this.state.OS.pop(), this.state.OS.pop())),
     POP: (instr: Pop) => this.state.OS.pop(),
@@ -180,6 +185,33 @@ export class GoVM implements VirtualMachine {
       } else {
         this.state.PC--
       }
+    },
+    SEND: state => {
+      const in_addr = this.state.OS.pop()
+      const chan_addr = this.state.OS.pop()
+
+      if (!this.memory.is_Channel(chan_addr)) {
+        console.error('send: not a channel')
+        return
+      }
+
+      const size = this.memory.mem_get(chan_addr + 1)
+      const count = this.memory.mem_get(chan_addr + 2)
+
+      if (count >= size) {
+        this.state.PC--
+        this.state.blocked = true
+
+        this.state.OS.push(chan_addr)
+        this.state.OS.push(in_addr)
+
+        return
+      }
+
+      this.memory.mem_set_child(chan_addr, 3 + count, in_addr)
+      this.memory.mem_set(chan_addr + 2, count + 1)
+
+      this.state.OS.pop()
     }
   }
 
@@ -190,6 +222,18 @@ export class GoVM implements VirtualMachine {
       E: this.state.E,
       PC: this.state.PC + 1 // + 1 to skip the GOTO instruction
     })
+  }
+
+  apply_unop = (op: string) => {
+    const v = this.state.OS.pop()
+    const addr = this.memory.unop_microcode[op](v, this.state)
+
+    if (this.state.blocked) {
+      this.state.OS.push(v)
+      return
+    }
+
+    this.state.OS.push(addr)
   }
 
   apply_binop = (op: string, v2: number, v1: number) =>

@@ -23,6 +23,7 @@ export interface WaitGroup extends GoLitBase {
 
 export interface Channel extends GoLitBase {
   tag: GoTag.Channel
+  type?: GoTag
 }
 
 export interface Int extends GoLitBase {

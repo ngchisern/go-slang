@@ -148,7 +148,7 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
   send: (comp: SendStatement, ce: string[][]) => {
     compile(comp.chan, ce)
     compile(comp.msg, ce)
-    instrs[wc++] = { tag: 'SEND', pos: compile_time_environment_position(ce, comp.chan.name) }
+    instrs[wc++] = { tag: 'SEND' }
   },
 
   literal: (comp: BasicLiteral, ce: string[][]) => {
@@ -258,7 +258,9 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
 
     if (comp.type.tag === 'chanType') {
       compile(comp.type.elem, ce)
-      instr = { tag: GoTag.Channel }
+      const prev = instrs.pop() as Ldc
+      wc--
+      instr = { tag: GoTag.Channel, type: prev.val?.tag as GoTag }
     } else if (comp.type.name == 'int') {
       instr = { tag: GoTag.Int }
     } else if (comp.type.name == 'sync.Mutex') {

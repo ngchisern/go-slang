@@ -1,9 +1,11 @@
+import { error } from 'console'
 import { LdcType } from '../common/instruction'
 import { GoLit, GoTag } from '../common/types'
 import {
   Blockframe_tag,
   Builtin_tag,
   Callframe_tag,
+  Channel_tag,
   Closure_tag,
   Environment_tag,
   False_tag,
@@ -26,11 +28,12 @@ import {
   tail
 } from './utils'
 import { VMState } from './vm'
+import { isBuiltin } from 'module'
 
 export const word_size = 8
 const mega = 2 ** 20
 
-const memory_size = 3000
+const memory_size = 5000
 
 const size_offset = 5
 
@@ -336,12 +339,52 @@ export class Memory {
   // note: #children is 0
 
   mem_allocate_WaitGroup = () => {
-    const wg_address = this.mem_allocate(WaitGroup_tag, 3)
+    const wg_address = this.mem_allocate(WaitGroup_tag, 2)
     this.mem_set(wg_address + 1, 0)
     return wg_address
   }
 
   is_WaitGroup = (address: number) => this.mem_get_tag(address) === WaitGroup_tag
+
+  // Channel
+  // [1 byte tag, 4 bytes unused,
+  //  2 bytes #children, 1 byte unused]
+  // followed by 1 number (buffer size), 1 buffer count
+  // 1 type, buffer size number of addresses
+  // note: #children is 0
+
+  mem_allocate_Channel = (size: number, type: number) => {
+    const ch_address = this.mem_allocate(Channel_tag, 4 + Math.max(1, size)) // allocate one more for unbuffered channel
+    this.mem_set(ch_address + 1, size)
+    this.mem_set(ch_address + 2, 0)
+    this.mem_set(ch_address + 3, type)
+    return ch_address
+  }
+
+  is_Channel = (address: number) => this.mem_get_tag(address) === Channel_tag
+
+  unop_microcode: { [key: string]: (x: number, state: VMState) => number } = {
+    '<-': (x: number, state: VMState) => {
+      if (!this.is_Channel(x)) {
+        console.error('unop: not a channel', x)
+        return -1
+      }
+
+      const size = this.mem_get(x + 1)
+      const count = this.mem_get(x + 2)
+
+      if (count === 0) {
+        state.PC--
+        state.blocked = true
+        return -1
+      }
+
+      const addr = this.mem_get_child(x, 3 + count - 1)
+      this.mem_set(x + 2, count - 1)
+
+      return addr
+    }
+  }
 
   binop_microcode: { [key: string]: (x: number, y: number) => GoLit } = {
     '+': (x: number, y: number) => ({ tag: GoTag.Int, val: x + y }),
@@ -395,7 +438,16 @@ export class Memory {
             ? this.mem_allocate_Mutex()
             : x.tag == GoTag.WaitGroup
               ? this.mem_allocate_WaitGroup()
-            : console.error('unknown JS value during JS value to address conversion:' + x)
+              : x.tag == GoTag.Channel
+                ? this.mem_allocate_Channel(
+                    0,
+                    x.type === GoTag.Int
+                      ? Number_tag
+                      : x.type === GoTag.Boolean
+                        ? True_tag
+                        : Null_tag
+                  )
+                : console.error('unknown JS value during JS value to address conversion:' + x)
 
   /**
    * Builtins
@@ -405,6 +457,23 @@ export class Memory {
   // to save the creation of an intermediate
   // argument array
   builtin_object: { [key: string]: (state: VMState) => any } = {
+    make: state => {
+      const addr = state.OS.pop()
+      if (this.is_Channel(addr)) {
+        // unbuffered channel
+        return this.mem_allocate_Channel(0, this.mem_get(addr + 3))
+      }
+
+      const size = this.address_to_JS_value(addr)
+      const addr2 = state.OS.pop()
+
+      if (!this.is_Channel(addr2) || size < 0) {
+        console.error('make: not a channel')
+        return
+      }
+
+      return this.mem_allocate_Channel(size, this.mem_get(addr + 3))
+    },
     Println: state => {
       const address = state.OS.pop()
       console.log(this.address_to_JS_value(address))
