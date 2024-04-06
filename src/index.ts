@@ -17,30 +17,34 @@ import "fmt"
 
 // counter with mutex
 var counter int = 0
-var mu sync.Mutex
+// var mu sync.Mutex
+var wg sync.WaitGroup
 // var channel chan int
 
 func simple(x int) {
-  mu.Lock();
+  // mu.Lock();
   counter = counter + x;
   fmt.Println(counter);
-  mu.Unlock();
+  // wg.Done();
+  // mu.Unlock();
 }
 
 func main() {
   // c := make(chan int)
   // var wg sync.waitGroup
-  // wg.Add(1)
+  // wg.Add(2)
   // go minus(c, wg)
   // c <- 21
   // close(c)
   // wg.Wait()
   x := 42;
   x = x - 21;
+  
   go simple(x);
   go simple(x);
-  x = x - 3;
-  simple(x);
+  // x = x - 3;
+  // simple(x);
+  // wg.Wait()
 }
 `
 

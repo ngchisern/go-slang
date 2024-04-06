@@ -8,12 +8,14 @@ import {
   Environment_tag,
   False_tag,
   Frame_tag,
+  Mutex_tag,
   Null_tag,
   Number_tag,
   Pair_tag,
   True_tag,
   Unassigned_tag,
   Undefined_tag,
+  WaitGroup_tag,
   head,
   is_boolean,
   is_null,
@@ -319,13 +321,27 @@ export class Memory {
   // note: #children is 0
 
   mem_allocate_Mutex = () => {
-    const mutex_address = this.mem_allocate(Number_tag, 3)
+    const mutex_address = this.mem_allocate(Mutex_tag, 3)
     this.mem_set(mutex_address + 1, 0)
     this.mem_set(mutex_address + 2, 0)
     return mutex_address
   }
 
-  is_Mutex = (address: number) => this.mem_get_tag(address) === Number_tag
+  is_Mutex = (address: number) => this.mem_get_tag(address) === Mutex_tag
+
+  // WaitGroup
+  // [1 byte tag, 4 bytes unused,
+  //  2 bytes #children, 1 byte unused]
+  // followed by 1 number (wait count)
+  // note: #children is 0
+
+  mem_allocate_WaitGroup = () => {
+    const wg_address = this.mem_allocate(WaitGroup_tag, 3)
+    this.mem_set(wg_address + 1, 0)
+    return wg_address
+  }
+
+  is_WaitGroup = (address: number) => this.mem_get_tag(address) === WaitGroup_tag
 
   binop_microcode: { [key: string]: (x: number, y: number) => GoLit } = {
     '+': (x: number, y: number) => ({ tag: GoTag.Int, val: x + y }),
@@ -377,6 +393,8 @@ export class Memory {
           ? this.mem_allocate_Number(x.val ? x.val : 0)
           : x.tag == GoTag.Mutex
             ? this.mem_allocate_Mutex()
+            : x.tag == GoTag.WaitGroup
+              ? this.mem_allocate_WaitGroup()
             : console.error('unknown JS value during JS value to address conversion:' + x)
 
   /**
@@ -429,6 +447,51 @@ export class Memory {
       }
 
       this.mem_set(address + 1, 0)
+      state.OS.pop()
+      return address
+    },
+    Add: state => {
+      const address = state.OS[state.OS.length - 3]
+
+      if (!this.is_WaitGroup(address)) {
+        console.error('not a WaitGroup')
+      }
+
+      const count = this.mem_get(address + 1)
+      const additional = this.address_to_JS_value(state.OS.pop())
+
+      this.mem_set(address + 1, count + additional)
+
+      state.OS.pop()
+      return address
+    },
+    Done: state => {
+      const address = state.OS[state.OS.length - 2]
+
+      if (!this.is_WaitGroup(address)) {
+        console.error('not a WaitGroup')
+      }
+
+      const count = this.mem_get(address + 1)
+      this.mem_set(address + 1, count - 1)
+
+      state.OS.pop()
+      return address
+    },
+    Wait: state => {
+      const address = state.OS[state.OS.length - 2]
+
+      if (!this.is_WaitGroup(address)) {
+        console.error('not a WaitGroup')
+      }
+
+      const count = this.mem_get(address + 1)
+      if (count !== 0) {
+        state.PC--
+        state.blocked = true
+        return
+      }
+
       state.OS.pop()
       return address
     }
