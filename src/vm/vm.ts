@@ -78,12 +78,15 @@ export class GoVM implements VirtualMachine {
   run = (scheduler: Scheduler) => {
     this.scheduler = scheduler
     console.log('running', this.currentThreadName)
-    while (!(this.instrs[this.PC].tag === 'DONE') && this.scheduler.checkCondition()) {
-      console.log(this.PC, this.instrs[this.PC], this.OS, this.currentThreadName)
+    while (this.should_continue()) {
       const instr = this.instrs[this.PC++]
       this.microcode[instr.tag](instr)
       this.scheduler.postLoopUpdate()
     }
+  }
+
+  should_continue = () => {
+    return this.instrs[this.PC].tag !== 'DONE' && this.instrs[this.PC].tag !== 'GO_DONE' && this.scheduler.checkCondition()
   }
 
   microcode: { [type: string]: (instr: Instruction) => void } = {
@@ -151,11 +154,9 @@ export class GoVM implements VirtualMachine {
   }
 
   spawn_goroutine = () => {
-    // TODO: need to deep copy the memory instead
-    // const threadId = this.threadCount++
     return new Goroutine(this.currentThread, 'worker ' + String(this.threadCount++), {
       OS: [],
-      RTS: [...this.RTS],
+      RTS: [],
       E: this.E,
       PC: this.PC + 1 // + 1 to skip the GOTO instruction
     })

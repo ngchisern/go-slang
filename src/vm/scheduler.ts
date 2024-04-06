@@ -35,6 +35,8 @@ export class TimeSliceGoScheduler implements Scheduler {
       this.vm.save(go)
       if (!go.isComplete(this.vm)) {
         this.queue.push(go)
+      } else if (go == main) {
+        break
       }
     }
   }

@@ -179,7 +179,7 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
     const goto: Goto = { tag: 'GOTO', addr: -1 }
     instrs[wc++] = goto
     compile(comp.expr, ce)
-    instrs[wc++] = { tag: 'DONE' }
+    instrs[wc++] = { tag: 'GO_DONE' }
     goto.addr = wc
   },
 

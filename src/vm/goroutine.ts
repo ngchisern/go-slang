@@ -27,6 +27,6 @@ export class Goroutine implements Task {
   isComplete(vm: VirtualMachine) {
     // Updated type of 'vm' parameter
     const PC = this.context.PC
-    return vm.instrs[PC].tag === 'DONE'
+    return vm.instrs[PC].tag === 'DONE' || vm.instrs[PC].tag === 'GO_DONE'
   }
 }

@@ -4,6 +4,7 @@ export type LcdType = LiteralType | undefined
 
 export type Instruction =
   | Done
+  | GoDone
   | EnterScope
   | ExitScope
   | Assign
@@ -26,6 +27,10 @@ interface InstructionBase {
 
 export interface Done extends InstructionBase {
   tag: 'DONE'
+}
+
+export interface GoDone extends InstructionBase {
+  tag: 'GO_DONE'
 }
 
 export interface EnterScope extends InstructionBase {
