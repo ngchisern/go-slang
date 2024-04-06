@@ -86,7 +86,11 @@ export class GoVM implements VirtualMachine {
   }
 
   should_continue = () => {
-    return this.instrs[this.PC].tag !== 'DONE' && this.instrs[this.PC].tag !== 'GO_DONE' && this.scheduler.checkCondition()
+    return (
+      this.instrs[this.PC].tag !== 'DONE' &&
+      this.instrs[this.PC].tag !== 'GO_DONE' &&
+      this.scheduler.checkCondition()
+    )
   }
 
   microcode: { [type: string]: (instr: Instruction) => void } = {

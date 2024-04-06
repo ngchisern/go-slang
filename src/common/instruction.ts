@@ -1,6 +1,5 @@
-import { LiteralType, ParameterDeclaration } from './astNode'
-
-export type LcdType = LiteralType | undefined
+import { ParameterDeclaration } from './astNode'
+import { GoLit } from './types'
 
 export type Instruction =
   | Done
@@ -56,9 +55,11 @@ export interface Pop extends InstructionBase {
   tag: 'POP'
 }
 
+export type LdcType = GoLit | undefined
+
 export interface Ldc extends InstructionBase {
   tag: 'LDC'
-  val: LcdType
+  val: LdcType
 }
 
 export interface Ldf extends InstructionBase {

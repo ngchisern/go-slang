@@ -1,3 +1,5 @@
+import { LdcType } from '../common/instruction'
+import { GoLit, GoTag } from '../common/types'
 import {
   Blockframe_tag,
   Builtin_tag,
@@ -309,18 +311,18 @@ export class Memory {
 
   is_Number = (address: number) => this.mem_get_tag(address) === Number_tag
 
-  binop_microcode: { [key: string]: (x: number, y: number) => any } = {
-    '+': (x: number, y: number) => x + y,
-    '*': (x: number, y: number) => x * y,
-    '-': (x: number, y: number) => x - y,
-    '/': (x: number, y: number) => x / y,
-    '%': (x: number, y: number) => x % y,
-    '<': (x: number, y: number) => x < y,
-    '<=': (x: number, y: number) => x <= y,
-    '>=': (x: number, y: number) => x >= y,
-    '>': (x: number, y: number) => x > y,
-    '===': (x: number, y: number) => x === y,
-    '!==': (x: number, y: number) => x !== y
+  binop_microcode: { [key: string]: (x: number, y: number) => GoLit } = {
+    '+': (x: number, y: number) => ({ tag: GoTag.Int, val: x + y }),
+    '*': (x: number, y: number) => ({ tag: GoTag.Int, val: x * y }),
+    '-': (x: number, y: number) => ({ tag: GoTag.Int, val: x - y }),
+    '/': (x: number, y: number) => ({ tag: GoTag.Int, val: x / y }),
+    '%': (x: number, y: number) => ({ tag: GoTag.Int, val: x % y }),
+    '<': (x: number, y: number) => ({ tag: GoTag.Boolean, val: x < y }),
+    '<=': (x: number, y: number) => ({ tag: GoTag.Boolean, val: x <= y }),
+    '>=': (x: number, y: number) => ({ tag: GoTag.Boolean, val: x >= y }),
+    '>': (x: number, y: number) => ({ tag: GoTag.Boolean, val: x > y }),
+    '===': (x: number, y: number) => ({ tag: GoTag.Boolean, val: x === y }),
+    '!==': (x: number, y: number) => ({ tag: GoTag.Boolean, val: x !== y })
   }
 
   // conversions between addresses and JS_value
@@ -346,25 +348,18 @@ export class Memory {
                   ? '<closure>'
                   : this.is_Builtin(x)
                     ? '<builtin>'
-                    : console.error('unknown word tag during address to JS value conversion:')
+                    : console.error('unknown word tag during address to JS value conversion:' + x)
 
-  JS_value_to_address = (x: any): any =>
-    is_boolean(x)
-      ? x
-        ? this.True
-        : this.False
-      : is_number(x)
-        ? this.mem_allocate_Number(x)
-        : is_undefined(x)
-          ? this.is_Undefined
-          : is_null(x)
-            ? this.Null
-            : is_pair(x)
-              ? this.mem_allocate_Pair(
-                  this.JS_value_to_address(head(x)),
-                  this.JS_value_to_address(tail(x))
-                )
-              : console.error('unknown JS value during JS value to address conversion:')
+  JS_value_to_address = (x: LdcType): any =>
+    x === undefined
+      ? this.is_Undefined
+      : x.tag === GoTag.Boolean
+        ? x.val
+          ? this.True
+          : this.False
+        : x.tag === GoTag.Int
+          ? this.mem_allocate_Number(x.val ? x.val : 0)
+          : console.error('unknown JS value during JS value to address conversion:' + x)
 
   /**
    * Builtins

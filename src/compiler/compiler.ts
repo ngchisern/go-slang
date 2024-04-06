@@ -23,8 +23,10 @@ import {
   VariableDeclaration
 } from '../common/astNode'
 import { Instruction, Goto, Call } from '../common/instruction'
-import { compile_time_environment_position } from '../vm/utils'
+import { compile_time_environment_position, is_boolean, is_number } from '../vm/utils'
 import { Memory } from '../vm/memory'
+import { GoLit, GoTag } from '../common/types'
+import { error } from 'console'
 
 // compile-time frames only need synbols (keys), no values
 const global_compile_frame = Object.keys(new Memory().primitive_object)
@@ -60,9 +62,17 @@ const compile = (comp: AstNode, ce: string[][]) => {
 
 const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } = {
   src: (comp: SourceFile, ce: string[][]) => {
-    const names = comp.decls.map(decl =>
-      decl.tag === 'func' ? (decl as FunctionDeclaration).sym : 'not supported'
-    )
+    const names: string[] = []
+
+    comp.decls.forEach(decl => {
+      if (decl.tag === 'func') {
+        names.push((decl as FunctionDeclaration).sym)
+      } else {
+        ;(decl as VariableDeclaration).specs.forEach(spec => {
+          names.push(...spec.syms)
+        })
+      }
+    })
     const new_env = compile_time_environment_extend(names, ce)
 
     // ENTER SCOPE first
@@ -104,7 +114,12 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
       // TODO spec.type should be stored and needed somewhere.
       for (let i = 0; i < spec.syms.length; i++) {
         // varDecl without expr has undefined as expr.
-        spec.exprs[i] ? compile(spec.exprs[i], ce) : (instrs[wc++] = { tag: 'LDC', val: undefined })
+        console.log('compiling', spec.type)
+        spec.exprs[i]
+          ? compile(spec.exprs[i], ce)
+          : spec.type
+            ? compile(spec.type, ce)
+            : (instrs[wc++] = { tag: 'LDC', val: undefined })
         instrs[wc++] = { tag: 'ASSIGN', pos: compile_time_environment_position(ce, spec.syms[i]) }
         instrs[wc++] = { tag: 'POP' }
       }
@@ -130,7 +145,13 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
   },
 
   literal: (comp: BasicLiteral, ce: string[][]) => {
-    instrs[wc++] = { tag: 'LDC', val: comp.value }
+    const val: GoLit = is_boolean(comp.value)
+      ? { tag: GoTag.Boolean, val: comp.value as boolean }
+      : is_number(comp.value)
+        ? { tag: GoTag.Int, val: comp.value as number }
+        : { tag: GoTag.String, val: comp.value as string }
+
+    instrs[wc++] = { tag: 'LDC', val: val }
   },
 
   funcLit: (comp: FunctionLiteral, ce: string[][]) => {
@@ -222,10 +243,27 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
     instrs[wc++] = { tag: 'BINOP', sym: comp.sym }
   },
 
-  type: (comp: Type) => {
-    const getTypeStr = (type: TypeName | ChannelType): string => {
-      return type.tag === 'typeName' ? type.name : `chan ${getTypeStr(type.elem.type)}`
+  type: (comp: Type, ce: string[][]) => {
+    let instr: GoLit
+
+    if (comp.type.tag === 'chanType') {
+      compile(comp.type.elem, ce)
+      instr = { tag: GoTag.Channel }
+    } else if (comp.type.name == 'int') {
+      instr = { tag: GoTag.Int }
+    } else if (comp.type.name == 'sync.Mutex') {
+      instr = { tag: GoTag.Mutex }
+    } else if (comp.type.name == 'sync.WaitGroup') {
+      instr = { tag: GoTag.WaitGroup }
+    } else if (comp.type.name == 'bool') {
+      instr = { tag: GoTag.Boolean }
+    } else if (comp.type.name === 'string') {
+      instr = { tag: GoTag.String }
+    } else {
+      error('unknown type')
+      instr = { tag: GoTag.Int } // dummy value
     }
-    instrs[wc++] = { tag: 'TYPE', type: getTypeStr(comp.type) }
+
+    instrs[wc++] = { tag: 'LDC', val: instr }
   }
 }
