@@ -367,8 +367,7 @@ export class Memory {
   unop_microcode: { [key: string]: (x: number, state: VMState) => number } = {
     '<-': (x: number, state: VMState) => {
       if (!this.is_Channel(x)) {
-        console.error('unop: not a channel', x)
-        return -1
+        throw new Error('unop: not a channel')
       }
 
       const size = this.mem_get(x + 1)
@@ -469,8 +468,7 @@ export class Memory {
       const addr2 = state.OS.pop()
 
       if (!this.is_Channel(addr2) || size < 0) {
-        console.error('make: not a channel')
-        return
+        throw new Error('make: not a channel')
       }
 
       return this.mem_allocate_Channel(size, this.mem_get(addr + 3))
@@ -506,14 +504,14 @@ export class Memory {
       const address = state.OS[state.OS.length - 2]
 
       if (!this.is_Mutex(address)) {
-        console.error('not a mutex')
+        throw new Error('not a mutex')
       }
 
       const locked = this.mem_get(address + 1)
       const owner = this.mem_get(address + 2)
 
       if (locked === 0 || owner !== state.currentThread) {
-        console.error('Error unlocking mutex')
+        throw new Error('sync: unlock of unlocked mutex')
       }
 
       this.mem_set(address + 1, 0)
@@ -524,7 +522,7 @@ export class Memory {
       const address = state.OS[state.OS.length - 3]
 
       if (!this.is_WaitGroup(address)) {
-        console.error('not a WaitGroup')
+        throw new Error('not a WaitGroup')
       }
 
       const count = this.mem_get(address + 1)
@@ -539,7 +537,7 @@ export class Memory {
       const address = state.OS[state.OS.length - 2]
 
       if (!this.is_WaitGroup(address)) {
-        console.error('not a WaitGroup')
+        throw new Error('not a WaitGroup')
       }
 
       const count = this.mem_get(address + 1)
@@ -552,7 +550,7 @@ export class Memory {
       const address = state.OS[state.OS.length - 2]
 
       if (!this.is_WaitGroup(address)) {
-        console.error('not a WaitGroup')
+        throw new Error('not a WaitGroup')
       }
 
       const count = this.mem_get(address + 1)

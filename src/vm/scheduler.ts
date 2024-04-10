@@ -27,7 +27,6 @@ export class TimeSliceGoScheduler implements Scheduler {
     let asleep_count = 0
 
     while (this.queue.length > 0) {
-      console.log(asleep_count, this.queue.length)
       if (asleep_count >= this.queue.length) {
         throw new Error('All goroutines are asleep - deadlock!')
       }
