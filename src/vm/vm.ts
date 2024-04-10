@@ -1,4 +1,4 @@
-import { Goroutine, Task } from './goroutine'
+import { Goroutine, GoroutineState, Task } from './goroutine'
 import {
   Instruction,
   Goto,
@@ -32,7 +32,7 @@ export interface VMState {
   RTS: any[]
   E: number
   PC: number
-  blocked: boolean
+  state: GoroutineState
   currentThread: number
   currentThreadName?: string
 }
@@ -55,7 +55,7 @@ export class GoVM implements VirtualMachine {
       RTS: [],
       E: memory.create_new_environment(),
       PC: 0,
-      blocked: false,
+      state: GoroutineState.RUNNABLE,
       currentThread: -1
     }
   }
@@ -79,7 +79,7 @@ export class GoVM implements VirtualMachine {
     this.state.RTS = go.context.RTS
     this.state.E = go.context.E
     this.state.PC = go.context.PC
-    this.state.blocked = false
+    this.state.state = go.state
 
     this.state.currentThread = go.id
     this.state.currentThreadName = go.name
@@ -90,11 +90,17 @@ export class GoVM implements VirtualMachine {
     go.context.RTS = this.state.RTS
     go.context.E = this.state.E
     go.context.PC = this.state.PC
+    if (this.state.state === GoroutineState.BLOCKED) {
+      go.state = GoroutineState.BLOCKED
+    } else {
+      go.state = GoroutineState.RUNNABLE
+    }
   }
 
   run = (scheduler: Scheduler) => {
     this.scheduler = scheduler
     // console.log('running', this.state.currentThreadName)
+    this.state.state = GoroutineState.RUNNING
     while (this.should_continue()) {
       const instr = this.instrs[this.state.PC++]
       // console.log(this.state.PC, instr)
@@ -108,7 +114,7 @@ export class GoVM implements VirtualMachine {
       this.instrs[this.state.PC].tag !== 'DONE' &&
       this.instrs[this.state.PC].tag !== 'GO_DONE' &&
       this.scheduler.checkCondition() &&
-      !this.state.blocked
+      this.state.state !== GoroutineState.BLOCKED
     )
   }
 
@@ -200,7 +206,7 @@ export class GoVM implements VirtualMachine {
 
       if (count >= size) {
         this.state.PC--
-        this.state.blocked = true
+        this.state.state = GoroutineState.BLOCKED
 
         this.state.OS.push(chan_addr)
         this.state.OS.push(in_addr)
@@ -228,7 +234,7 @@ export class GoVM implements VirtualMachine {
     const v = this.state.OS.pop()
     const addr = this.memory.unop_microcode[op](v, this.state)
 
-    if (this.state.blocked) {
+    if (this.state.state === GoroutineState.BLOCKED) {
       this.state.OS.push(v)
       return
     }
@@ -247,7 +253,7 @@ export class GoVM implements VirtualMachine {
   apply_builtin = (builtin_id: number) => {
     const result = this.memory.builtin_array[builtin_id](this.state)
 
-    if (this.state.blocked) {
+    if (this.state.state === GoroutineState.BLOCKED) {
       return
     }
 

@@ -29,6 +29,7 @@ import {
 } from './utils'
 import { VMState } from './vm'
 import { isBuiltin } from 'module'
+import { GoroutineState } from './goroutine'
 
 export const word_size = 8
 const mega = 2 ** 20
@@ -375,7 +376,7 @@ export class Memory {
 
       if (count === 0) {
         state.PC--
-        state.blocked = true
+        state.state = GoroutineState.BLOCKED
         return -1
       }
 
@@ -490,7 +491,7 @@ export class Memory {
       if (locked === 1) {
         // handle state where mutex is already locked
         state.PC--
-        state.blocked = true
+        state.state = GoroutineState.BLOCKED
         return
       }
 
@@ -557,7 +558,7 @@ export class Memory {
       const count = this.mem_get(address + 1)
       if (count !== 0) {
         state.PC--
-        state.blocked = true
+        state.state = GoroutineState.BLOCKED
         return
       }
 

@@ -1,4 +1,4 @@
-import { Goroutine, Task } from './goroutine'
+import { Goroutine, GoroutineState, Task } from './goroutine'
 import { GoVM, VirtualMachine } from './vm'
 
 export interface Scheduler {
@@ -24,8 +24,14 @@ export class TimeSliceGoScheduler implements Scheduler {
   run() {
     const main = this.vm.main()
     this.queue.push(main)
+    let asleep_count = 0
 
     while (this.queue.length > 0) {
+      console.log(asleep_count, this.queue.length)
+      if (asleep_count >= this.queue.length) {
+        throw new Error('All goroutines are asleep - deadlock!')
+      }
+
       const go = this.queue.shift() as Goroutine
       this.vm.switch(go)
 
@@ -37,6 +43,12 @@ export class TimeSliceGoScheduler implements Scheduler {
         this.queue.push(go)
       } else if (go == main) {
         break
+      }
+
+      if (go.state == GoroutineState.BLOCKED) {
+        asleep_count++
+      } else {
+        asleep_count = 0
       }
     }
   }

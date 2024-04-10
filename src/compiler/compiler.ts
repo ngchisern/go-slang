@@ -26,7 +26,6 @@ import { Instruction, Goto, Call, Ldc, Ld } from '../common/instruction'
 import { compile_time_environment_position, is_boolean, is_number } from '../vm/utils'
 import { Memory } from '../vm/memory'
 import { GoLit, GoTag } from '../common/types'
-import { error } from 'console'
 
 // compile-time frames only need synbols (keys), no values
 const global_compile_frame = Object.keys(new Memory().primitive_object)
@@ -272,7 +271,7 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
     } else if (comp.type.name === 'string') {
       instr = { tag: GoTag.String }
     } else {
-      error('unknown type')
+      console.log('unknown type')
       instr = { tag: GoTag.Int } // dummy value
     }
 
