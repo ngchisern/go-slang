@@ -15,7 +15,8 @@ export const Pair_tag = 11
 export const Builtin_tag = 12
 export const Mutex_tag = 13
 export const WaitGroup_tag = 14
-export const Channel_tag = 15
+export const Buffered_Channel_tag = 15
+export const Unbuffered_Channel_tag = 16
 
 export const mem_make = (bytes: number): DataView => {
   if (bytes % 8 !== 0) {

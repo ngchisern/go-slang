@@ -35,7 +35,7 @@ export class TimeSliceGoScheduler implements Scheduler {
       this.vm.switch(go)
 
       this.resetTimeSlice()
-      this.vm.run(this)
+      const has_run = this.vm.run(this)
 
       this.vm.save(go)
       if (!go.isComplete(this.vm)) {
@@ -44,10 +44,10 @@ export class TimeSliceGoScheduler implements Scheduler {
         break
       }
 
-      if (go.state == GoroutineState.BLOCKED) {
-        asleep_count++
-      } else {
+      if (has_run) {
         asleep_count = 0
+      } else {
+        asleep_count++
       }
     }
   }

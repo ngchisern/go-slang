@@ -3,9 +3,9 @@ import { LdcType } from '../common/instruction'
 import { GoLit, GoTag } from '../common/types'
 import {
   Blockframe_tag,
+  Buffered_Channel_tag,
   Builtin_tag,
   Callframe_tag,
-  Channel_tag,
   Closure_tag,
   Environment_tag,
   False_tag,
@@ -16,6 +16,7 @@ import {
   Pair_tag,
   True_tag,
   Unassigned_tag,
+  Unbuffered_Channel_tag,
   Undefined_tag,
   WaitGroup_tag,
   head,
@@ -347,22 +348,49 @@ export class Memory {
 
   is_WaitGroup = (address: number) => this.mem_get_tag(address) === WaitGroup_tag
 
-  // Channel
+  // Buffered Channel
   // [1 byte tag, 4 bytes unused,
   //  2 bytes #children, 1 byte unused]
   // followed by 1 number (buffer size), 1 buffer count
-  // 1 type, buffer size number of addresses
+  // 1 type, 1 offset, buffer size number of addresses
   // note: #children is 0
 
-  mem_allocate_Channel = (size: number, type: number) => {
-    const ch_address = this.mem_allocate(Channel_tag, 4 + Math.max(1, size)) // allocate one more for unbuffered channel
+  mem_allocate_Buffered_Channel = (size: number, type: number) => {
+    const ch_address = this.mem_allocate(Buffered_Channel_tag, 5 + Math.max(1, size)) // allocate one more for unbuffered channel
     this.mem_set(ch_address + 1, size)
     this.mem_set(ch_address + 2, 0)
     this.mem_set(ch_address + 3, type)
+    this.mem_set(ch_address + 4, 0)
     return ch_address
   }
 
-  is_Channel = (address: number) => this.mem_get_tag(address) === Channel_tag
+  is_Buffered_Channel = (address: number) => this.mem_get_tag(address) === Buffered_Channel_tag
+
+  // Unbuffered Channel
+  // [1 byte tag, 4 bytes unused,
+  //  2 bytes #children, 1 byte unused]
+  // followed by 1 type, 1 hasData, 1 sender, 1 addrress
+  // note: #children is 0
+
+  mem_allocate_Unbuffered_Channel = (type: number) => {
+    const ch_address = this.mem_allocate(Unbuffered_Channel_tag, 5)
+    this.mem_set(ch_address + 1, type)
+    this.mem_set(ch_address + 2, this.False)
+    this.mem_set(ch_address + 3, 0) // sender cannot be 0
+    return ch_address
+  }
+
+  is_Unbuffered_Channel = (address: number) => this.mem_get_tag(address) === Unbuffered_Channel_tag
+
+  // Channel
+
+  mem_allocate_Channel = (size: number, type: number) =>
+    size === 0
+      ? this.mem_allocate_Unbuffered_Channel(type)
+      : this.mem_allocate_Buffered_Channel(size, type)
+
+  is_Channel = (address: number) =>
+    this.is_Buffered_Channel(address) || this.is_Unbuffered_Channel(address)
 
   unop_microcode: { [key: string]: (x: number, state: VMState) => number } = {
     '<-': (x: number, state: VMState) => {
@@ -370,19 +398,33 @@ export class Memory {
         throw new Error('unop: not a channel')
       }
 
-      const size = this.mem_get(x + 1)
-      const count = this.mem_get(x + 2)
+      if (this.is_Buffered_Channel(x)) {
+        const size = this.mem_get(x + 1)
+        const count = this.mem_get(x + 2)
 
-      if (count === 0) {
-        state.PC--
-        state.state = GoroutineState.BLOCKED
-        return -1
+        if (count === 0) {
+          state.PC--
+          state.state = GoroutineState.BLOCKED
+          return -1
+        }
+
+        const addr = this.mem_get_child(x, 4 + count - 1)
+        this.mem_set(x + 2, count - 1)
+
+        return addr
+      } else {
+        const hasData = this.mem_get_child(x, 1)
+        if (this.is_False(hasData)) {
+          state.PC--
+          state.state = GoroutineState.BLOCKED
+          return -1
+        }
+
+        const addr = this.mem_get_child(x, 3)
+        this.mem_set_child(x, 1, this.False)
+
+        return addr
       }
-
-      const addr = this.mem_get_child(x, 3 + count - 1)
-      this.mem_set(x + 2, count - 1)
-
-      return addr
     }
   }
 

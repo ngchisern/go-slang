@@ -16,8 +16,6 @@ import {
 } from '../common/instruction'
 import { Memory } from './memory'
 import { Scheduler } from './scheduler'
-import { GoTag } from '../common/types'
-import { Channel_tag, Null_tag, Number_tag, True_tag } from './utils'
 
 export interface VirtualMachine {
   instrs: Instruction[]
@@ -79,7 +77,7 @@ export class GoVM implements VirtualMachine {
     this.state.RTS = go.context.RTS
     this.state.E = go.context.E
     this.state.PC = go.context.PC
-    this.state.state = go.state
+    this.state.state = GoroutineState.RUNNING // always try to run it
 
     this.state.currentThread = go.id
     this.state.currentThreadName = go.name
@@ -97,16 +95,23 @@ export class GoVM implements VirtualMachine {
     }
   }
 
-  run = (scheduler: Scheduler) => {
+  run = (scheduler: Scheduler): boolean => {
     this.scheduler = scheduler
+    let has_run = false
+
     // console.log('running', this.state.currentThreadName)
-    this.state.state = GoroutineState.RUNNING
     while (this.should_continue()) {
       const instr = this.instrs[this.state.PC++]
-      // console.log(this.state.PC, instr)
+      // console.log(this.state.currentThread, this.state.PC, instr)
       this.microcode[instr.tag](instr)
       this.scheduler.postLoopUpdate()
+
+      if (this.state.state !== GoroutineState.BLOCKED) {
+        has_run = true
+      }
     }
+
+    return has_run
   }
 
   should_continue = () => {
@@ -201,28 +206,53 @@ export class GoVM implements VirtualMachine {
         return
       }
 
-      const size = this.memory.mem_get(chan_addr + 1)
-      const count = this.memory.mem_get(chan_addr + 2)
+      if (this.memory.is_Buffered_Channel(chan_addr)) {
+        const size = this.memory.mem_get(chan_addr + 1)
+        const count = this.memory.mem_get(chan_addr + 2)
 
-      if (count >= size) {
+        if (count >= size) {
+          this.state.PC--
+          this.state.state = GoroutineState.BLOCKED
+
+          this.state.OS.push(chan_addr)
+          this.state.OS.push(in_addr)
+
+          return
+        }
+
+        this.memory.mem_set_child(chan_addr, 4 + count, in_addr)
+        this.memory.mem_set(chan_addr + 2, count + 1)
+
+        this.state.OS.pop()
+      } else {
+        // unbuffered channel
+        const hasData = this.memory.mem_get_child(chan_addr, 1)
+        const sender = this.memory.mem_get_child(chan_addr, 2)
+
+        if (sender == this.state.currentThread && this.memory.is_False(hasData)) {
+          this.memory.mem_set_child(chan_addr, 2, 0)
+          return
+        }
+
+        if (sender == 0) {
+          // no sender
+          this.memory.mem_set_child(chan_addr, 1, this.memory.True)
+          this.memory.mem_set_child(chan_addr, 2, this.state.currentThread)
+          this.memory.mem_set_child(chan_addr, 3, in_addr)
+        }
+
         this.state.PC--
         this.state.state = GoroutineState.BLOCKED
 
         this.state.OS.push(chan_addr)
         this.state.OS.push(in_addr)
-
-        return
       }
-
-      this.memory.mem_set_child(chan_addr, 3 + count, in_addr)
-      this.memory.mem_set(chan_addr + 2, count + 1)
-
-      this.state.OS.pop()
     }
   }
 
   spawn_goroutine = () => {
-    return new Goroutine(this.state.currentThread, 'worker ' + String(this.threadCount++), {
+    const threadId = this.threadCount++
+    return new Goroutine(threadId, 'worker ' + String(threadId), {
       OS: [],
       RTS: [],
       E: this.state.E,
