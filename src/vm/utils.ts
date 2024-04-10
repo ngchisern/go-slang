@@ -1,4 +1,4 @@
-import { Builtin, Memory } from './memory'
+import { Builtin, Memory } from './memory/memory'
 
 export const False_tag = 0
 export const True_tag = 1
@@ -17,15 +17,6 @@ export const Mutex_tag = 13
 export const WaitGroup_tag = 14
 export const Buffered_Channel_tag = 15
 export const Unbuffered_Channel_tag = 16
-
-export const mem_make = (bytes: number): DataView => {
-  if (bytes % 8 !== 0) {
-    console.error('mem bytes must be divisible by 8')
-  }
-  const data = new ArrayBuffer(bytes)
-  const view = new DataView(data)
-  return view
-}
 
 /* ************************
  * compile-time environment

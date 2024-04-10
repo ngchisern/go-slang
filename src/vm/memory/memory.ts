@@ -1,6 +1,5 @@
-import { error } from 'console'
-import { LdcType } from '../common/instruction'
-import { GoLit, GoTag } from '../common/types'
+import { LdcType } from '../../common/instruction'
+import { GoLit, GoTag } from '../../common/types'
 import {
   Blockframe_tag,
   Buffered_Channel_tag,
@@ -25,12 +24,11 @@ import {
   is_number,
   is_pair,
   is_undefined,
-  mem_make,
   tail
-} from './utils'
-import { VMState } from './vm'
+} from '../utils'
+import { VMState } from '../vm'
 import { isBuiltin } from 'module'
-import { GoroutineState } from './goroutine'
+import { GoroutineState } from '../goroutine'
 
 export const word_size = 8
 const mega = 2 ** 20
@@ -46,17 +44,10 @@ export interface Builtin {
 }
 
 // TODO: No garbage collection yet
-/**
- * Memory layout:
- * 0: HEAP block
- * 1..end: STACK blocks
- *
- * STACK blocks start at the end of the memory and grow upwards.
- */
-export class Memory {
-  private data: DataView
-  private builtin_frame: number
-  private free: number
+export abstract class Memory {
+  dataView: DataView
+  builtin_frame: number
+  free: number
 
   // literal values
   False: number
@@ -68,8 +59,25 @@ export class Memory {
   builtin_array: Array<any>
   primitive_object: { [key: string]: Builtin }
 
+  /**
+   * abstract methods
+   */
+  abstract mem_make(bytes: number): void
+
+  abstract setUint8(address: number, value: number): void
+
+  abstract setUint16(address: number, value: number): void
+
+  abstract setFloat64(address: number, value: number): void
+
+  abstract getUint8(address: number): number
+
+  abstract getUint16(address: number): number
+
+  abstract getFloat64(address: number): number
+
   constructor() {
-    this.data = mem_make(memory_size * word_size)
+    this.mem_make(memory_size * word_size)
     this.builtin_frame = 0
     this.free = 0
 
@@ -110,22 +118,22 @@ export class Memory {
   }
 
   mem_allocate = (tag: number, size: number): number => {
-    if (this.free + size >= this.data.byteLength / word_size) {
+    if (this.free + size >= this.dataView.byteLength / word_size) {
       throw new Error('Out of memory')
     }
 
     const address = this.free
     this.free += size
 
-    this.data.setUint8(address * word_size, tag)
-    this.data.setUint16(address * word_size + size_offset, size)
+    this.setUint8(address * word_size, tag)
+    this.setUint16(address * word_size + size_offset, size)
     return address
   }
 
   // get and set a word in mem at given address
-  mem_get = (address: number) => this.data.getFloat64(address * word_size)
+  mem_get = (address: number) => this.getFloat64(address * word_size)
 
-  mem_set = (address: number, x: number) => this.data.setFloat64(address * word_size, x)
+  mem_set = (address: number, x: number) => this.setFloat64(address * word_size, x)
 
   // child index starts at 0
   mem_get_child = (address: number, child_index: number) => this.mem_get(address + 1 + child_index)
@@ -133,23 +141,23 @@ export class Memory {
   mem_set_child = (address: number, child_index: number, value: number) =>
     this.mem_set(address + 1 + child_index, value)
 
-  mem_get_tag = (address: number) => this.data.getUint8(address * word_size)
+  mem_get_tag = (address: number) => this.getUint8(address * word_size)
 
-  mem_get_size = (address: number) => this.data.getUint16(address * word_size + size_offset)
+  mem_get_size = (address: number) => this.getUint16(address * word_size + size_offset)
 
   // access byte in mem, using address and offset
   mem_set_byte_at_offset = (address: number, offset: number, value: number) =>
-    this.data.setUint8(address * word_size + offset, value)
+    this.setUint8(address * word_size + offset, value)
 
   mem_get_byte_at_offset = (address: number, offset: number) =>
-    this.data.getUint8(address * word_size + offset)
+    this.getUint8(address * word_size + offset)
 
   // access byte in mem, using address and offset
   mem_set_2_bytes_at_offset = (address: number, offset: number, value: number) =>
-    this.data.setUint16(address * word_size + offset, value)
+    this.setUint16(address * word_size + offset, value)
 
   mem_get_2_bytes_at_offset = (address: number, offset: number) =>
-    this.data.getUint16(address * word_size + offset)
+    this.getUint16(address * word_size + offset)
 
   // boolean values carry their value (0 for false, 1 for true)
   // in the byte following the tag

@@ -24,11 +24,11 @@ import {
 } from '../common/astNode'
 import { Instruction, Goto, Call, Ldc, Ld } from '../common/instruction'
 import { compile_time_environment_position, is_boolean, is_number } from '../vm/utils'
-import { Memory } from '../vm/memory'
 import { GoLit, GoTag } from '../common/types'
+import { SingleMemory } from '../vm/memory/singleMemory'
 
 // compile-time frames only need synbols (keys), no values
-const global_compile_frame = Object.keys(new Memory().primitive_object)
+const global_compile_frame = Object.keys(new SingleMemory().primitive_object)
 const global_compile_environment = [global_compile_frame]
 
 const compile_time_environment_extend = (vs: string[], e: string[][]) => {

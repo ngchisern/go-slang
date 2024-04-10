@@ -14,7 +14,7 @@ import {
   Reset,
   Unop
 } from '../common/instruction'
-import { Memory } from './memory'
+import { Memory } from './memory/memory'
 import { Scheduler } from './scheduler'
 
 export interface VirtualMachine {
@@ -102,6 +102,7 @@ export class GoVM implements VirtualMachine {
     // console.log('running', this.state.currentThreadName)
     while (this.should_continue()) {
       const instr = this.instrs[this.state.PC++]
+      // console.log('running ', this.state.PC, instr.tag)
       this.microcode[instr.tag](instr)
       this.scheduler.postLoopUpdate()
 
