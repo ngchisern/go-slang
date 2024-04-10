@@ -102,7 +102,6 @@ export class GoVM implements VirtualMachine {
     // console.log('running', this.state.currentThreadName)
     while (this.should_continue()) {
       const instr = this.instrs[this.state.PC++]
-      // console.log(this.state.currentThread, this.state.PC, instr)
       this.microcode[instr.tag](instr)
       this.scheduler.postLoopUpdate()
 
@@ -207,8 +206,8 @@ export class GoVM implements VirtualMachine {
       }
 
       if (this.memory.is_Buffered_Channel(chan_addr)) {
-        const size = this.memory.mem_get(chan_addr + 1)
-        const count = this.memory.mem_get(chan_addr + 2)
+        const size = this.memory.mem_get(chan_addr + 2)
+        const count = this.memory.mem_get(chan_addr + 3)
 
         if (count >= size) {
           this.state.PC--
@@ -220,8 +219,11 @@ export class GoVM implements VirtualMachine {
           return
         }
 
-        this.memory.mem_set_child(chan_addr, 4 + count, in_addr)
-        this.memory.mem_set(chan_addr + 2, count + 1)
+        const offset = this.memory.mem_get(chan_addr + 4)
+        const index = (offset + count) % size
+
+        this.memory.mem_set_child(chan_addr, 4 + index, in_addr)
+        this.memory.mem_set(chan_addr + 3, count + 1)
 
         this.state.OS.pop()
       } else {

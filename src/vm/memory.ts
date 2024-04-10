@@ -351,15 +351,15 @@ export class Memory {
   // Buffered Channel
   // [1 byte tag, 4 bytes unused,
   //  2 bytes #children, 1 byte unused]
-  // followed by 1 number (buffer size), 1 buffer count
-  // 1 type, 1 offset, buffer size number of addresses
+  // followed by 1 type, 1 number (buffer size), 1 buffer count
+  // 1 offset, buffer size number of addresses
   // note: #children is 0
 
   mem_allocate_Buffered_Channel = (size: number, type: number) => {
     const ch_address = this.mem_allocate(Buffered_Channel_tag, 5 + Math.max(1, size)) // allocate one more for unbuffered channel
-    this.mem_set(ch_address + 1, size)
-    this.mem_set(ch_address + 2, 0)
-    this.mem_set(ch_address + 3, type)
+    this.mem_set(ch_address + 1, type)
+    this.mem_set(ch_address + 2, size)
+    this.mem_set(ch_address + 3, 0)
     this.mem_set(ch_address + 4, 0)
     return ch_address
   }
@@ -399,8 +399,8 @@ export class Memory {
       }
 
       if (this.is_Buffered_Channel(x)) {
-        const size = this.mem_get(x + 1)
-        const count = this.mem_get(x + 2)
+        const size = this.mem_get(x + 2)
+        const count = this.mem_get(x + 3)
 
         if (count === 0) {
           state.PC--
@@ -408,8 +408,12 @@ export class Memory {
           return -1
         }
 
-        const addr = this.mem_get_child(x, 4 + count - 1)
+        const offset = this.mem_get(x + 4)
+        const pos = offset
+        const addr = this.mem_get_child(x, 4 + pos)
+
         this.mem_set(x + 2, count - 1)
+        this.mem_set(x + 4, (pos + 1) % size)
 
         return addr
       } else {
