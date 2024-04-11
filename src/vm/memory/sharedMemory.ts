@@ -1,9 +1,9 @@
 import { Memory } from './memory'
 
 export class SharedMemory extends Memory {
-  private data: SharedArrayBuffer
+  data: SharedArrayBuffer
 
-  constructor(data: SharedArrayBuffer) {
+  constructor(data?: SharedArrayBuffer) {
     super(data)
   }
 

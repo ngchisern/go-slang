@@ -1,4 +1,6 @@
+import { Instruction } from '../../common/instruction'
 import { Goroutine, GoroutineState, Task } from '../goroutine'
+import { SingleMemory } from '../memory/singleMemory'
 import { GoVM } from '../vm'
 
 export interface Scheduler {
@@ -14,7 +16,10 @@ export class TimeSliceGoScheduler implements Scheduler {
   private timeSlice: number
   private queue: Goroutine[]
 
-  constructor(vm: GoVM) {
+  constructor(instrs: Instruction[]) {
+    const memory = new SingleMemory()
+    const vm = new GoVM(instrs, memory)
+
     this.queue = []
     this.vm = vm
   }
