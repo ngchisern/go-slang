@@ -11,10 +11,17 @@ export const isNode =
 
 const worker_path = '/externalLibs/web/bundle.js'
 
+enum WorkerState {
+  IDLE,
+  RUNNING
+}
+
 export class ParallelScheduler implements Scheduler {
+  private maxWorker: number
   private workers: Worker[]
+  private workerState: WorkerState[]
+
   private queue: Goroutine[]
-  private workerCount: number
 
   private memory: SharedMemory
   private instructions: Instruction[]
@@ -23,85 +30,99 @@ export class ParallelScheduler implements Scheduler {
   // round robin scheduler
   private workerIndex: number = 0
 
-  constructor(workerCount: number, instrs: Instruction[]) {
+  constructor(maxWorker: number, instrs: Instruction[]) {
+    this.maxWorker = maxWorker
     this.workers = []
+    this.workerState = []
+
     this.queue = []
-    this.workerCount = workerCount
 
     this.memory = new SharedMemory()
     this.instructions = instrs
     this.dummyVM = new GoVM(instrs, this.memory)
 
-    // for (let i = 0; i < workerCount; i++) {
-    this.create_worker()
-    // }
+    for (let i = 0; i < maxWorker; i++) {
+      this.create_worker()
+    }
   }
 
   create_worker() {
     try {
       const worker = new Worker(worker_path, { type: 'module' })
-      worker.onmessage = this.handleWorkerMessage
+      this.workerState.push(WorkerState.IDLE)
       this.workers.push(worker)
+      const done = this.initializeVM(worker)
+      console.log('worker', this.workers.length, 'initialized')
     } catch (e) {
       console.log(e)
     }
   }
 
-  async initializeVM() {
+  async initializeVM(worker: Worker): Promise<RunDone> {
     const setUp: SetUp = {
       type: 'setup',
       state: this.memory.memory_state(),
       instrs: this.instructions
     }
 
-    const promisess = this.workers.map(worker => {
-      return new Promise(resolve => {
-        const setUpHandler = (event: MessageEvent) => {
-          if (event.data.type === 'setup_done') {
-            worker.removeEventListener('message', setUpHandler)
-            resolve(event.data)
-          }
+    return await new Promise(resolve => {
+      const setUpHandler = (event: MessageEvent) => {
+        if (event.data.type === 'setup_done') {
+          worker.removeEventListener('message', setUpHandler)
+          resolve(event.data)
         }
-        worker.addEventListener('message', setUpHandler)
-        worker.postMessage(setUp)
-      })
+      }
+      worker.addEventListener('message', setUpHandler)
+      worker.postMessage(setUp)
     })
-
-    const results = await Promise.all(promisess)
-    console.log('All workers have responded:', results)
   }
 
   async run() {
     const main = this.dummyVM.main()
+    this.workers.forEach(worker => {
+      worker.postMessage({ type: 'run', goroutine: main })
+    })
 
-    const worker = this.workers[this.workerIndex++]
-
-    worker.postMessage({ type: 'run', goroutine: main })
-
-    await this.wait()
+    const all_done = await this.wait()
+    console.log('all done', all_done)
   }
 
   wait() {
     return new Promise(resolve => {
       const runDoneHandler = (event: MessageEvent) => {
         if (event.data.type === 'run_done') {
-          const { goroutine } = event.data as RunDone
-
-          // rehydrate the goroutine
-          const go = new Goroutine(goroutine.id, goroutine.name, goroutine.context)
-
-          if (go.isComplete(this.dummyVM)) {
+          if (this.handle_run_done(event)) {
+            this.workers.forEach(worker => {
+              worker.removeEventListener('message', runDoneHandler)
+            })
             resolve(true)
-          } else {
-            console.log('Goroutine is not complete:', goroutine)
-            this.queue.push(go)
-            resolve(false)
           }
         }
       }
-      const index = this.workerIndex % this.workers.length
-      this.workers[index].addEventListener('message', runDoneHandler)
+
+      this.workers.forEach(worker => {
+        worker.addEventListener('message', runDoneHandler)
+      })
     })
+  }
+
+  handle_run_done(event: MessageEvent): boolean {
+    const workerIndex = this.workers.indexOf(event.target as Worker)
+    this.workerState[workerIndex] = WorkerState.IDLE
+
+    if (this.queue.length === 0 && this.workerState.every(state => state === WorkerState.IDLE)) {
+      return true
+    }
+
+    if (this.queue.length > 0) {
+      const next = this.queue.shift()
+      if (next) {
+        this.workers[workerIndex].postMessage({ type: 'run', goroutine: next })
+        this.workerState[workerIndex] = WorkerState.RUNNING
+      }
+    }
+
+    return false
   }
 
   add(task: Task): void {
@@ -114,9 +135,5 @@ export class ParallelScheduler implements Scheduler {
 
   postLoopUpdate(): void {
     throw new Error('Method not implemented.')
-  }
-
-  handleWorkerMessage(event: MessageEvent) {
-    console.log('main', event.data)
   }
 }

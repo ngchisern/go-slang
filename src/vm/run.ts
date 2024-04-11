@@ -10,6 +10,5 @@ export const run = (instrs: Instruction[]) => {
 
 export async function run_parallel(instrs: Instruction[]) {
   const scheduler = new ParallelScheduler(4, instrs)
-  await scheduler.initializeVM()
   await scheduler.run()
 }
