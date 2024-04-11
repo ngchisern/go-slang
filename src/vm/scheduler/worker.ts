@@ -1,5 +1,6 @@
 import { Instruction } from '../../common/instruction'
 import { Goroutine } from '../goroutine'
+import { MemoryState } from '../memory/memory'
 import { SharedMemory } from '../memory/sharedMemory'
 import { GoVM } from '../vm'
 
@@ -9,7 +10,7 @@ export interface MessageData {
 
 export class SetUp implements MessageData {
   type: 'setup'
-  buffer: SharedArrayBuffer
+  state: MemoryState
   instrs: Instruction[]
 }
 
@@ -31,10 +32,9 @@ export class RunDone implements MessageData {
 let memory: SharedMemory
 let vm: GoVM
 
-const initialize_vm = (data: SharedArrayBuffer, instrs: Instruction[]) => {
-  memory = new SharedMemory(data)
+const initialize_vm = (state: MemoryState, instrs: Instruction[]) => {
+  memory = new SharedMemory(state)
   vm = new GoVM(instrs, memory)
-  run(vm.main())
 }
 
 const run = (goroutine: Goroutine) => {
@@ -53,8 +53,8 @@ const handleMainMessage = (e: MessageEvent) => {
 
   switch (type) {
     case 'setup': {
-      const { buffer, instrs } = e.data as SetUp
-      initialize_vm(buffer, instrs)
+      const { state, instrs } = e.data as SetUp
+      initialize_vm(state, instrs)
       postMessage({ type: 'setup_done', success: true } as SetUpDone)
       break
     }
@@ -65,7 +65,8 @@ const handleMainMessage = (e: MessageEvent) => {
       run(goroutine)
       console.log('Done running goroutine:', goroutine)
 
-      postMessage({ type: 'run_done', goroutine } as RunDone)
+      console.log(goroutine)
+      postMessage({ type: 'run_done', goroutine: goroutine } as RunDone)
       break
     }
     default: {

@@ -4,7 +4,7 @@ import { memory_size, word_size } from '../memory/memory'
 import { SharedMemory } from '../memory/sharedMemory'
 import { GoVM } from '../vm'
 import { Scheduler } from './scheduler'
-import { SetUp } from './worker'
+import { RunDone, SetUp } from './worker'
 
 export const isNode =
   typeof process !== 'undefined' && process.versions != null && process.versions.node != null
@@ -16,11 +16,9 @@ export class ParallelScheduler implements Scheduler {
   private queue: Goroutine[]
   private workerCount: number
 
-  // memory
   private memory: SharedMemory
-  private sharedArrayBuffer: SharedArrayBuffer
-
   private instructions: Instruction[]
+  private dummyVM: GoVM
 
   // round robin scheduler
   private workerIndex: number = 0
@@ -31,9 +29,8 @@ export class ParallelScheduler implements Scheduler {
     this.workerCount = workerCount
 
     this.memory = new SharedMemory()
-    this.sharedArrayBuffer = this.memory.data
-
     this.instructions = instrs
+    this.dummyVM = new GoVM(instrs, this.memory)
 
     // for (let i = 0; i < workerCount; i++) {
     this.create_worker()
@@ -53,7 +50,7 @@ export class ParallelScheduler implements Scheduler {
   async initializeVM() {
     const setUp: SetUp = {
       type: 'setup',
-      buffer: this.sharedArrayBuffer,
+      state: this.memory.memory_state(),
       instrs: this.instructions
     }
 
@@ -75,11 +72,11 @@ export class ParallelScheduler implements Scheduler {
   }
 
   async run() {
-    // const main = new GoVM(this.instructions, this.memory).main()
+    const main = this.dummyVM.main()
 
-    // const worker = this.workers[this.workerIndex++]
+    const worker = this.workers[this.workerIndex++]
 
-    // worker.postMessage({ type: 'run', goroutine: main })
+    worker.postMessage({ type: 'run', goroutine: main })
 
     await this.wait()
   }
@@ -88,18 +85,22 @@ export class ParallelScheduler implements Scheduler {
     return new Promise(resolve => {
       const runDoneHandler = (event: MessageEvent) => {
         if (event.data.type === 'run_done') {
-          const { goroutine } = event.data
+          const { goroutine } = event.data as RunDone
 
-          if (goroutine.isComplete()) {
+          // rehydrate the goroutine
+          const go = new Goroutine(goroutine.id, goroutine.name, goroutine.context)
+
+          if (go.isComplete(this.dummyVM)) {
             resolve(true)
           } else {
             console.log('Goroutine is not complete:', goroutine)
-            this.queue.push(goroutine)
+            this.queue.push(go)
             resolve(false)
           }
         }
       }
-      this.workers[this.workerIndex].addEventListener('message', runDoneHandler)
+      const index = this.workerIndex % this.workers.length
+      this.workers[index].addEventListener('message', runDoneHandler)
     })
   }
 

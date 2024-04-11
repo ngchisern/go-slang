@@ -35,7 +35,10 @@ const mega = 2 ** 20
 
 export const memory_size = 5000
 
-const size_offset = 5
+// update the size offset to 6
+//  [1 byte tag, 4 bytes payload (depending on node type),
+//  1 byte unused, 2 bytes #children]
+const size_offset = 6
 
 export interface Builtin {
   tag: 'BUILTIN'
@@ -43,11 +46,23 @@ export interface Builtin {
   arity: number
 }
 
+export interface MemoryState {
+  data: ArrayBuffer | SharedArrayBuffer
+  builtin_frame: number
+  False: number
+  True: number
+  Undefined: number
+  Unassigned: number
+  Null: number
+
+  // free data
+  free_data?: number | SharedArrayBuffer
+}
+
 // TODO: No garbage collection yet
 export abstract class Memory {
   dataView: DataView
   builtin_frame: number
-  free: number
 
   // literal values
   False: number
@@ -78,22 +93,15 @@ export abstract class Memory {
 
   abstract getFloat64(address: number): number
 
-  constructor(data?: ArrayBuffer | SharedArrayBuffer) {
-    data ? this.set_memory(data) : this.mem_make(memory_size * word_size)
-    this.builtin_frame = 0
-    this.free = 0
+  abstract free(): number
 
-    this.allocate_literal_values()
-    this.allocate_builtin_frame()
-    // TODO: constants
-  }
+  abstract increase_free(size: number): void
 
-  create_new_environment = (): number => {
-    const non_empty_env = this.mem_allocate_Environment(0)
-    return this.mem_Environment_extend(this.builtin_frame, non_empty_env)
-  }
+  constructor(state?: MemoryState) {
+    if (state) {
+      this.replicate(state)
+    }
 
-  allocate_builtin_frame = () => {
     this.primitive_object = {}
     this.builtin_array = []
     {
@@ -107,7 +115,45 @@ export abstract class Memory {
         this.builtin_array[i++] = this.builtin_object[key]
       }
     }
+  }
 
+  initialize(): void {
+    this.mem_make(memory_size * word_size)
+    this.builtin_frame = 0
+
+    this.allocate_literal_values()
+    this.allocate_builtin_frame()
+    // TODO: constants
+  }
+
+  replicate = (state: MemoryState) => {
+    this.dataView = new DataView(state.data)
+    this.builtin_frame = state.builtin_frame
+    this.False = state.False
+    this.True = state.True
+    this.Undefined = state.Undefined
+    this.Unassigned = state.Unassigned
+    this.Null = state.Null
+  }
+
+  public base_state(): MemoryState {
+    return {
+      data: this.dataView.buffer,
+      builtin_frame: this.builtin_frame,
+      False: this.False,
+      True: this.True,
+      Undefined: this.Undefined,
+      Unassigned: this.Unassigned,
+      Null: this.Null
+    }
+  }
+
+  create_new_environment = (): number => {
+    const non_empty_env = this.mem_allocate_Environment(0)
+    return this.mem_Environment_extend(this.builtin_frame, non_empty_env)
+  }
+
+  allocate_builtin_frame = () => {
     const primitive_values = Object.values(this.primitive_object)
     const frame_address = this.mem_allocate_Frame(primitive_values.length)
 
@@ -120,12 +166,13 @@ export abstract class Memory {
   }
 
   mem_allocate = (tag: number, size: number): number => {
-    if (this.free + size >= this.dataView.byteLength / word_size) {
+    // console.log('free:', this.free(), 'size:', size, 'dataView.byteLength:', this.dataView.byteLength, 'word_size:', word_size)
+    if (this.free() + size >= this.dataView.byteLength / word_size) {
       throw new Error('Out of memory')
     }
 
-    const address = this.free
-    this.free += size
+    const address = this.free()
+    this.increase_free(size)
 
     this.setUint8(address * word_size, tag)
     this.setUint16(address * word_size + size_offset, size)

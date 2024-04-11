@@ -1,6 +1,15 @@
 import { Memory, word_size } from './memory'
 
 export class SingleMemory extends Memory {
+  private freeIndex: number
+
+  constructor() {
+    super()
+    this.freeIndex = 0
+
+    super.initialize()
+  }
+
   mem_make(bytes: number): void {
     if (bytes % 8 !== 0) {
       console.error('mem bytes must be divisible by 8')
@@ -15,6 +24,14 @@ export class SingleMemory extends Memory {
       console.error('mem bytes must be divisible by 8')
     }
     this.dataView = new DataView(data)
+  }
+
+  free(): number {
+    return this.freeIndex
+  }
+
+  increase_free(size: number): void {
+    this.freeIndex += size
   }
 
   setUint8(address: number, value: number): void {

@@ -119,7 +119,6 @@ export class GoVM implements VirtualMachine {
 
     while (this.should_continue()) {
       const instr = this.instrs[this.state.PC++]
-      console.log('running ', this.state.PC, instr.tag)
       this.microcode[instr.tag](instr)
 
       if (this.state.state !== GoroutineState.BLOCKED) {
