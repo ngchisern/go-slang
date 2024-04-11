@@ -1,14 +1,18 @@
 import { Instruction } from '../../common/instruction'
 import { Goroutine, GoroutineState, Task } from '../goroutine'
 import { SingleMemory } from '../memory/singleMemory'
+import {
+  IControlInstruction,
+  ISpawnBehavior,
+  InstructionBatch,
+  ManualAdd,
+  TimeAllocation
+} from '../types'
 import { GoVM } from '../vm'
 
 export interface Scheduler {
   run(): void
   add(task: Task): void
-
-  checkCondition(): boolean
-  postLoopUpdate(): void
 }
 
 export class TimeSliceGoScheduler implements Scheduler {
@@ -37,8 +41,7 @@ export class TimeSliceGoScheduler implements Scheduler {
       const go = this.queue.shift() as Goroutine
       this.vm.switch(go)
 
-      this.resetTimeSlice()
-      const has_run = this.vm.run(this)
+      const has_run = this.vm.run(this.create_control_instruction())
 
       this.vm.save(go)
       if (!go.isComplete(this.vm)) {
@@ -59,15 +62,10 @@ export class TimeSliceGoScheduler implements Scheduler {
     this.queue.push(task as Goroutine)
   }
 
-  checkCondition(): boolean {
-    return this.timeSlice > 0
-  }
+  create_control_instruction(): IControlInstruction {
+    const lease: InstructionBatch = { type: 'InstructionBatch', instructionCount: 5 }
+    const spawnBehavior: ManualAdd = { type: 'ManualAdd', scheduler: this }
 
-  postLoopUpdate() {
-    this.timeSlice--
-  }
-
-  resetTimeSlice() {
-    this.timeSlice = 5 // 5 instructions
+    return { lease, spawnBehavior } as IControlInstruction
   }
 }

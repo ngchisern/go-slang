@@ -29,6 +29,11 @@ export class RunDone implements MessageData {
   goroutine: Goroutine
 }
 
+export class SpawnNew implements MessageData {
+  type: 'spawn_new'
+  goroutine: Goroutine
+}
+
 let memory: SharedMemory
 let vm: GoVM
 

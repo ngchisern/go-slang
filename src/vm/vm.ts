@@ -15,7 +15,15 @@ import {
   Unop
 } from '../common/instruction'
 import { Memory } from './memory/memory'
-import { Scheduler } from './scheduler/scheduler'
+import {
+  IControlInstruction,
+  ILease,
+  ISpawnBehavior,
+  InstructionBatch,
+  ManualAdd,
+  TimeAllocation
+} from './types'
+import { SpawnNew } from './scheduler/worker'
 
 export interface VirtualMachine {
   instrs: Instruction[]
@@ -36,7 +44,8 @@ export interface VMState {
 }
 
 export class GoVM implements VirtualMachine {
-  scheduler: Scheduler
+  lease: ILease
+  spawnBehavior: ISpawnBehavior
 
   threadCount: number
   instrs: Instruction[]
@@ -95,16 +104,19 @@ export class GoVM implements VirtualMachine {
     }
   }
 
-  run = (scheduler: Scheduler): boolean => {
-    this.scheduler = scheduler
+  run = (control: IControlInstruction): boolean => {
+    this.lease = control.lease
+    this.spawnBehavior = control.spawnBehavior
+
     let has_run = false
 
+    this.start_lease()
     // console.log('running', this.state.currentThreadName)
     while (this.should_continue()) {
       const instr = this.instrs[this.state.PC++]
       // console.log('running ', this.state.PC, instr.tag)
       this.microcode[instr.tag](instr)
-      this.scheduler.postLoopUpdate()
+      this.post_loop_update()
 
       if (this.state.state !== GoroutineState.BLOCKED) {
         has_run = true
@@ -133,9 +145,58 @@ export class GoVM implements VirtualMachine {
     return (
       this.instrs[this.state.PC].tag !== 'DONE' &&
       this.instrs[this.state.PC].tag !== 'GO_DONE' &&
-      (!this.scheduler || this.scheduler.checkCondition()) &&
+      this.check_lease() &&
       this.state.state !== GoroutineState.BLOCKED
     )
+  }
+
+  start_lease = () => {
+    if (!this.lease) {
+      return
+    }
+
+    if (this.lease.type === 'InstructionBatch') {
+      // DO NOTHING
+    } else if (this.lease.type === 'TimeAllocation') {
+      const timeAllocation = this.lease as TimeAllocation
+      timeAllocation.start = Date.now()
+    } else {
+      console.log('other lease type is not supported')
+    }
+  }
+
+  check_lease = (): boolean => {
+    if (!this.lease) {
+      return true
+    }
+
+    if (this.lease.type === 'InstructionBatch') {
+      const instructionBatch = this.lease as InstructionBatch
+      return instructionBatch.instructionCount > 0
+    } else if (this.lease.type === 'TimeAllocation') {
+      const timeAllocation = this.lease as TimeAllocation
+      const elapsedTime = Date.now() - timeAllocation.start
+      return elapsedTime < timeAllocation.duration
+    } else {
+      console.log('other lease type is not supported')
+      return true
+    }
+  }
+
+  post_loop_update = () => {
+    if (!this.lease) {
+      return
+    }
+
+    if (this.lease.type === 'InstructionBatch') {
+      const instructionBatch = this.lease as InstructionBatch
+      instructionBatch.instructionCount--
+    } else if (this.lease.type === 'TimeAllocation') {
+      const timeAllocation = this.lease as TimeAllocation
+      // TODO
+    } else {
+      console.log('other lease type is not supported')
+    }
   }
 
   microcode: { [type: string]: (instr: Instruction) => void } = {
@@ -199,7 +260,14 @@ export class GoVM implements VirtualMachine {
     },
     GO: (instr: Call) => {
       const spawned = this.spawn_goroutine()
-      this.scheduler.add(spawned)
+      if (this.spawnBehavior.type === 'ManualAdd') {
+        const scheduler = (this.spawnBehavior as ManualAdd).scheduler
+        scheduler.add(spawned)
+      } else if (this.spawnBehavior.type === 'AsyncCommunication') {
+        postMessage({ type: 'spawn_new', goroutine: spawned } as SpawnNew)
+      } else {
+        console.log('Spawn Behavior', this.spawnBehavior.type, 'not supported')
+      }
     },
     RESET: (instr: Reset) => {
       // keep popping...
@@ -247,12 +315,12 @@ export class GoVM implements VirtualMachine {
         const hasData = this.memory.mem_get_child(chan_addr, 1)
         const sender = this.memory.mem_get_child(chan_addr, 2)
 
-        if (sender == this.state.currentThread && this.memory.is_False(hasData)) {
+        if (sender === this.state.currentThread && this.memory.is_False(hasData)) {
           this.memory.mem_set_child(chan_addr, 2, 0)
           return
         }
 
-        if (sender == 0) {
+        if (sender === 0) {
           // no sender
           this.memory.mem_set_child(chan_addr, 1, this.memory.True)
           this.memory.mem_set_child(chan_addr, 2, this.state.currentThread)
