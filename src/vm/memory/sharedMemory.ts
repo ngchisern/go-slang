@@ -51,8 +51,8 @@ export class SharedMemory extends Memory {
     return Atomics.load(new Uint32Array(this.free_data), 0)
   }
 
-  increase_free(size: number): void {
-    Atomics.add(new Uint32Array(this.free_data), 0, size)
+  increase_free(size: number): number {
+    return Atomics.add(new Uint32Array(this.free_data), 0, size)
   }
 
   setUint8(address: number, value: number): void {

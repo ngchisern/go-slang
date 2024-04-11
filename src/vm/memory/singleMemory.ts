@@ -30,8 +30,10 @@ export class SingleMemory extends Memory {
     return this.freeIndex
   }
 
-  increase_free(size: number): void {
+  increase_free(size: number): number {
+    const old = this.freeIndex
     this.freeIndex += size
+    return old
   }
 
   setUint8(address: number, value: number): void {

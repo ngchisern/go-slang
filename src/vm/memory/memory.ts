@@ -95,7 +95,8 @@ export abstract class Memory {
 
   abstract free(): number
 
-  abstract increase_free(size: number): void
+  // Adds a value to the value at the given position in the array, returning the original value
+  abstract increase_free(size: number): number
 
   constructor(state?: MemoryState) {
     if (state) {
@@ -167,12 +168,12 @@ export abstract class Memory {
 
   mem_allocate = (tag: number, size: number): number => {
     // console.log('free:', this.free(), 'size:', size, 'dataView.byteLength:', this.dataView.byteLength, 'word_size:', word_size)
-    if (this.free() + size >= this.dataView.byteLength / word_size) {
+    const current_free = this.increase_free(size)
+    if (current_free + size >= this.dataView.byteLength / word_size) {
       throw new Error('Out of memory')
     }
 
-    const address = this.free()
-    this.increase_free(size)
+    const address = current_free
 
     this.setUint8(address * word_size, tag)
     this.setUint16(address * word_size + size_offset, size)
