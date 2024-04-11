@@ -151,9 +151,13 @@ const tests: Test[] = [
       }
       func main() {
         c := make(chan int)
+        bc := make(chan int, 1)
         go minus(c)
+        go minus(bc)
         c <- 21
+        bc <- 212
         close(c)
+        close(bc)
       }
     `,
     output: [
@@ -181,7 +185,17 @@ const tests: Test[] = [
       'TYPE',
       'ASSIGN',
       'POP',
+      'LD', // bc := make(chan int, 1)
+      'TYPE',
+      'LDC',
+      'ASSIGN',
+      'POP',
       'GO', // go minus(c)
+      'GOTO',
+      'LD',
+      'CALL',
+      'GO_DONE',
+      'GO', // go minus(bc)
       'GOTO',
       'LD',
       'CALL',
@@ -189,7 +203,14 @@ const tests: Test[] = [
       'LD', // c <- 21
       'LDC',
       'SEND',
+      'LD', // bc <- 212
+      'LDC',
+      'SEND',
       'LD', // close(c)
+      'LDC',
+      'CALL',
+      'POP',
+      'LD', // close(bc)
       'LDC',
       'CALL',
       'POP',
