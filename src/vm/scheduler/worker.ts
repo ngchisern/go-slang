@@ -2,6 +2,7 @@ import { Instruction } from '../../common/instruction'
 import { Goroutine } from '../goroutine'
 import { MemoryState } from '../memory/memory'
 import { SharedMemory } from '../memory/sharedMemory'
+import { AsyncCommunication, IControlInstruction, ILease } from '../types'
 import { GoVM } from '../vm'
 
 export interface MessageData {
@@ -22,6 +23,7 @@ export class SetUpDone implements MessageData {
 export class Run implements MessageData {
   type: 'run'
   goroutine: Goroutine
+  lease: ILease
 }
 
 export class RunDone implements MessageData {
@@ -42,13 +44,21 @@ const initialize_vm = (state: MemoryState, instrs: Instruction[]) => {
   vm = new GoVM(instrs, memory)
 }
 
-const run = (goroutine: Goroutine) => {
+const run = (goroutine: Goroutine, lease: ILease) => {
   vm.switch(goroutine)
-  vm.run_all()
+
+  const controlInstruction = prepare_control_instruction(lease)
+  vm.run(controlInstruction)
+
   vm.save(goroutine)
 }
 
-const handleMainMessage = (e: MessageEvent) => {
+const prepare_control_instruction = (lease: ILease): IControlInstruction => {
+  const spawnBehavior: AsyncCommunication = { type: 'AsyncCommunication' }
+  return { spawnBehavior, lease } as IControlInstruction
+}
+
+const handle_main_message = (e: MessageEvent) => {
   const { type } = e.data as MessageData
 
   if (!type) {
@@ -64,14 +74,10 @@ const handleMainMessage = (e: MessageEvent) => {
       break
     }
     case 'run': {
-      const { goroutine } = e.data as Run
+      const { goroutine, lease } = e.data as Run
+      run(goroutine, lease)
 
-      console.log('Running goroutine:', goroutine)
-      run(goroutine)
-      console.log('Done running goroutine:', goroutine)
-
-      console.log(goroutine)
-      postMessage({ type: 'run_done', goroutine: goroutine } as RunDone)
+      postMessage({ type: 'run_done', goroutine } as RunDone)
       break
     }
     default: {
@@ -81,4 +87,4 @@ const handleMainMessage = (e: MessageEvent) => {
   }
 }
 
-onmessage = handleMainMessage
+onmessage = handle_main_message

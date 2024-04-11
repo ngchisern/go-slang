@@ -531,7 +531,7 @@ export abstract class Memory {
 
   JS_value_to_address = (x: LdcType): any =>
     x === undefined
-      ? this.is_Undefined
+      ? this.Undefined
       : x.tag === GoTag.Boolean
         ? x.val
           ? this.True

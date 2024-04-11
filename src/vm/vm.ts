@@ -126,21 +126,6 @@ export class GoVM implements VirtualMachine {
     return has_run
   }
 
-  run_all = (): boolean => {
-    let has_run = false
-
-    while (this.should_continue()) {
-      const instr = this.instrs[this.state.PC++]
-      this.microcode[instr.tag](instr)
-
-      if (this.state.state !== GoroutineState.BLOCKED) {
-        has_run = true
-      }
-    }
-
-    return has_run
-  }
-
   should_continue = () => {
     return (
       this.instrs[this.state.PC].tag !== 'DONE' &&
