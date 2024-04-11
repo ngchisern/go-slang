@@ -9,6 +9,11 @@ export interface MessageData {
   type: string
 }
 
+export class Log implements MessageData {
+  type: 'log'
+  args: any[]
+}
+
 export class SetUp implements MessageData {
   type: 'setup'
   state: MemoryState
@@ -88,3 +93,9 @@ const handle_main_message = (e: MessageEvent) => {
 }
 
 onmessage = handle_main_message
+
+const originalConsoleLog = console.log;
+console.log = (...args) => {
+    postMessage({ type: 'log', args } as Log);
+    originalConsoleLog.apply(console, args); 
+};

@@ -5,7 +5,7 @@ import { SharedMemory } from '../memory/sharedMemory'
 import { InstructionBatch } from '../types'
 import { GoVM } from '../vm'
 import { Scheduler } from './scheduler'
-import { Run, RunDone, SetUp, SpawnNew } from './worker'
+import { Log, Run, RunDone, SetUp, SpawnNew } from './worker'
 
 export const isNode =
   typeof process !== 'undefined' && process.versions != null && process.versions.node != null
@@ -47,6 +47,7 @@ export class ParallelScheduler implements Scheduler {
       const worker = new Worker(worker_path, { type: 'module' })
       this.workerState.push(WorkerState.IDLE)
       this.workers.push(worker)
+      worker.onmessage = this.handleLog
       const done = this.initializeVM(worker)
     } catch (e) {
       console.log(e.message)
@@ -164,5 +165,12 @@ export class ParallelScheduler implements Scheduler {
 
   add(task: Task): void {
     this.queue.push(task as Goroutine)
+  }
+
+  handleLog(event: MessageEvent) {
+    if (event.data.type === 'log') {
+      const data = event.data as Log
+      console.log(...data.args)
+    }
   }
 }
