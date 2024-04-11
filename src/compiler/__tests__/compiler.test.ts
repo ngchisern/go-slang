@@ -1,40 +1,38 @@
-import { parseGoCode } from '../../parser/parser'
-import { compileGoCode } from '../compiler'
-import { checkInstrs } from './__utils__/utils'
+import { Test, testDriver } from './__utils__/utils'
 
-it('compile simple Go code correctly', () => {
-  const programStr = `
-    package main
-    import 'fmt'
-    func main() {
-      fmt.Println(1);
-    }
-  `
+const tests: Test[] = [
+  {
+    name: 'Compile simple Go code correctly',
+    input: `
+      package main
+      import "fmt"
+      func main() {
+        fmt.Println(1);
+      }
+    `,
+    output: [
+      'ENTER_SCOPE',
+      'LDF', // main
+      'GOTO',
+      'ENTER_SCOPE',
+      'LD', // fmt.Println(1)
+      'LDC',
+      'CALL',
+      'POP',
+      'EXIT_SCOPE',
+      'LDC',
+      'RESET',
+      'ASSIGN',
+      'POP',
+      'LD',
+      'CALL',
+      'POP',
+      'EXIT_SCOPE',
+      'DONE'
+    ]
+  }
+]
 
-  const parsedCode = parseGoCode(programStr)
-  expect(parsedCode).toBeTruthy()
-
-  const instrs = compileGoCode(parsedCode)
-
-  const expectedInstrTags = [
-    'ENTER_SCOPE',
-    'LDF',
-    'GOTO',
-    'ENTER_SCOPE',
-    'LD',
-    'LDC',
-    'CALL',
-    'POP',
-    'EXIT_SCOPE',
-    'LDC',
-    'RESET',
-    'ASSIGN',
-    'POP',
-    'LD',
-    'CALL',
-    'POP',
-    'EXIT_SCOPE'
-  ]
-  
-  checkInstrs(instrs, expectedInstrTags)
+describe("test compiler", () => {
+  testDriver(tests)
 })

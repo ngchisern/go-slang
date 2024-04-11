@@ -1,7 +1,25 @@
 import { Instruction } from "../../../common/instruction";
+import { parseGoCode } from "../../../parser/parser";
+import { compileGoCode } from "../../compiler";
 
-export const checkInstrs = (actualInstrs: Instruction[], expectedInstrTags: string[]) => {
-  expectedInstrTags.forEach((expectedInstrTag, i) => {
-    expect(actualInstrs[i].tag).toEqual(expectedInstrTag)
+export interface Test {
+  name: string
+  input: string
+  output: any
+}
+
+export const testDriver = (tests: Test[]) => {
+  tests.forEach(({ name: name, input: programStr, output: expectedInstrTags }: Test) => {
+    it(name, () => {
+      const parsedCode = parseGoCode(programStr)
+      expect(parsedCode).toBeTruthy()
+      const instrs = compileGoCode(parsedCode)
+      checkInstrs(instrs, expectedInstrTags)
+    })
   })
+}
+
+const checkInstrs = (actualInstrs: Instruction[], expectedInstrTags: string[]) => {
+  // Check entire arr easier for debugging.
+  expect(actualInstrs.map(i => i.tag)).toEqual(expectedInstrTags)
 }
