@@ -3,6 +3,10 @@ import { Memory } from './memory'
 export class SharedMemory extends Memory {
   private data: SharedArrayBuffer
 
+  constructor(data: SharedArrayBuffer) {
+    super(data)
+  }
+
   mem_make(bytes: number): void {
     if (bytes % 8 !== 0) {
       console.error('mem bytes must be divisible by 8')
@@ -11,6 +15,14 @@ export class SharedMemory extends Memory {
     const view = new DataView(data)
     this.data = data
     this.dataView = view
+  }
+
+  set_memory(data: SharedArrayBuffer): void {
+    if (data.byteLength % 8 !== 0) {
+      console.error('mem bytes must be divisible by 8')
+    }
+    this.data = data
+    this.dataView = new DataView(data)
   }
 
   setUint8(address: number, value: number): void {

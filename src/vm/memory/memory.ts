@@ -33,7 +33,7 @@ import { GoroutineState } from '../goroutine'
 export const word_size = 8
 const mega = 2 ** 20
 
-const memory_size = 5000
+export const memory_size = 5000
 
 const size_offset = 5
 
@@ -64,6 +64,8 @@ export abstract class Memory {
    */
   abstract mem_make(bytes: number): void
 
+  abstract set_memory(data: ArrayBuffer | SharedArrayBuffer): void
+
   abstract setUint8(address: number, value: number): void
 
   abstract setUint16(address: number, value: number): void
@@ -76,8 +78,8 @@ export abstract class Memory {
 
   abstract getFloat64(address: number): number
 
-  constructor() {
-    this.mem_make(memory_size * word_size)
+  constructor(data?: ArrayBuffer | SharedArrayBuffer) {
+    data ? this.set_memory(data) : this.mem_make(memory_size * word_size)
     this.builtin_frame = 0
     this.free = 0
 

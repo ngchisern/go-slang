@@ -1,9 +1,7 @@
-import { Goroutine, GoroutineState, Task } from './goroutine'
-import { GoVM, VirtualMachine } from './vm'
+import { Goroutine, GoroutineState, Task } from '../goroutine'
+import { GoVM } from '../vm'
 
 export interface Scheduler {
-  vm: VirtualMachine
-
   run(): void
   add(task: Task): void
 

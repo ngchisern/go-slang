@@ -10,6 +10,13 @@ export class SingleMemory extends Memory {
     this.dataView = view
   }
 
+  set_memory(data: ArrayBuffer): void {
+    if (data.byteLength % word_size !== 0) {
+      console.error('mem bytes must be divisible by 8')
+    }
+    this.dataView = new DataView(data)
+  }
+
   setUint8(address: number, value: number): void {
     this.dataView.setUint8(address, value)
   }

@@ -15,7 +15,7 @@ import {
   Unop
 } from '../common/instruction'
 import { Memory } from './memory/memory'
-import { Scheduler } from './scheduler'
+import { Scheduler } from './scheduler/scheduler'
 
 export interface VirtualMachine {
   instrs: Instruction[]
