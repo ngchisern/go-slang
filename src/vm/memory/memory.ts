@@ -85,18 +85,28 @@ export abstract class Memory {
 
   abstract setUint16(address: number, value: number): void
 
-  abstract setFloat64(address: number, value: number): void
+  abstract setUint64(address: number, value: number): void
 
   abstract getUint8(address: number): number
 
   abstract getUint16(address: number): number
 
-  abstract getFloat64(address: number): number
+  abstract getUint64(address: number): number
 
   abstract free(): number
 
   // Adds a value to the value at the given position in the array, returning the original value
   abstract increase_free(size: number): number
+
+  abstract lock(state: VMState): number
+
+  abstract unlock(state: VMState): number
+
+  abstract wg_add(state: VMState): number
+
+  abstract wg_done(state: VMState): number
+
+  abstract wg_wait(state: VMState): number
 
   constructor(state?: MemoryState) {
     if (state) {
@@ -181,9 +191,9 @@ export abstract class Memory {
   }
 
   // get and set a word in mem at given address
-  mem_get = (address: number) => this.getFloat64(address * word_size)
+  mem_get = (address: number) => this.getUint64(address * word_size)
 
-  mem_set = (address: number, x: number) => this.setFloat64(address * word_size, x)
+  mem_set = (address: number, x: number) => this.setUint64(address * word_size, x)
 
   // child index starts at 0
   mem_get_child = (address: number, child_index: number) => this.mem_get(address + 1 + child_index)
@@ -583,89 +593,19 @@ export abstract class Memory {
       return address
     },
     Lock: state => {
-      const address = state.OS[state.OS.length - 2]
-
-      if (!this.is_Mutex(address)) {
-        console.error('not a mutex')
-      }
-
-      const locked = this.mem_get(address + 1)
-      if (locked === 1) {
-        // handle state where mutex is already locked
-        state.PC--
-        state.state = GoroutineState.BLOCKED
-        return
-      }
-
-      this.mem_set(address + 1, 1)
-      this.mem_set(address + 2, state.currentThread as number)
-
-      state.OS.pop() // pop the fun; apply builtin will pop the method name
-      return address
+      return this.lock(state)
     },
     Unlock: state => {
-      // pop the second last element
-      const address = state.OS[state.OS.length - 2]
-
-      if (!this.is_Mutex(address)) {
-        throw new Error('not a mutex')
-      }
-
-      const locked = this.mem_get(address + 1)
-      const owner = this.mem_get(address + 2)
-
-      if (locked === 0 || owner !== state.currentThread) {
-        throw new Error('sync: unlock of unlocked mutex')
-      }
-
-      this.mem_set(address + 1, 0)
-      state.OS.pop()
-      return address
+      return this.unlock(state)
     },
     Add: state => {
-      const address = state.OS[state.OS.length - 3]
-
-      if (!this.is_WaitGroup(address)) {
-        throw new Error('not a WaitGroup')
-      }
-
-      const count = this.mem_get(address + 1)
-      const additional = this.address_to_JS_value(state.OS.pop())
-
-      this.mem_set(address + 1, count + additional)
-
-      state.OS.pop()
-      return address
+      return this.wg_add(state)
     },
     Done: state => {
-      const address = state.OS[state.OS.length - 2]
-
-      if (!this.is_WaitGroup(address)) {
-        throw new Error('not a WaitGroup')
-      }
-
-      const count = this.mem_get(address + 1)
-      this.mem_set(address + 1, count - 1)
-
-      state.OS.pop()
-      return address
+      return this.wg_done(state)
     },
     Wait: state => {
-      const address = state.OS[state.OS.length - 2]
-
-      if (!this.is_WaitGroup(address)) {
-        throw new Error('not a WaitGroup')
-      }
-
-      const count = this.mem_get(address + 1)
-      if (count !== 0) {
-        state.PC--
-        state.state = GoroutineState.BLOCKED
-        return
-      }
-
-      state.OS.pop()
-      return address
+      return this.wg_wait(state)
     }
   }
 }
