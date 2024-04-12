@@ -34,6 +34,7 @@ export class Run implements MessageData {
 export class RunDone implements MessageData {
   type: 'run_done'
   goroutine: Goroutine
+  has_run: boolean
 }
 
 export class SpawnNew implements MessageData {
@@ -49,13 +50,15 @@ const initialize_vm = (state: MemoryState, instrs: Instruction[]) => {
   vm = new GoVM(instrs, memory)
 }
 
-const run = (goroutine: Goroutine, lease: ILease) => {
+const run = (goroutine: Goroutine, lease: ILease): boolean => {
   vm.switch(goroutine)
 
   const controlInstruction = prepare_control_instruction(lease)
-  vm.run(controlInstruction)
+  const has_run = vm.run(controlInstruction)
 
   vm.save(goroutine)
+
+  return has_run
 }
 
 const prepare_control_instruction = (lease: ILease): IControlInstruction => {
@@ -80,9 +83,9 @@ const handle_main_message = (e: MessageEvent) => {
     }
     case 'run': {
       const { goroutine, lease } = e.data as Run
-      run(goroutine, lease)
+      const has_run = run(goroutine, lease)
 
-      postMessage({ type: 'run_done', goroutine } as RunDone)
+      postMessage({ type: 'run_done', goroutine, has_run } as RunDone)
       break
     }
     default: {

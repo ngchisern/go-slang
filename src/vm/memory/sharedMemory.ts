@@ -1,6 +1,6 @@
 import { GoroutineState } from '../goroutine'
 import { VMState } from '../vm'
-import { Memory, MemoryState } from './memory'
+import { Memory, MemoryState, word_size } from './memory'
 
 export class SharedMemory extends Memory {
   data: SharedArrayBuffer
@@ -167,14 +167,17 @@ export class SharedMemory extends Memory {
   }
 
   atomic_compare_exchange_mem_64(address: number, expected: number, desired: number): number {
+    address = address * word_size
     return Number(Atomics.compareExchange(new BigUint64Array(this.data, address, 1), 0, BigInt(expected), BigInt(desired)))
   }
 
   atomic_add_mem_64(address: number, value: number): number {
+    address = address * word_size
     return Number(Atomics.add(new BigUint64Array(this.data, address, 1), 0, BigInt(value)))
   }
 
   atomic_sub_mem_64(address: number, value: number): number {
+    address = address * word_size
     return Number(Atomics.sub(new BigUint64Array(this.data, address, 1), 0, BigInt(value)))
   }
 }

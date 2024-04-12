@@ -5,7 +5,7 @@ import { SharedMemory } from '../memory/sharedMemory'
 import { InstructionBatch } from '../types'
 import { GoVM } from '../vm'
 import { Scheduler } from './scheduler'
-import { Log, Run, RunDone, SetUp, SpawnNew } from './worker'
+import { Log, Run, RunDone, SetUp, SetUpDone, SpawnNew } from './worker'
 
 export const isNode =
   typeof process !== 'undefined' && process.versions != null && process.versions.node != null
@@ -28,6 +28,9 @@ export class ParallelScheduler implements Scheduler {
   private instructions: Instruction[]
   private dummyVM: GoVM
 
+  private blocked_task: Set<number>
+  private total_tasks: number
+
   constructor(maxWorker: number, instrs: Instruction[]) {
     this.maxWorker = maxWorker
     this.workers = []
@@ -38,6 +41,8 @@ export class ParallelScheduler implements Scheduler {
     this.memory = new SharedMemory()
     this.instructions = instrs
     this.dummyVM = new GoVM(instrs, this.memory)
+
+    this.blocked_task = new Set()
 
     this.create_worker()
   }
@@ -54,7 +59,7 @@ export class ParallelScheduler implements Scheduler {
     }
   }
 
-  async initializeVM(worker: Worker): Promise<RunDone> {
+  async initializeVM(worker: Worker): Promise<SetUpDone> {
     const setUp: SetUp = {
       type: 'setup',
       state: this.memory.memory_state(),
@@ -65,7 +70,7 @@ export class ParallelScheduler implements Scheduler {
       const setUpHandler = (event: MessageEvent) => {
         if (event.data.type === 'setup_done') {
           worker.removeEventListener('message', setUpHandler)
-          resolve(event.data)
+          resolve(event.data as SetUpDone)
         }
       }
       worker.addEventListener('message', setUpHandler)
@@ -75,9 +80,14 @@ export class ParallelScheduler implements Scheduler {
 
   async run() {
     const main = this.dummyVM.main()
+    this.total_tasks = 1
     this.schedule_to_worker(0, main)
 
     const all_done = await this.wait()
+
+    if (!all_done) {
+      throw new Error('All goroutines are asleep - deadlock!')
+    }
   }
 
   wait() {
@@ -85,12 +95,16 @@ export class ParallelScheduler implements Scheduler {
       const runDoneHandler = (event: MessageEvent) => {
         if (event.data.type === 'run_done') {
           if (this.handleRunDone(event)) {
-            this.workers.forEach(worker => {
-              worker.removeEventListener('message', runDoneHandler)
-            })
+            this.teardown()
             resolve(true)
           }
+          
+          if (this.blocked_task.size >= this.total_tasks) {
+            this.teardown()
+            resolve(false)
+          }
         } else if (event.data.type === 'spawn_new') {
+          this.total_tasks++
           this.handleSpawnNew(event, runDoneHandler)
         }
       }
@@ -110,10 +124,20 @@ export class ParallelScheduler implements Scheduler {
     // rehydrate
     const go = new Goroutine(old.id, old.name, old.context)
 
+    const has_run = runDone.has_run
+
+    if (has_run) {
+      this.blocked_task.clear()
+    } else {
+      this.blocked_task.add(go.id)
+    }
+    
     if (!go.isComplete(this.dummyVM)) {
       this.add(go)
     } else if (go.name === 'main') {
       return true
+    } else {
+      this.total_tasks--
     }
 
     if (this.queue.length > 0) {
@@ -172,5 +196,11 @@ export class ParallelScheduler implements Scheduler {
       const data = event.data as Log
       console.log(...data.args)
     }
+  }
+
+  teardown() {
+    this.workers.forEach(worker => {
+      worker.terminate()
+    })
   }
 }
