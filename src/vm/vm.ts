@@ -24,7 +24,7 @@ import {
   ManualAdd,
   TimeAllocation
 } from './types'
-import { SpawnNew } from './scheduler/worker'
+import { GoSpawn } from './scheduler/worker'
 
 export interface VirtualMachine {
   instrs: Instruction[]
@@ -250,7 +250,7 @@ export class GoVM implements VirtualMachine {
         const scheduler = (this.spawnBehavior as ManualAdd).scheduler
         scheduler.add(spawned)
       } else if (this.spawnBehavior.type === 'AsyncCommunication') {
-        postMessage({ type: 'spawn_new', goroutine: spawned } as SpawnNew)
+        postMessage({ type: 'go_spawn', goroutine: spawned } as GoSpawn)
       } else {
         console.log('Spawn Behavior', this.spawnBehavior.type, 'not supported')
       }

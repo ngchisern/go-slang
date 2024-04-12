@@ -5,7 +5,7 @@ import { SharedMemory } from '../memory/sharedMemory'
 import { InstructionBatch } from '../types'
 import { GoVM } from '../vm'
 import { Scheduler } from './scheduler'
-import { Log, Run, RunDone, SetUp, SetUpDone, SpawnNew } from './worker'
+import { Log, GoAllocate, SetUp, SetUpDone, GoSpawn } from './worker'
 
 export const isNode =
   typeof process !== 'undefined' && process.versions != null && process.versions.node != null
@@ -22,27 +22,26 @@ export class ParallelScheduler implements Scheduler {
   private workers: Worker[]
   private workerState: WorkerState[]
 
-  private queue: Goroutine[]
+  private globalRunQueue: Goroutine[]
 
   private memory: SharedMemory
   private instructions: Instruction[]
   private dummyVM: GoVM
 
-  private blocked_task: Set<number>
-  private total_tasks: number
+  private blockedGoroutines: Set<Goroutine>
 
   constructor(maxWorker: number, instrs: Instruction[]) {
     this.maxWorker = maxWorker
     this.workers = []
     this.workerState = []
 
-    this.queue = []
+    this.globalRunQueue = []
 
     this.memory = new SharedMemory()
     this.instructions = instrs
     this.dummyVM = new GoVM(instrs, this.memory)
 
-    this.blocked_task = new Set()
+    this.blockedGoroutines = new Set()
 
     this.create_worker()
   }
@@ -80,8 +79,7 @@ export class ParallelScheduler implements Scheduler {
 
   async run() {
     const main = this.dummyVM.main()
-    this.total_tasks = 1
-    this.schedule_to_worker(0, main)
+    this.globalRunQueue.push(main)
 
     const all_done = await this.wait()
 
@@ -92,82 +90,69 @@ export class ParallelScheduler implements Scheduler {
 
   wait() {
     return new Promise(resolve => {
-      const runDoneHandler = (event: MessageEvent) => {
-        if (event.data.type === 'run_done') {
-          if (this.handleRunDone(event)) {
-            this.teardown()
-            resolve(true)
-          }
-
-          if (this.blocked_task.size >= this.total_tasks) {
-            this.teardown()
-            resolve(false)
-          }
-        } else if (event.data.type === 'spawn_new') {
-          this.total_tasks++
-          this.handleSpawnNew(event, runDoneHandler)
+      const main_listener = (event: MessageEvent) => {
+        if (event.data.type === 'main_done') {
+          this.teardown()
+          resolve(true)
+        } else if (event.data.type === 'go_spawn') {
+          this.handleGoSpawn(event, main_listener)
+        } else if (event.data.type === 'go_park') {
+          this.handlePark(event)
+        } else if (event.data.type === 'go_ready') {
+          this.handleReady(event)
+        } else if (event.data.type === 'go_request') {
+          this.handleRequest(event)
         }
       }
 
       this.workers.forEach(worker => {
-        worker.addEventListener('message', runDoneHandler)
+        worker.addEventListener('message', main_listener)
       })
     })
   }
 
-  handleRunDone(event: MessageEvent): boolean {
-    const workerIndex = this.workers.indexOf(event.target as Worker)
-    this.workerState[workerIndex] = WorkerState.IDLE
-
-    const runDone = event.data as RunDone
-    const old = runDone.goroutine
-    // rehydrate
-    const go = new Goroutine(old.id, old.name, old.context)
-
-    const has_run = runDone.has_run
-
-    if (has_run) {
-      this.blocked_task.clear()
-    } else {
-      this.blocked_task.add(go.id)
-    }
-
-    if (!go.isComplete(this.dummyVM)) {
-      this.add(go)
-    } else if (go.name === 'main') {
-      return true
-    } else {
-      this.total_tasks--
-    }
-
-    if (this.queue.length > 0) {
-      const next = this.queue.shift()
-      if (next) {
-        this.schedule_to_worker(workerIndex, next)
-      }
-    }
-
-    return false
-  }
-
-  handleSpawnNew(event: MessageEvent, runDoneHandler: (event: MessageEvent) => void) {
-    const spawnNew = event.data as SpawnNew
+  handleGoSpawn(event: MessageEvent, mainHandler: (event: MessageEvent) => void) {
+    const spawnNew = event.data as GoSpawn
     const newGo = spawnNew.goroutine
+    this.add(newGo)
 
     const workerIdx = this.findIdleWorker()
 
     if (workerIdx !== -1) {
-      this.schedule_to_worker(workerIdx, newGo)
       return
     }
 
-    if (this.workers.length >= this.maxWorker) {
-      this.add(newGo)
-    } else {
+    if (this.workers.length < this.maxWorker) {
       this.create_worker()
-      const workerIdx = this.workers.length - 1
-      this.workers[workerIdx].addEventListener('message', runDoneHandler)
-      this.schedule_to_worker(workerIdx, newGo)
+      this.workers[this.workers.length - 1].addEventListener('message', mainHandler)
+    }
+  }
+
+  handlePark(event: MessageEvent): void {
+    const park = event.data as GoSpawn
+    const goroutine = park.goroutine
+
+    this.blockedGoroutines.add(goroutine)
+  }
+
+  handleReady(event: MessageEvent): void {
+    const ready = event.data as GoSpawn
+    const goroutine = ready.goroutine
+
+    this.blockedGoroutines.delete(goroutine)
+    this.globalRunQueue.push(goroutine)
+  }
+
+  /**
+   * If the global run queue is not empty, schedule the goroutines to the worker
+   */
+  handleRequest(event: MessageEvent): void {
+    const worker = event.target as Worker
+    const workerIndex = this.workers.indexOf(worker)
+
+    if (this.globalRunQueue.length > 0) {
+      const goroutines = this.globalRunQueue.splice(0, 1)
+      this.schedule_to_worker(workerIndex, goroutines)
     }
   }
 
@@ -175,20 +160,14 @@ export class ParallelScheduler implements Scheduler {
     return this.workerState.indexOf(WorkerState.IDLE)
   }
 
-  schedule_to_worker(workerIndex: number, goroutine: Goroutine) {
-    if (this.workerState[workerIndex] === WorkerState.RUNNING) {
-      console.log('cannot assign a task to a busy worker')
-      return
-    }
-
-    const lease: InstructionBatch = { type: 'InstructionBatch', instructionCount: 5 }
-    const run = { type: 'run', goroutine, lease } as Run
+  schedule_to_worker(workerIndex: number, goroutines: Goroutine[]) {
+    const run = { type: 'go_allocate', goroutines } as GoAllocate
     this.workers[workerIndex].postMessage(run)
     this.workerState[workerIndex] = WorkerState.RUNNING
   }
 
   add(task: Task): void {
-    this.queue.push(task as Goroutine)
+    this.globalRunQueue.push(task as Goroutine)
   }
 
   handleLog(event: MessageEvent) {

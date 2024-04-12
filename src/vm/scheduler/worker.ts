@@ -2,7 +2,7 @@ import { Instruction } from '../../common/instruction'
 import { Goroutine } from '../goroutine'
 import { MemoryState } from '../memory/memory'
 import { SharedMemory } from '../memory/sharedMemory'
-import { AsyncCommunication, IControlInstruction, ILease } from '../types'
+import { AsyncCommunication, IControlInstruction, ILease, InstructionBatch } from '../types'
 import { GoVM } from '../vm'
 
 export interface MessageData {
@@ -25,34 +25,49 @@ export class SetUpDone implements MessageData {
   success: boolean
 }
 
-export class Run implements MessageData {
-  type: 'run'
-  goroutine: Goroutine
-  lease: ILease
+export class GoAllocate implements MessageData {
+  type: 'go_allocate'
+  goroutines: Goroutine[]
 }
 
-export class RunDone implements MessageData {
-  type: 'run_done'
+export class GoRequest implements MessageData {
+  type: 'go_request'
+}
+
+export class GoSpawn implements MessageData {
+  type: 'go_spawn'
   goroutine: Goroutine
+}
+
+export class GoPark implements MessageData {
+  type: 'go_park'
+  goroutine: Goroutine
+}
+
+export class GoReady implements MessageData {
+  type: 'go_ready'
+  goroutine: Goroutine
+}
+
+export class MainDone implements MessageData {
+  type: 'main_done'
   has_run: boolean
-}
-
-export class SpawnNew implements MessageData {
-  type: 'spawn_new'
-  goroutine: Goroutine
 }
 
 let memory: SharedMemory
 let vm: GoVM
+let local_run_queue: Goroutine[] = []
 
 const initialize_vm = (state: MemoryState, instrs: Instruction[]) => {
   memory = new SharedMemory(state)
   vm = new GoVM(instrs, memory)
+  local_run_queue = []
 }
 
-const run = (goroutine: Goroutine, lease: ILease): boolean => {
+const run = (goroutine: Goroutine): boolean => {
   vm.switch(goroutine)
 
+  const lease: InstructionBatch = { type: 'InstructionBatch', instructionCount: 5 }
   const controlInstruction = prepare_control_instruction(lease)
   const has_run = vm.run(controlInstruction)
 
@@ -81,11 +96,13 @@ const handle_main_message = (e: MessageEvent) => {
       postMessage({ type: 'setup_done', success: true } as SetUpDone)
       break
     }
-    case 'run': {
-      const { goroutine, lease } = e.data as Run
-      const has_run = run(goroutine, lease)
+    case 'go_allocate': {
+      const { goroutines } = e.data as GoAllocate
 
-      postMessage({ type: 'run_done', goroutine, has_run } as RunDone)
+      // rehydrate all goroutines
+      goroutines.forEach(goroutine => {
+        local_run_queue.push(new Goroutine(goroutine.id, goroutine.name, goroutine.context))
+      })
       break
     }
     default: {
@@ -95,6 +112,16 @@ const handle_main_message = (e: MessageEvent) => {
   }
 }
 
+const post_run = (goroutine: Goroutine): boolean => {
+  if (!goroutine.isComplete(vm)) {
+    local_run_queue.push(goroutine)
+  } else if (goroutine.name === 'main') {
+    return true
+  }
+
+  return false
+}
+
 onmessage = handle_main_message
 
 const originalConsoleLog = console.log
@@ -102,3 +129,23 @@ console.log = (...args) => {
   postMessage({ type: 'log', args } as Log)
   originalConsoleLog.apply(console, args)
 }
+
+function main(resolve: Function) {
+  const goroutine = local_run_queue?.shift();
+  if (goroutine) {
+    const has_run = run(goroutine);
+    if (post_run(goroutine)) {
+      postMessage({ type: 'main_done', has_run } as MainDone)
+    }
+  } else {
+    postMessage({ type: 'go_request' } as GoRequest)
+  }
+
+  setTimeout(() => main(resolve), local_run_queue.length ? 0 : 100);
+}
+
+async function main_event() {
+  await new Promise(main);
+}
+
+main_event();
