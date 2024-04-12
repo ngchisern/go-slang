@@ -59,3 +59,11 @@ export const is_pair = (x: any) => Array.isArray(x) && x.length === 2
 export const head = (x: any) => x[0]
 
 export const tail = (x: any) => x[1]
+
+/*
+ * Go Channel Hashing
+ */
+
+export const sendq = 0
+
+export const recvq = 1

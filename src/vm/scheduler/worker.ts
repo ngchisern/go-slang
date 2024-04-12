@@ -51,7 +51,6 @@ export class GoReady implements MessageData {
 
 export class MainDone implements MessageData {
   type: 'main_done'
-  has_run: boolean
 }
 
 let memory: SharedMemory
@@ -64,16 +63,13 @@ const initialize_vm = (state: MemoryState, instrs: Instruction[]) => {
   local_run_queue = []
 }
 
-const run = (goroutine: Goroutine): boolean => {
+const run = (goroutine: Goroutine) => {
   vm.switch(goroutine)
 
   const lease: InstructionBatch = { type: 'InstructionBatch', instructionCount: 5 }
   const controlInstruction = prepare_control_instruction(lease)
-  const has_run = vm.run(controlInstruction)
-
+  vm.run(controlInstruction)
   vm.save(goroutine)
-
-  return has_run
 }
 
 const prepare_control_instruction = (lease: ILease): IControlInstruction => {
@@ -131,21 +127,21 @@ console.log = (...args) => {
 }
 
 function main(resolve: Function) {
-  const goroutine = local_run_queue?.shift();
+  const goroutine = local_run_queue?.shift()
   if (goroutine) {
-    const has_run = run(goroutine);
+    run(goroutine)
     if (post_run(goroutine)) {
-      postMessage({ type: 'main_done', has_run } as MainDone)
+      postMessage({ type: 'main_done' } as MainDone)
     }
   } else {
     postMessage({ type: 'go_request' } as GoRequest)
   }
 
-  setTimeout(() => main(resolve), local_run_queue.length ? 0 : 100);
+  setTimeout(() => main(resolve), local_run_queue.length ? 0 : 10)
 }
 
 async function main_event() {
-  await new Promise(main);
+  await new Promise(main)
 }
 
-main_event();
+main_event()

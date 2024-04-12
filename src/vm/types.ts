@@ -1,4 +1,5 @@
-import { Scheduler } from './scheduler/scheduler'
+import { Goroutine } from './goroutine'
+import { Scheduler, TimeSliceGoScheduler } from './scheduler/scheduler'
 
 export interface ISpawnBehavior {
   type: string
@@ -28,7 +29,26 @@ export class TimeAllocation implements ILease {
   start: number
 }
 
+export interface IGoBlockBehavior {
+  type: string
+}
+
+export class GoBlockSingle implements IGoBlockBehavior {
+  type: 'GoBlockSingle'
+  scheduler: TimeSliceGoScheduler
+}
+
+export class GoBlockMulti implements IGoBlockBehavior {
+  type: 'GoBlockMulti'
+}
+
 export interface IControlInstruction {
   spawnBehavior: ISpawnBehavior
   lease: ILease
+  goBlockBehavior: IGoBlockBehavior
+}
+
+export interface GoChannelBuffer {
+  goroutine: Goroutine,
+  addr: number
 }

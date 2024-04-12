@@ -1,4 +1,9 @@
-import { GoroutineState } from '../goroutine'
+import { escape } from 'querystring'
+import { Ldc } from '../../common/instruction'
+import { GoTag } from '../../common/types'
+import { Goroutine, GoroutineState } from '../goroutine'
+import { GoBlockSingle, GoChannelBuffer, IGoBlockBehavior } from '../types'
+import { recvq, sendq } from '../utils'
 import { VMState } from '../vm'
 import { Memory, word_size } from './memory'
 
@@ -62,7 +67,7 @@ export class SingleMemory extends Memory {
     return Number(this.dataView.getBigUint64(address)) // TODO: check if this is correct
   }
 
-  lock(state: VMState): number {
+  lock(state: VMState, goBlockBehavior: IGoBlockBehavior): number {
     const address = state.OS[state.OS.length - 2]
 
     if (!this.is_Mutex(address)) {
@@ -71,20 +76,19 @@ export class SingleMemory extends Memory {
 
     const locked = this.mem_get(address + 1)
     if (locked === 1) {
-      // handle state where mutex is already locked
-      state.PC--
+      // NO NEED TO DECREMENT PC
+      this.handle_lock(state, address, goBlockBehavior as GoBlockSingle)
       state.state = GoroutineState.BLOCKED
-      return -1
+    } else {
+      this.mem_set(address + 1, 1)
+      this.mem_set(address + 2, state.currentThread as number)
     }
-
-    this.mem_set(address + 1, 1)
-    this.mem_set(address + 2, state.currentThread as number)
 
     state.OS.pop() // pop the fun; apply builtin will pop the method name
     return address
   }
 
-  unlock(state: VMState): number {
+  unlock(state: VMState, goBlockBehavior: IGoBlockBehavior): number {
     // pop the second last element
     const address = state.OS[state.OS.length - 2]
 
@@ -99,12 +103,19 @@ export class SingleMemory extends Memory {
       throw new Error('sync: unlock of unlocked mutex')
     }
 
-    this.mem_set(address + 1, 0)
+    const waiting = this.handle_unlock(address, goBlockBehavior as GoBlockSingle)
+
+    if (waiting) {
+      this.mem_set(address + 2, waiting.id)
+    } else {
+      this.mem_set(address + 1, 0)
+    }
+
     state.OS.pop()
     return address
   }
 
-  wg_add(state: VMState): number {
+  wg_add(state: VMState, goBlockBehavior: IGoBlockBehavior): number {
     const address = state.OS[state.OS.length - 3]
 
     if (!this.is_WaitGroup(address)) {
@@ -120,7 +131,7 @@ export class SingleMemory extends Memory {
     return address
   }
 
-  wg_wait(state: VMState): number {
+  wg_wait(state: VMState, goBlockBehavior: IGoBlockBehavior): number {
     const address = state.OS[state.OS.length - 2]
 
     if (!this.is_WaitGroup(address)) {
@@ -129,16 +140,15 @@ export class SingleMemory extends Memory {
 
     const count = this.mem_get(address + 1)
     if (count !== 0) {
-      state.PC--
+      this.handle_lock(state, address, goBlockBehavior as GoBlockSingle)
       state.state = GoroutineState.BLOCKED
-      return -1
     }
 
     state.OS.pop()
     return address
   }
 
-  wg_done(state: VMState): number {
+  wg_done(state: VMState, goBlockBehavior: IGoBlockBehavior): number {
     const address = state.OS[state.OS.length - 2]
 
     if (!this.is_WaitGroup(address)) {
@@ -148,11 +158,15 @@ export class SingleMemory extends Memory {
     const count = this.mem_get(address + 1)
     this.mem_set(address + 1, count - 1)
 
+    if (count === 1) {
+      this.handle_unlock_all(address, goBlockBehavior as GoBlockSingle)
+    }
+
     state.OS.pop()
     return address
   }
 
-  channel_send(state: VMState): void {
+  channel_send(state: VMState, goBlockBehavior: IGoBlockBehavior): void {
     const in_addr = state.OS.pop()
     const chan_addr = state.OS.pop()
 
@@ -161,82 +175,151 @@ export class SingleMemory extends Memory {
       return
     }
 
+    // reserve a memory location for the value
+    const val = this.address_to_JS_value(in_addr)
+    const val_addr = this.JS_value_to_address({ tag: GoTag.Int, val })
+
     if (this.is_Buffered_Channel(chan_addr)) {
       const buffer_size = this.mem_get_size(chan_addr) - 5 // 5 config values
       const count = this.mem_get(chan_addr + 2)
 
       if (count >= buffer_size) {
-        state.PC--
         state.state = GoroutineState.BLOCKED
+        const hash = chan_addr + sendq
 
-        state.OS.push(chan_addr)
-        state.OS.push(in_addr)
+        this.handle_chan_lock(state, hash, val_addr, goBlockBehavior as GoBlockSingle)
+      } else {
+        const receiver = this.pop_chan_recv(chan_addr, goBlockBehavior as GoBlockSingle)
+        if (count === 0 && receiver) {
+          const addr = receiver.addr
+          this.mem_set(addr + 1, this.mem_get(val_addr + 1))
+        } else {
+          const slotOut = this.mem_get(chan_addr + 3)
+          const slotIn = (slotOut + count) % buffer_size
 
-        return
+          this.mem_set(chan_addr + 2, count + 1)
+          this.mem_set_child(chan_addr, 4 + slotIn, val_addr)
+        }
       }
-
-      const slotOut = this.mem_get(chan_addr + 3)
-      const slotIn = (slotOut + count) % buffer_size
-
-      this.mem_set(chan_addr + 2, count + 1)
-      this.mem_set_child(chan_addr, 4 + slotIn, in_addr)
 
       state.OS.pop()
     } else {
       // unbuffered channel
-      const hasData = this.mem_get_child(chan_addr, 1)
-      const sender = this.mem_get_child(chan_addr, 2)
+      const receiver = this.pop_chan_recv(chan_addr, goBlockBehavior as GoBlockSingle)
 
-      if (sender === state.currentThread && this.is_False(hasData)) {
-        this.mem_set_child(chan_addr, 2, 0)
-        return
+      if (receiver) {
+        const addr = receiver.addr
+        this.mem_set(addr + 1, this.mem_get(val_addr + 1))
+      } else {
+        const hash = chan_addr + sendq
+        this.handle_chan_lock(state, hash, val_addr, goBlockBehavior as GoBlockSingle)
+        state.state = GoroutineState.BLOCKED
       }
 
-      if (sender === 0) {
-        // no sender
-        this.mem_set_child(chan_addr, 1, this.True)
-        this.mem_set_child(chan_addr, 2, state.currentThread)
-        this.mem_set_child(chan_addr, 3, in_addr)
-      }
-
-      state.PC--
-      state.state = GoroutineState.BLOCKED
-
-      state.OS.push(chan_addr)
-      state.OS.push(in_addr)
+      state.OS.pop()
     }
   }
 
-  channel_receive(chan_addr: number, state: VMState): number {
+  channel_receive(chan_addr: number, state: VMState, goBlockBehavior: IGoBlockBehavior): number {
+    // reserve memory location for the dummy value (only integer supproted now)
+    const val_addr = this.JS_value_to_address({ tag: GoTag.Int, val: 0 })
+
     if (this.is_Buffered_Channel(chan_addr)) {
       const buffer_size = this.mem_get_size(chan_addr) - 5
       const count = this.mem_get(chan_addr + 2)
 
       if (count === 0) {
-        state.PC--
+        const hash = chan_addr + recvq
+        this.handle_chan_lock(state, hash, val_addr, goBlockBehavior as GoBlockSingle)
         state.state = GoroutineState.BLOCKED
-        return -1
+        return val_addr
       }
 
       const slotOut = this.mem_get(chan_addr + 3)
       const addr = this.mem_get_child(chan_addr, 4 + slotOut)
 
-      this.mem_set(chan_addr + 2, count - 1)
-      this.mem_set(chan_addr + 3, (slotOut + 1) % buffer_size)
+      // copy to dummy location
+      this.mem_set(val_addr + 1, this.mem_get(addr + 1))
 
-      return addr
-    } else {
-      const hasData = this.mem_get_child(chan_addr, 1)
-      if (this.is_False(hasData)) {
-        state.PC--
-        state.state = GoroutineState.BLOCKED
-        return -1
+      const sender = this.pop_chan_send(chan_addr, goBlockBehavior as GoBlockSingle)
+      if (count === buffer_size && sender) {
+        const saddr = sender.addr
+        this.mem_set(chan_addr + 4 + slotOut, this.mem_get(saddr + 1))
+      } else {
+        this.mem_set(chan_addr + 2, count - 1)
       }
 
-      const addr = this.mem_get_child(chan_addr, 3)
-      this.mem_set_child(chan_addr, 1, this.False)
+      this.mem_set(chan_addr + 3, (slotOut + 1) % buffer_size)
+      return val_addr
+    } else {
+      const sender = this.pop_chan_send(chan_addr, goBlockBehavior as GoBlockSingle)
 
-      return addr
+      if (sender) {
+        const addr = sender.addr
+        this.mem_set(val_addr + 1, this.mem_get(addr + 1))
+      } else {
+        const hash = chan_addr + recvq
+        this.handle_chan_lock(state, hash, val_addr, goBlockBehavior as GoBlockSingle)
+        state.state = GoroutineState.BLOCKED
+      }
+
+      return val_addr
     }
+  }
+
+  handle_lock = (state: VMState, addr: number, goBlockBehavior: GoBlockSingle) => {
+    const scheduler = goBlockBehavior.scheduler
+    scheduler.add_blocked(
+      addr,
+      new Goroutine(state.currentThread as number, state.currentThreadName, state)
+    )
+  }
+
+  handle_unlock = (addr: number, goBlockBehavior: GoBlockSingle): Goroutine | undefined => {
+    const scheduler = goBlockBehavior.scheduler
+    return scheduler.remove_blocked(addr)
+  }
+
+  handle_unlock_all = (addr: number, goBlockBehavior: GoBlockSingle): boolean => {
+    const scheduler = goBlockBehavior.scheduler
+    return scheduler.remove_blocked_all(addr)
+  }
+
+  handle_chan_lock = (
+    state: VMState,
+    addr: number,
+    valueAddr: number,
+    goBlockBehavior: GoBlockSingle
+  ) => {
+    const scheduler = goBlockBehavior.scheduler
+    scheduler.add_channel_blocked(
+      addr,
+      new Goroutine(state.currentThread as number, state.currentThreadName, state),
+      valueAddr
+    )
+  }
+
+  handle_chan_unlock = (
+    addr: number,
+    goBlockBehavior: GoBlockSingle
+  ): GoChannelBuffer | undefined => {
+    const scheduler = goBlockBehavior.scheduler
+    return scheduler.remove_channel_blocked(addr)
+  }
+
+  pop_chan_send = (
+    chan_addr: number,
+    goBlockBehavior: GoBlockSingle
+  ): GoChannelBuffer | undefined => {
+    const hash = chan_addr + sendq
+    return this.handle_chan_unlock(hash, goBlockBehavior)
+  }
+
+  pop_chan_recv = (
+    chan_addr: number,
+    goBlockBehavior: GoBlockSingle
+  ): GoChannelBuffer | undefined => {
+    const hash = chan_addr + recvq
+    return this.handle_chan_unlock(hash, goBlockBehavior)
   }
 }

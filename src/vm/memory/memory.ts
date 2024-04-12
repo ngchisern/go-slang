@@ -29,6 +29,8 @@ import {
 import { VMState } from '../vm'
 import { isBuiltin } from 'module'
 import { GoroutineState } from '../goroutine'
+import { GoBlockMulti, IGoBlockBehavior } from '../types'
+import { stat } from 'fs'
 
 export const word_size = 8
 const mega = 2 ** 20
@@ -98,19 +100,23 @@ export abstract class Memory {
   // Adds a value to the value at the given position in the array, returning the original value
   abstract increase_free(size: number): number
 
-  abstract lock(state: VMState): number
+  abstract lock(state: VMState, goBlockBehavior: IGoBlockBehavior): number
 
-  abstract unlock(state: VMState): number
+  abstract unlock(state: VMState, goBlockBehavior: IGoBlockBehavior): number
 
-  abstract wg_add(state: VMState): number
+  abstract wg_add(state: VMState, goBlockBehavior: IGoBlockBehavior): number
 
-  abstract wg_done(state: VMState): number
+  abstract wg_done(state: VMState, goBlockBehavior: IGoBlockBehavior): number
 
-  abstract wg_wait(state: VMState): number
+  abstract wg_wait(state: VMState, goBlockBehavior: IGoBlockBehavior): number
 
-  abstract channel_send(state: VMState): void
+  abstract channel_send(state: VMState, goBlockBehavior: IGoBlockBehavior): void
 
-  abstract channel_receive(chan_addr: number, state: VMState): number
+  abstract channel_receive(
+    chan_addr: number,
+    state: VMState,
+    goBlockBehavior: IGoBlockBehavior
+  ): number
 
   constructor(state?: MemoryState) {
     if (state) {
@@ -394,7 +400,7 @@ export abstract class Memory {
   // Mutex
   // [1 byte tag, 4 bytes unused,
   //  2 bytes #children, 1 byte unused]
-  // followed by 1 boolean (locked), 1 owner (addr)
+  // followed by 1 boolean (locked), 1 owner
   // note: #children is 0
 
   mem_allocate_Mutex = () => {
@@ -423,8 +429,8 @@ export abstract class Memory {
   // Buffered Channel
   // [1 byte tag, 4 bytes unused,
   //  2 bytes #children, 1 byte unused]
-  // followed by 1 type, 1 buffer count (number)
-  // 1 slot-out, 1 lock, buffer size number of addresses
+  // followed by 1 type, 1 buffer count (number), 1 slot-out, 1 lock
+  // buffer size number of addresses
   // note: #children is 0
 
   mem_allocate_Buffered_Channel = (size: number, type: number) => {
@@ -441,14 +447,12 @@ export abstract class Memory {
   // Unbuffered Channel
   // [1 byte tag, 4 bytes unused,
   //  2 bytes #children, 1 byte unused]
-  // followed by 1 type, 1 hasData, 1 sender, 1 addrress
+  // followed by 1 type
   // note: #children is 0
 
   mem_allocate_Unbuffered_Channel = (type: number) => {
-    const ch_address = this.mem_allocate(Unbuffered_Channel_tag, 5)
+    const ch_address = this.mem_allocate(Unbuffered_Channel_tag, 2)
     this.mem_set(ch_address + 1, type)
-    this.mem_set(ch_address + 2, this.False)
-    this.mem_set(ch_address + 3, 0) // sender cannot be 0
     return ch_address
   }
 
@@ -464,13 +468,15 @@ export abstract class Memory {
   is_Channel = (address: number) =>
     this.is_Buffered_Channel(address) || this.is_Unbuffered_Channel(address)
 
-  unop_microcode: { [key: string]: (x: number, state: VMState) => number } = {
-    '<-': (chan_addr: number, state: VMState) => {
+  unop_microcode: {
+    [key: string]: (x: number, state: VMState, goBlockBehavior: IGoBlockBehavior) => number
+  } = {
+    '<-': (chan_addr: number, state: VMState, goBlockBehavior) => {
       if (!this.is_Channel(chan_addr)) {
         throw new Error('unop: not a channel')
       }
 
-      return this.channel_receive(chan_addr, state)
+      return this.channel_receive(chan_addr, state, goBlockBehavior)
     }
   }
 
@@ -544,7 +550,7 @@ export abstract class Memory {
   // arguments directly from the operand stack,
   // to save the creation of an intermediate
   // argument array
-  builtin_object: { [key: string]: (state: VMState) => any } = {
+  builtin_object: { [key: string]: (state: VMState, goBlockBehavior: IGoBlockBehavior) => any } = {
     make: state => {
       const addr = state.OS.pop()
       if (this.is_Channel(addr)) {
@@ -566,20 +572,20 @@ export abstract class Memory {
       console.log(this.address_to_JS_value(address))
       return address
     },
-    Lock: state => {
-      return this.lock(state)
+    Lock: (state, goBlockBehavior) => {
+      return this.lock(state, goBlockBehavior)
     },
-    Unlock: state => {
-      return this.unlock(state)
+    Unlock: (state, goBlockBehavior) => {
+      return this.unlock(state, goBlockBehavior)
     },
-    Add: state => {
-      return this.wg_add(state)
+    Add: (state, goBlockBehavior) => {
+      return this.wg_add(state, goBlockBehavior)
     },
-    Done: state => {
-      return this.wg_done(state)
+    Done: (state, goBlockBehavior) => {
+      return this.wg_done(state, goBlockBehavior)
     },
-    Wait: state => {
-      return this.wg_wait(state)
+    Wait: (state, goBlockBehavior) => {
+      return this.wg_wait(state, goBlockBehavior)
     }
   }
 }

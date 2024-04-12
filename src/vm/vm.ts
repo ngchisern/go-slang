@@ -17,7 +17,9 @@ import {
 } from '../common/instruction'
 import { Memory } from './memory/memory'
 import {
+  GoBlockSingle,
   IControlInstruction,
+  IGoBlockBehavior,
   ILease,
   ISpawnBehavior,
   InstructionBatch,
@@ -41,12 +43,13 @@ export interface VMState {
   PC: number
   state: GoroutineState
   currentThread: number
-  currentThreadName?: string
+  currentThreadName: string
 }
 
 export class GoVM implements VirtualMachine {
   lease: ILease
   spawnBehavior: ISpawnBehavior
+  goBlockBehavior: IGoBlockBehavior
 
   threadCount: number
   instrs: Instruction[]
@@ -58,14 +61,6 @@ export class GoVM implements VirtualMachine {
     this.threadCount = 1
     this.instrs = instrs
     this.memory = memory
-    this.state = {
-      OS: [],
-      RTS: [],
-      E: memory.create_new_environment(),
-      PC: 0,
-      state: GoroutineState.RUNNABLE,
-      currentThread: -1
-    }
   }
 
   main(): Goroutine {
@@ -82,15 +77,15 @@ export class GoVM implements VirtualMachine {
 
   switch(task: Task) {
     let go = task as Goroutine
-
-    this.state.OS = go.context.OS
-    this.state.RTS = go.context.RTS
-    this.state.E = go.context.E
-    this.state.PC = go.context.PC
-    this.state.state = GoroutineState.RUNNING // always try to run it
-
-    this.state.currentThread = go.id
-    this.state.currentThreadName = go.name
+    this.state = {
+      OS: go.context.OS,
+      RTS: go.context.RTS,
+      E: go.context.E,
+      PC: go.context.PC,
+      state: go.state,
+      currentThread: go.id,
+      currentThreadName: go.name
+    }
   }
 
   save(go: Goroutine) {
@@ -105,26 +100,20 @@ export class GoVM implements VirtualMachine {
     }
   }
 
-  run = (control: IControlInstruction): boolean => {
+  run = (control: IControlInstruction): void => {
     this.lease = control.lease
     this.spawnBehavior = control.spawnBehavior
-
-    let has_run = false
+    this.goBlockBehavior = control.goBlockBehavior
 
     this.start_lease()
     // console.log('running', this.state.currentThreadName)
     while (this.should_continue()) {
+      this.state.state = GoroutineState.RUNNING
       const instr = this.instrs[this.state.PC++]
-      // console.log('running ', this.state.PC, instr.tag)
+      // console.log(this.state.currentThreadName, 'running ', this.state.PC, instr.tag)
       this.microcode[instr.tag](instr)
       this.post_loop_update()
-
-      if (this.state.state !== GoroutineState.BLOCKED) {
-        has_run = true
-      }
     }
-
-    return has_run
   }
 
   should_continue = () => {
@@ -267,7 +256,7 @@ export class GoVM implements VirtualMachine {
       }
     },
     SEND: (instr: Send) => {
-      this.memory.channel_send(this.state)
+      this.memory.channel_send(this.state, this.goBlockBehavior)
     }
   }
 
@@ -283,13 +272,7 @@ export class GoVM implements VirtualMachine {
 
   apply_unop = (op: string) => {
     const v = this.state.OS.pop()
-    const addr = this.memory.unop_microcode[op](v, this.state)
-
-    if (this.state.state === GoroutineState.BLOCKED) {
-      this.state.OS.push(v)
-      return
-    }
-
+    const addr = this.memory.unop_microcode[op](v, this.state, this.goBlockBehavior)
     this.state.OS.push(addr)
   }
 
@@ -302,11 +285,7 @@ export class GoVM implements VirtualMachine {
     )
 
   apply_builtin = (builtin_id: number) => {
-    const result = this.memory.builtin_array[builtin_id](this.state)
-
-    if (this.state.state === GoroutineState.BLOCKED) {
-      return
-    }
+    const result = this.memory.builtin_array[builtin_id](this.state, this.goBlockBehavior)
 
     this.state.OS.pop() // pop fun
     this.state.OS.push(result)
