@@ -108,6 +108,10 @@ export abstract class Memory {
 
   abstract wg_wait(state: VMState): number
 
+  abstract channel_send(state: VMState): void
+
+  abstract channel_receive(chan_addr: number, state: VMState): number
+
   constructor(state?: MemoryState) {
     if (state) {
       this.replicate(state)
@@ -419,14 +423,14 @@ export abstract class Memory {
   // Buffered Channel
   // [1 byte tag, 4 bytes unused,
   //  2 bytes #children, 1 byte unused]
-  // followed by 1 type, 1 number (buffer size), 1 buffer count
-  // 1 offset, buffer size number of addresses
+  // followed by 1 type, 1 buffer count (number)
+  // 1 slot-out, 1 lock, buffer size number of addresses
   // note: #children is 0
 
   mem_allocate_Buffered_Channel = (size: number, type: number) => {
-    const ch_address = this.mem_allocate(Buffered_Channel_tag, 5 + Math.max(1, size)) // allocate one more for unbuffered channel
+    const ch_address = this.mem_allocate(Buffered_Channel_tag, 5 + Math.max(1, size))
     this.mem_set(ch_address + 1, type)
-    this.mem_set(ch_address + 2, size)
+    this.mem_set(ch_address + 2, 0)
     this.mem_set(ch_address + 3, 0)
     this.mem_set(ch_address + 4, 0)
     return ch_address
@@ -461,42 +465,12 @@ export abstract class Memory {
     this.is_Buffered_Channel(address) || this.is_Unbuffered_Channel(address)
 
   unop_microcode: { [key: string]: (x: number, state: VMState) => number } = {
-    '<-': (x: number, state: VMState) => {
-      if (!this.is_Channel(x)) {
+    '<-': (chan_addr: number, state: VMState) => {
+      if (!this.is_Channel(chan_addr)) {
         throw new Error('unop: not a channel')
       }
 
-      if (this.is_Buffered_Channel(x)) {
-        const size = this.mem_get(x + 2)
-        const count = this.mem_get(x + 3)
-
-        if (count === 0) {
-          state.PC--
-          state.state = GoroutineState.BLOCKED
-          return -1
-        }
-
-        const offset = this.mem_get(x + 4)
-        const pos = offset
-        const addr = this.mem_get_child(x, 4 + pos)
-
-        this.mem_set(x + 2, count - 1)
-        this.mem_set(x + 4, (pos + 1) % size)
-
-        return addr
-      } else {
-        const hasData = this.mem_get_child(x, 1)
-        if (this.is_False(hasData)) {
-          state.PC--
-          state.state = GoroutineState.BLOCKED
-          return -1
-        }
-
-        const addr = this.mem_get_child(x, 3)
-        this.mem_set_child(x, 1, this.False)
-
-        return addr
-      }
+      return this.channel_receive(chan_addr, state)
     }
   }
 

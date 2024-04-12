@@ -98,7 +98,7 @@ export class ParallelScheduler implements Scheduler {
             this.teardown()
             resolve(true)
           }
-          
+
           if (this.blocked_task.size >= this.total_tasks) {
             this.teardown()
             resolve(false)
@@ -131,7 +131,7 @@ export class ParallelScheduler implements Scheduler {
     } else {
       this.blocked_task.add(go.id)
     }
-    
+
     if (!go.isComplete(this.dummyVM)) {
       this.add(go)
     } else if (go.name === 'main') {

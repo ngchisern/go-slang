@@ -12,7 +12,8 @@ import {
   Ldf,
   Call,
   Reset,
-  Unop
+  Unop,
+  Send
 } from '../common/instruction'
 import { Memory } from './memory/memory'
 import {
@@ -265,59 +266,8 @@ export class GoVM implements VirtualMachine {
         this.state.PC--
       }
     },
-    SEND: state => {
-      const in_addr = this.state.OS.pop()
-      const chan_addr = this.state.OS.pop()
-
-      if (!this.memory.is_Channel(chan_addr)) {
-        console.error('send: not a channel')
-        return
-      }
-
-      if (this.memory.is_Buffered_Channel(chan_addr)) {
-        const size = this.memory.mem_get(chan_addr + 2)
-        const count = this.memory.mem_get(chan_addr + 3)
-
-        if (count >= size) {
-          this.state.PC--
-          this.state.state = GoroutineState.BLOCKED
-
-          this.state.OS.push(chan_addr)
-          this.state.OS.push(in_addr)
-
-          return
-        }
-
-        const offset = this.memory.mem_get(chan_addr + 4)
-        const index = (offset + count) % size
-
-        this.memory.mem_set_child(chan_addr, 4 + index, in_addr)
-        this.memory.mem_set(chan_addr + 3, count + 1)
-
-        this.state.OS.pop()
-      } else {
-        // unbuffered channel
-        const hasData = this.memory.mem_get_child(chan_addr, 1)
-        const sender = this.memory.mem_get_child(chan_addr, 2)
-
-        if (sender === this.state.currentThread && this.memory.is_False(hasData)) {
-          this.memory.mem_set_child(chan_addr, 2, 0)
-          return
-        }
-
-        if (sender === 0) {
-          // no sender
-          this.memory.mem_set_child(chan_addr, 1, this.memory.True)
-          this.memory.mem_set_child(chan_addr, 2, this.state.currentThread)
-          this.memory.mem_set_child(chan_addr, 3, in_addr)
-        }
-
-        this.state.PC--
-        this.state.state = GoroutineState.BLOCKED
-
-        this.state.OS.push(chan_addr)
-        this.state.OS.push(in_addr)
-      }
+    SEND: (instr: Send) => {
+      this.memory.channel_send(this.state)
     }
   }
 

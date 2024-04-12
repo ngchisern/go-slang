@@ -151,4 +151,92 @@ export class SingleMemory extends Memory {
     state.OS.pop()
     return address
   }
+
+  channel_send(state: VMState): void {
+    const in_addr = state.OS.pop()
+    const chan_addr = state.OS.pop()
+
+    if (!this.is_Channel(chan_addr)) {
+      console.error('send: not a channel')
+      return
+    }
+
+    if (this.is_Buffered_Channel(chan_addr)) {
+      const buffer_size = this.mem_get_size(chan_addr) - 5 // 5 config values
+      const count = this.mem_get(chan_addr + 2)
+
+      if (count >= buffer_size) {
+        state.PC--
+        state.state = GoroutineState.BLOCKED
+
+        state.OS.push(chan_addr)
+        state.OS.push(in_addr)
+
+        return
+      }
+
+      const slotOut = this.mem_get(chan_addr + 3)
+      const slotIn = (slotOut + count) % buffer_size
+
+      this.mem_set(chan_addr + 2, count + 1)
+      this.mem_set_child(chan_addr, 4 + slotIn, in_addr)
+
+      state.OS.pop()
+    } else {
+      // unbuffered channel
+      const hasData = this.mem_get_child(chan_addr, 1)
+      const sender = this.mem_get_child(chan_addr, 2)
+
+      if (sender === state.currentThread && this.is_False(hasData)) {
+        this.mem_set_child(chan_addr, 2, 0)
+        return
+      }
+
+      if (sender === 0) {
+        // no sender
+        this.mem_set_child(chan_addr, 1, this.True)
+        this.mem_set_child(chan_addr, 2, state.currentThread)
+        this.mem_set_child(chan_addr, 3, in_addr)
+      }
+
+      state.PC--
+      state.state = GoroutineState.BLOCKED
+
+      state.OS.push(chan_addr)
+      state.OS.push(in_addr)
+    }
+  }
+
+  channel_receive(chan_addr: number, state: VMState): number {
+    if (this.is_Buffered_Channel(chan_addr)) {
+      const buffer_size = this.mem_get_size(chan_addr) - 5
+      const count = this.mem_get(chan_addr + 2)
+
+      if (count === 0) {
+        state.PC--
+        state.state = GoroutineState.BLOCKED
+        return -1
+      }
+
+      const slotOut = this.mem_get(chan_addr + 3)
+      const addr = this.mem_get_child(chan_addr, 4 + slotOut)
+
+      this.mem_set(chan_addr + 2, count - 1)
+      this.mem_set(chan_addr + 3, (slotOut + 1) % buffer_size)
+
+      return addr
+    } else {
+      const hasData = this.mem_get_child(chan_addr, 1)
+      if (this.is_False(hasData)) {
+        state.PC--
+        state.state = GoroutineState.BLOCKED
+        return -1
+      }
+
+      const addr = this.mem_get_child(chan_addr, 3)
+      this.mem_set_child(chan_addr, 1, this.False)
+
+      return addr
+    }
+  }
 }

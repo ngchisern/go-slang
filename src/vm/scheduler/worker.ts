@@ -97,8 +97,8 @@ const handle_main_message = (e: MessageEvent) => {
 
 onmessage = handle_main_message
 
-const originalConsoleLog = console.log;
+const originalConsoleLog = console.log
 console.log = (...args) => {
-    postMessage({ type: 'log', args } as Log);
-    originalConsoleLog.apply(console, args); 
-};
+  postMessage({ type: 'log', args } as Log)
+  originalConsoleLog.apply(console, args)
+}

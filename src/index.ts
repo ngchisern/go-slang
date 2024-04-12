@@ -1,6 +1,6 @@
 import { compileGoCode } from './compiler/compiler'
 import { parseGoCode } from './parser/parser'
-import { run } from './vm/run'
+import { run, run_parallel } from './vm/run'
 
 const code = `
 package main
@@ -30,29 +30,45 @@ func simple(x int) {
 }
 
 func main() {
-  // c := make(chan int)
+  ch := make(chan int, 2)
   // var wg sync.waitGroup
   // wg.Add(2)
   // go minus(c, wg)
   // c <- 21
   // close(c)
   // wg.Wait()
+
+  go func(x int) {
+    fmt.Println(x)
+    ch <- 5
+    ch <- 10
+    // wg.Done()
+  } (42)
   x := 42;
-  x = x - 21;
+  a := <-ch
+  b := <-ch
+  // x = x - 21;
   
-  go simple(x);
-  go simple(x);
-  // x = x - 3;
-  // simple(x);
+  // go simple(x);
+  // go simple(x);
+  // // x = x - 3;
+  // simple(a);
+  fmt.Println(a)
+  fmt.Println(b)
   // wg.Wait()
 }
 `
 
-export const compileAndRunGoCode = (code: string) => {
-  const ast = parseGoCode(code)
-  const instrs = compileGoCode(ast)
-  // instrs.forEach((v, i) => console.log(`${i}:`, v))
-  run(instrs)
+export async function compileAndRunGoCode(code: string, parallel = false) {
+  try {
+    const ast = parseGoCode(code)
+    const instrs = compileGoCode(ast)
+    // instrs.forEach((v, i) => console.log(`${i}:`, v));
+    parallel ? await run_parallel(instrs) : run(instrs)
+    return { status: 'finished' }
+  } catch (e) {
+    return { status: 'error', message: e }
+  }
 }
 
-// compileAndRunGoCode(code)
+// console.log(compileAndRunGoCode(code, false))

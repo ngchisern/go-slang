@@ -159,16 +159,147 @@ export class SharedMemory extends Memory {
     if (!this.is_WaitGroup(address)) {
       throw new Error('not a WaitGroup')
     }
-    
+
     this.atomic_sub_mem_64(address + 1, 1)
 
     state.OS.pop()
     return address
   }
 
+  channel_send(state: VMState): void {
+    const in_addr = state.OS.pop()
+    const chan_addr = state.OS.pop()
+
+    if (!this.is_Channel(chan_addr)) {
+      console.error('send: not a channel')
+      return
+    }
+
+    if (this.is_Buffered_Channel(chan_addr)) {
+      const buffer_size = this.mem_get_size(chan_addr) - 5 // 5 config values
+
+      let old_count = this.mem_get(chan_addr + 2)
+      let new_count = old_count + 1
+
+      while (true) {
+        if (old_count >= buffer_size) {
+          state.PC--
+          state.state = GoroutineState.BLOCKED
+
+          state.OS.push(chan_addr)
+          state.OS.push(in_addr)
+
+          return
+        }
+
+        const count = this.atomic_compare_exchange_mem_64(chan_addr + 2, old_count, new_count)
+        if (count === old_count) {
+          break
+        }
+
+        old_count = count
+        new_count = old_count + 1
+      }
+
+      // attmempting to acquire the lock on the channel
+      const lockAddr = chan_addr + 4
+      while (this.atomic_compare_exchange_mem_64(lockAddr, 0, 1) === 1) {}
+
+      const slotOut = this.mem_get(chan_addr + 3)
+      const slotIn = (slotOut + old_count) % buffer_size
+
+      this.mem_set_child(chan_addr, 4 + slotIn, in_addr)
+
+      // release the lock
+      this.atomic_sub_mem_64(lockAddr, 1)
+      state.OS.pop()
+    } else {
+      // unbuffered channel
+      let sender = this.mem_get_child(chan_addr, 2)
+      const hasData = this.mem_get_child(chan_addr, 1)
+
+      if (sender === state.currentThread && this.is_False(hasData)) {
+        this.mem_set_child(chan_addr, 2, 0)
+        return
+      }
+
+      sender = this.atomic_compare_exchange_mem_64(chan_addr + 3, 0, state.currentThread)
+
+      if (sender === 0) {
+        // no sender
+        this.mem_set_child(chan_addr, 1, this.True)
+        this.mem_set_child(chan_addr, 2, state.currentThread)
+        this.mem_set_child(chan_addr, 3, in_addr)
+      }
+
+      state.PC--
+      state.state = GoroutineState.BLOCKED
+
+      state.OS.push(chan_addr)
+      state.OS.push(in_addr)
+    }
+  }
+
+  channel_receive(chan_addr: number, state: VMState): number {
+    if (this.is_Buffered_Channel(chan_addr)) {
+      const buffer_size = this.mem_get_size(chan_addr) - 5 // 5 config values
+
+      let old_count = this.mem_get(chan_addr + 2)
+      let new_count = old_count - 1
+
+      while (true) {
+        if (old_count === 0) {
+          state.PC--
+          state.state = GoroutineState.BLOCKED
+          return -1
+        }
+
+        const count = this.atomic_compare_exchange_mem_64(chan_addr + 2, old_count, new_count)
+        if (count === old_count) {
+          break
+        }
+
+        old_count = count
+        new_count = old_count + 1
+      }
+
+      // attmempting to acquire the lock on the channel
+      const lockAddr = chan_addr + 4
+      while (this.atomic_compare_exchange_mem_64(lockAddr, 0, 1) === 1) {}
+
+      const slotOut = this.mem_get(chan_addr + 3)
+      const addr = this.mem_get_child(chan_addr, 4 + slotOut)
+
+      this.mem_set(chan_addr + 3, (slotOut + 1) % buffer_size)
+
+      // release the lock
+      this.atomic_sub_mem_64(lockAddr, 1)
+
+      return addr
+    } else {
+      const addr = this.mem_get_child(chan_addr, 3)
+      const stillHasData = this.atomic_compare_exchange_mem_64(chan_addr + 2, this.True, this.False)
+
+      if (this.is_False(stillHasData)) {
+        state.PC--
+        state.state = GoroutineState.BLOCKED
+        return -1
+      }
+
+      return addr
+    }
+  }
+
   atomic_compare_exchange_mem_64(address: number, expected: number, desired: number): number {
     address = address * word_size
-    return Number(Atomics.compareExchange(new BigUint64Array(this.data, address, 1), 0, BigInt(expected), BigInt(desired)))
+    return Number(
+      Atomics.compareExchange(
+        new BigUint64Array(this.data, address, 1),
+        0,
+        BigInt(expected),
+        BigInt(desired)
+      )
+    )
   }
 
   atomic_add_mem_64(address: number, value: number): number {
