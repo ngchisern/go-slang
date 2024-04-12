@@ -9,6 +9,6 @@ export const run = (instrs: Instruction[]) => {
 }
 
 export async function run_parallel(instrs: Instruction[]) {
-  const scheduler = new ParallelScheduler(4, instrs)
+  const scheduler = new ParallelScheduler(navigator.hardwareConcurrency, instrs)
   await scheduler.run()
 }
