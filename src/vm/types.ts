@@ -49,6 +49,6 @@ export interface IControlInstruction {
 }
 
 export interface GoChannelBuffer {
-  goroutine: Goroutine,
+  goroutine: Goroutine
   addr: number
 }

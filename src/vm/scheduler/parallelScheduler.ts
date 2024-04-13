@@ -1,11 +1,10 @@
 import { Instruction } from '../../common/instruction'
-import { Goroutine, Task } from '../goroutine'
-import { memory_size, word_size } from '../memory/memory'
+import { Goroutine, GoroutineState, Task } from '../goroutine'
 import { SharedMemory } from '../memory/sharedMemory'
-import { InstructionBatch } from '../types'
+import { GoChannelBuffer, InstructionBatch } from '../types'
 import { GoVM } from '../vm'
 import { Scheduler } from './scheduler'
-import { Log, GoAllocate, SetUp, SetUpDone, GoSpawn } from './worker'
+import { Log, GoAllocate, SetUp, SetUpDone, GoSpawn, GoPark, GoReady, GoReadyReply } from './worker'
 
 export const isNode =
   typeof process !== 'undefined' && process.versions != null && process.versions.node != null
@@ -28,7 +27,8 @@ export class ParallelScheduler implements Scheduler {
   private instructions: Instruction[]
   private dummyVM: GoVM
 
-  private blockedGoroutines: Set<Goroutine>
+  private blocked: { [key: number]: Set<Goroutine> }
+  private channelBlocked: { [key: number]: Set<GoChannelBuffer> }
 
   constructor(maxWorker: number, instrs: Instruction[]) {
     this.maxWorker = maxWorker
@@ -41,7 +41,8 @@ export class ParallelScheduler implements Scheduler {
     this.instructions = instrs
     this.dummyVM = new GoVM(instrs, this.memory)
 
-    this.blockedGoroutines = new Set()
+    this.blocked = {}
+    this.channelBlocked = {}
 
     this.create_worker()
   }
@@ -102,6 +103,11 @@ export class ParallelScheduler implements Scheduler {
           this.handleReady(event)
         } else if (event.data.type === 'go_request') {
           this.handleRequest(event)
+
+          if (this.workerState.every(state => state === WorkerState.IDLE)) {
+            this.teardown()
+            resolve(false)
+          }
         }
       }
 
@@ -129,18 +135,101 @@ export class ParallelScheduler implements Scheduler {
   }
 
   handlePark(event: MessageEvent): void {
-    const park = event.data as GoSpawn
+    const park = event.data as GoPark
     const goroutine = park.goroutine
+    const hash = park.hash
 
-    this.blockedGoroutines.add(goroutine)
+    if (park.addr) {
+      this.add_channel_blocked(park.addr, goroutine, hash)
+    } else {
+      this.add_blocked(hash, goroutine)
+    }
   }
 
   handleReady(event: MessageEvent): void {
-    const ready = event.data as GoSpawn
-    const goroutine = ready.goroutine
+    const worker = event.target as Worker
 
-    this.blockedGoroutines.delete(goroutine)
+    const ready = event.data as GoReady
+    const hash = ready.hash
+
+    if (ready.addr) {
+      const chan = this.remove_channel_blocked(ready.addr)
+      const message: GoReadyReply = chan
+        ? {
+            type: 'go_ready_reply',
+            hash,
+            goroutine: chan.goroutine,
+            addr: ready.addr,
+            success: true
+          }
+        : { type: 'go_ready_reply', hash, success: false }
+      worker.postMessage(message)
+    } else if (ready.all) {
+      const remove = this.remove_blocked_all(hash)
+      const message: GoReadyReply = { type: 'go_ready_reply', hash, success: remove }
+      worker.postMessage(message)
+    } else {
+      const go = this.remove_blocked(hash)
+      const message: GoReadyReply = go
+        ? { type: 'go_ready_reply', hash, goroutine: go, success: true }
+        : { type: 'go_ready_reply', hash, success: false }
+      worker.postMessage(message)
+    }
+  }
+
+  add_blocked(addr: number, task: Task) {
+    if (!this.blocked[addr]) {
+      this.blocked[addr] = new Set()
+    }
+    this.blocked[addr].add(task as Goroutine)
+  }
+
+  remove_blocked(addr: number): Goroutine | undefined {
+    if (!this.blocked[addr] || this.blocked[addr].size === 0) {
+      return undefined
+    }
+
+    const goroutine = this.blocked[addr].values().next().value
+
+    goroutine.state = GoroutineState.RUNNABLE
     this.globalRunQueue.push(goroutine)
+    this.blocked[addr].delete(goroutine)
+    return goroutine
+  }
+
+  remove_blocked_all(addr: number): boolean {
+    if (!this.blocked[addr]) {
+      return false
+    }
+
+    this.blocked[addr].forEach(goroutine => {
+      goroutine.state = GoroutineState.RUNNABLE
+      this.globalRunQueue.push(goroutine)
+    })
+    delete this.blocked[addr]
+
+    return true
+  }
+
+  add_channel_blocked(addr: number, task: Task, value: number) {
+    if (!this.channelBlocked[addr]) {
+      this.channelBlocked[addr] = new Set()
+    }
+
+    const buffer: GoChannelBuffer = { goroutine: task as Goroutine, addr: value }
+    this.channelBlocked[addr].add(buffer)
+  }
+
+  remove_channel_blocked(addr: number): GoChannelBuffer | undefined {
+    if (!this.channelBlocked[addr] || this.channelBlocked[addr].size === 0) {
+      return undefined
+    }
+
+    const buffer = this.channelBlocked[addr].values().next().value
+    buffer.goroutine.state = GoroutineState.RUNNABLE
+    this.globalRunQueue.push(buffer.goroutine)
+    this.channelBlocked[addr].delete(buffer)
+    return buffer
   }
 
   /**
@@ -149,6 +238,7 @@ export class ParallelScheduler implements Scheduler {
   handleRequest(event: MessageEvent): void {
     const worker = event.target as Worker
     const workerIndex = this.workers.indexOf(worker)
+    this.workerState[workerIndex] = WorkerState.IDLE
 
     if (this.globalRunQueue.length > 0) {
       const goroutines = this.globalRunQueue.splice(0, 1)

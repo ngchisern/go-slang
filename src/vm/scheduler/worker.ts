@@ -1,8 +1,14 @@
 import { Instruction } from '../../common/instruction'
-import { Goroutine } from '../goroutine'
+import { Goroutine, GoroutineState } from '../goroutine'
 import { MemoryState } from '../memory/memory'
 import { SharedMemory } from '../memory/sharedMemory'
-import { AsyncCommunication, IControlInstruction, ILease, InstructionBatch } from '../types'
+import {
+  AsyncCommunication,
+  GoBlockMulti,
+  IControlInstruction,
+  ILease,
+  InstructionBatch
+} from '../types'
 import { GoVM } from '../vm'
 
 export interface MessageData {
@@ -41,12 +47,24 @@ export class GoSpawn implements MessageData {
 
 export class GoPark implements MessageData {
   type: 'go_park'
+  hash: number
   goroutine: Goroutine
+  addr?: number
 }
 
 export class GoReady implements MessageData {
   type: 'go_ready'
-  goroutine: Goroutine
+  hash: number
+  all: boolean
+  addr?: number
+}
+
+export class GoReadyReply implements MessageData {
+  type: 'go_ready_reply'
+  hash: number
+  goroutine?: Goroutine
+  addr?: number
+  success: boolean
 }
 
 export class MainDone implements MessageData {
@@ -66,15 +84,17 @@ const initialize_vm = (state: MemoryState, instrs: Instruction[]) => {
 const run = (goroutine: Goroutine) => {
   vm.switch(goroutine)
 
-  const lease: InstructionBatch = { type: 'InstructionBatch', instructionCount: 5 }
-  const controlInstruction = prepare_control_instruction(lease)
+  const controlInstruction = prepare_control_instruction()
   vm.run(controlInstruction)
   vm.save(goroutine)
 }
 
-const prepare_control_instruction = (lease: ILease): IControlInstruction => {
+const prepare_control_instruction = (): IControlInstruction => {
+  const lease: InstructionBatch = { type: 'InstructionBatch', instructionCount: 5 }
   const spawnBehavior: AsyncCommunication = { type: 'AsyncCommunication' }
-  return { spawnBehavior, lease } as IControlInstruction
+  const goBlockBehavior: GoBlockMulti = { type: 'GoBlockMulti' }
+
+  return { spawnBehavior, lease, goBlockBehavior } as IControlInstruction
 }
 
 const handle_main_message = (e: MessageEvent) => {
@@ -102,16 +122,17 @@ const handle_main_message = (e: MessageEvent) => {
       break
     }
     default: {
-      console.error('Unknown message type:', type)
       break
     }
   }
 }
 
 const post_run = (goroutine: Goroutine): boolean => {
-  if (!goroutine.isComplete(vm)) {
+  const isComplete = goroutine.isComplete(vm)
+
+  if (!isComplete && goroutine.state == GoroutineState.RUNNABLE) {
     local_run_queue.push(goroutine)
-  } else if (goroutine.name === 'main') {
+  } else if (goroutine.name == 'main' && goroutine.isComplete(vm)) {
     return true
   }
 

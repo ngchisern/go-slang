@@ -104,7 +104,7 @@ export class TimeSliceGoScheduler implements Scheduler {
     this.channelBlocked[addr].add(buffer)
   }
 
-  remove_channel_blocked(addr: number): GoChannelBuffer| undefined{
+  remove_channel_blocked(addr: number): GoChannelBuffer | undefined {
     if (!this.channelBlocked[addr] || this.channelBlocked[addr].size === 0) {
       return undefined
     }

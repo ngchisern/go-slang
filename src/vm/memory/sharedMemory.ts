@@ -1,4 +1,7 @@
-import { GoroutineState } from '../goroutine'
+import { Goroutine, GoroutineState } from '../goroutine'
+import { GoPark, GoReady, GoReadyReply } from '../scheduler/worker'
+import { GoBlockMulti, GoBlockSingle, GoChannelBuffer, IGoBlockBehavior } from '../types'
+import { recvq, sendq } from '../utils'
 import { VMState } from '../vm'
 import { Memory, MemoryState, word_size } from './memory'
 
@@ -81,7 +84,7 @@ export class SharedMemory extends Memory {
     return Number(Atomics.load(new BigUint64Array(this.data, address, 1), 0))
   }
 
-  lock(state: VMState): number {
+  lock(state: VMState, goBlockBehavior: IGoBlockBehavior): number {
     const address = state.OS[state.OS.length - 2]
 
     if (!this.is_Mutex(address)) {
@@ -91,18 +94,17 @@ export class SharedMemory extends Memory {
     const locked = this.atomic_compare_exchange_mem_64(address + 1, 0, 1)
     if (locked === 1) {
       // handle state where mutex is already locked
-      state.PC--
+      this.handle_lock(state, address, goBlockBehavior as GoBlockMulti)
       state.state = GoroutineState.BLOCKED
-      return -1
+    } else {
+      this.mem_set(address + 2, state.currentThread as number)
     }
-
-    this.mem_set(address + 2, state.currentThread as number)
 
     state.OS.pop() // pop the fun; apply builtin will pop the method name
     return address
   }
 
-  unlock(state: VMState): number {
+  unlock(state: VMState, goBlockBehavior: IGoBlockBehavior): number {
     // pop the second last element
     const address = state.OS[state.OS.length - 2]
 
@@ -110,18 +112,30 @@ export class SharedMemory extends Memory {
       throw new Error('not a mutex')
     }
 
-    const locked = this.atomic_compare_exchange_mem_64(address + 1, 1, 0)
+    // const locked = this.atomic_compare_exchange_mem_64(address + 1, 1, 0)
+    const locked = this.mem_get(address + 1)
     const owner = this.mem_get(address + 2)
 
     if (locked === 0 || owner !== state.currentThread) {
       throw new Error('sync: unlock of unlocked mutex')
     }
 
+    let waiting: Goroutine | undefined
+    this.handle_unlock(address, goBlockBehavior as GoBlockMulti).then(res => {
+      waiting = res
+    })
+
+    if (waiting) {
+      this.mem_set(address + 2, waiting.id)
+    } else {
+      this.mem_set(address + 1, 0)
+    }
+
     state.OS.pop()
     return address
   }
 
-  wg_add(state: VMState): number {
+  wg_add(state: VMState, goBlockBehavior: IGoBlockBehavior): number {
     const address = state.OS[state.OS.length - 3]
 
     if (!this.is_WaitGroup(address)) {
@@ -135,7 +149,7 @@ export class SharedMemory extends Memory {
     return address
   }
 
-  wg_wait(state: VMState): number {
+  wg_wait(state: VMState, goBlockBehavior: IGoBlockBehavior): number {
     const address = state.OS[state.OS.length - 2]
 
     if (!this.is_WaitGroup(address)) {
@@ -144,16 +158,15 @@ export class SharedMemory extends Memory {
 
     const count = this.mem_get(address + 1)
     if (count !== 0) {
-      state.PC--
+      this.handle_lock(state, address, goBlockBehavior as GoBlockMulti)
       state.state = GoroutineState.BLOCKED
-      return -1
     }
 
     state.OS.pop()
     return address
   }
 
-  wg_done(state: VMState): number {
+  wg_done(state: VMState, goBlockBehavior: IGoBlockBehavior): number {
     const address = state.OS[state.OS.length - 2]
 
     if (!this.is_WaitGroup(address)) {
@@ -161,6 +174,10 @@ export class SharedMemory extends Memory {
     }
 
     this.atomic_sub_mem_64(address + 1, 1)
+
+    if (this.mem_get(address + 1) === 0) {
+      this.handle_unlock_all(address, goBlockBehavior as GoBlockMulti)
+    }
 
     state.OS.pop()
     return address
@@ -310,5 +327,111 @@ export class SharedMemory extends Memory {
   atomic_sub_mem_64(address: number, value: number): number {
     address = address * word_size
     return Number(Atomics.sub(new BigUint64Array(this.data, address, 1), 0, BigInt(value)))
+  }
+
+  handle_lock = (state: VMState, addr: number, goBlockBehavior: GoBlockMulti) => {
+    const goroutine = new Goroutine(state.currentThread as number, state.currentThreadName, state)
+    const goPark = { type: 'go_park', hash: addr, goroutine } as GoPark
+    postMessage(goPark)
+  }
+
+  async handle_unlock(addr: number, goBlockBehavior: GoBlockMulti): Promise<Goroutine | undefined> {
+    const goReady = { type: 'go_ready', hash: addr } as GoReady
+    /// post message and wait for reply
+    postMessage(goReady)
+
+    return await new Promise((resolve, reject) => {
+      const handler = (e: MessageEvent) => {
+        if (e.data.type === 'go_ready_reply') {
+          const { goroutine, hash, success } = e.data as GoReadyReply
+          if (hash === addr) {
+            const go = success ? goroutine : undefined
+            removeEventListener('message', handler)
+            resolve(go)
+          }
+        }
+      }
+
+      addEventListener('message', handler)
+    })
+  }
+
+  async handle_unlock_all(addr: number, goBlockBehavior: GoBlockMulti): Promise<boolean> {
+    const goReady = { type: 'go_ready', hash: addr } as GoReady
+    /// post message and wait for reply
+    postMessage(goReady)
+
+    return await new Promise((resolve, reject) => {
+      const handler = (e: MessageEvent) => {
+        if (e.data.type === 'go_ready_reply') {
+          const { hash, success } = e.data as GoReadyReply
+          if (hash === addr) {
+            removeEventListener('message', handler)
+            resolve(success)
+          }
+        }
+      }
+
+      addEventListener('message', handler)
+    })
+  }
+
+  handle_chan_lock = (
+    state: VMState,
+    addr: number,
+    valueAddr: number,
+    goBlockBehavior: GoBlockMulti
+  ) => {
+    const goroutine = new Goroutine(state.currentThread as number, state.currentThreadName, state)
+    const goPark = { type: 'go_park', hash: addr, goroutine, addr: valueAddr } as GoPark
+    postMessage(goPark)
+  }
+
+  async handle_chan_unlock(
+    fhash: number,
+    goBlockBehavior: GoBlockMulti
+  ): Promise<GoChannelBuffer | undefined> {
+    const goReady = { type: 'go_ready', hash: fhash } as GoReady
+    /// post message and wait for reply
+    postMessage(goReady)
+
+    return await new Promise((resolve, reject) => {
+      const handler = (e: MessageEvent) => {
+        if (e.data.type === 'go_ready_reply') {
+          const { goroutine, hash, addr, success } = e.data as GoReadyReply
+          if (fhash === hash) {
+            const go = success ? goroutine : undefined
+            removeEventListener('message', handler)
+            resolve({ goroutine: go, addr } as GoChannelBuffer)
+          }
+        }
+      }
+
+      addEventListener('message', handler)
+    })
+  }
+
+  pop_chan_send = (
+    chan_addr: number,
+    goBlockBehavior: GoBlockMulti
+  ): GoChannelBuffer | undefined => {
+    const hash = chan_addr + sendq
+    let result
+    this.handle_chan_unlock(hash, goBlockBehavior).then(res => {
+      result = res
+    })
+    return result
+  }
+
+  pop_chan_recv = (
+    chan_addr: number,
+    goBlockBehavior: GoBlockMulti
+  ): GoChannelBuffer | undefined => {
+    const hash = chan_addr + recvq
+    let result
+    this.handle_chan_unlock(hash, goBlockBehavior).then(res => {
+      result = res
+    })
+    return result
   }
 }
