@@ -1,4 +1,5 @@
-import { Builtin, Memory } from './memory'
+import { Builtin, Memory } from './memory/memory'
+import { ILease, InstructionBatch, TimeAllocation } from './types'
 
 export const False_tag = 0
 export const True_tag = 1
@@ -13,15 +14,10 @@ export const Frame_tag = 9
 export const Environment_tag = 10
 export const Pair_tag = 11
 export const Builtin_tag = 12
-
-export const mem_make = (bytes: number): DataView => {
-  if (bytes % 8 !== 0) {
-    console.error('mem bytes must be divisible by 8')
-  }
-  const data = new ArrayBuffer(bytes)
-  const view = new DataView(data)
-  return view
-}
+export const Mutex_tag = 13
+export const WaitGroup_tag = 14
+export const Buffered_Channel_tag = 15
+export const Unbuffered_Channel_tag = 16
 
 /* ************************
  * compile-time environment
@@ -64,3 +60,67 @@ export const is_pair = (x: any) => Array.isArray(x) && x.length === 2
 export const head = (x: any) => x[0]
 
 export const tail = (x: any) => x[1]
+
+/*
+ * Go Channel Hashing
+ */
+
+export const sendq = 0
+
+export const recvq = 1
+
+/**
+ * Lease Util
+ */
+
+export const start_lease = (lease: ILease) => {
+  if (lease.type === 'InstructionBatch') {
+    // DO NOTHING
+  } else if (lease.type === 'TimeAllocation') {
+    const timeAllocation = lease as TimeAllocation
+    timeAllocation.start = Date.now()
+  } else {
+    console.log('other lease type is not supported')
+  }
+}
+
+export const check_lease = (lease: ILease): boolean => {
+  if (lease.type === 'InstructionBatch') {
+    const instructionBatch = lease as InstructionBatch
+    return instructionBatch.instructionCount > 0
+  } else if (lease.type === 'TimeAllocation') {
+    const timeAllocation = lease as TimeAllocation
+    const elapsedTime = Date.now() - timeAllocation.start
+    return elapsedTime < timeAllocation.duration
+  } else {
+    console.log('other lease type is not supported')
+    return true
+  }
+}
+
+export const lease_per_loop_update = (lease: ILease) => {
+  if (lease.type === 'InstructionBatch') {
+    const instructionBatch = lease as InstructionBatch
+    instructionBatch.instructionCount--
+  } else if (lease.type === 'TimeAllocation') {
+    const timeAllocation = lease as TimeAllocation
+    // DO NOTHING
+  } else {
+    console.log('other lease type is not supported')
+  }
+}
+
+export const exceed_lease = (lease: ILease): boolean => {
+  if (lease.type === 'InstructionBatch') {
+    const instructionBatch = lease as InstructionBatch
+    return instructionBatch.instructionCount <= 0
+  } else if (lease.type === 'TimeAllocation') {
+    const timeAllocation = lease as TimeAllocation
+    const buffer = 100
+    const elapsedTime = Date.now() - timeAllocation.start
+    return elapsedTime > timeAllocation.duration + buffer
+  } else {
+    console.log('other lease type is not supported')
+    return true
+  }
+}

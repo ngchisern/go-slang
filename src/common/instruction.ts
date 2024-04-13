@@ -1,9 +1,9 @@
-import { LiteralType, ParameterDeclaration } from './astNode'
-
-export type LcdType = LiteralType | undefined
+import { ParameterDeclaration } from './astNode'
+import { GoLit } from './types'
 
 export type Instruction =
   | Done
+  | GoDone
   | EnterScope
   | ExitScope
   | Assign
@@ -28,6 +28,10 @@ export interface Done extends InstructionBase {
   tag: 'DONE'
 }
 
+export interface GoDone extends InstructionBase {
+  tag: 'GO_DONE'
+}
+
 export interface EnterScope extends InstructionBase {
   tag: 'ENTER_SCOPE'
   syms: string[]
@@ -44,16 +48,17 @@ export interface Assign extends InstructionBase {
 
 export interface Send extends InstructionBase {
   tag: 'SEND'
-  pos: [number, number]
 }
 
 export interface Pop extends InstructionBase {
   tag: 'POP'
 }
 
+export type LdcType = GoLit | undefined
+
 export interface Ldc extends InstructionBase {
   tag: 'LDC'
-  val: LcdType
+  val: LdcType
 }
 
 export interface Ldf extends InstructionBase {
@@ -82,6 +87,7 @@ export interface Go extends InstructionBase {
 
 export interface Ld extends InstructionBase {
   tag: 'LD'
+  sel: [number, number] | undefined
   pos: [number, number]
 }
 

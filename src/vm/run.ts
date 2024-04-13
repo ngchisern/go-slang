@@ -1,11 +1,14 @@
 import { Instruction } from '../common/instruction'
-import { Memory } from './memory'
-import { TimeSliceGoScheduler } from './scheduler'
+import { ParallelScheduler } from './scheduler/parallelScheduler'
+import { TimeSliceGoScheduler } from './scheduler/scheduler'
 import { GoVM } from './vm'
 
-export const run = (instrs: Instruction[]) => {
-  const memory = new Memory()
-  const vm = new GoVM(instrs, memory)
-  const scheduler = new TimeSliceGoScheduler(vm)
-  scheduler.run()
+export async function run(instrs: Instruction[]) {
+  const scheduler = new TimeSliceGoScheduler(instrs)
+  await scheduler.run()
+}
+
+export async function run_parallel(instrs: Instruction[]) {
+  const scheduler = new ParallelScheduler(navigator.hardwareConcurrency, instrs)
+  await scheduler.run()
 }
