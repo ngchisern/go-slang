@@ -1,4 +1,4 @@
-import { Goroutine, Task } from './goroutine'
+import { Goroutine, GoroutineState, Task } from './goroutine'
 import {
   Instruction,
   Goto,
@@ -11,11 +11,23 @@ import {
   Assign,
   Ldf,
   Call,
-  Reset
+  Reset,
+  Unop,
+  Send
 } from '../common/instruction'
-import { Memory } from './memory'
-import { Scheduler } from './scheduler'
-import { stringify } from 'querystring'
+import { Memory } from './memory/memory'
+import {
+  GoBlockSingle,
+  IControlInstruction,
+  IGoBlockBehavior,
+  ILease,
+  ISpawnBehavior,
+  InstructionBatch,
+  ManualAdd,
+  TimeAllocation
+} from './types'
+import { GoSpawn } from './scheduler/worker'
+import { check_lease, lease_per_loop_update, start_lease } from './utils'
 
 export interface VirtualMachine {
   instrs: Instruction[]
@@ -25,19 +37,26 @@ export interface VirtualMachine {
   save(task: Task): void
 }
 
+export interface VMState {
+  OS: any[]
+  RTS: any[]
+  E: number
+  PC: number
+  state: GoroutineState
+  currentThread: number
+  currentThreadName: string
+}
+
 export class GoVM implements VirtualMachine {
-  scheduler: Scheduler
+  lease: ILease
+  spawnBehavior: ISpawnBehavior
+  goBlockBehavior: IGoBlockBehavior
 
   threadCount: number
   instrs: Instruction[]
   memory: Memory
 
-  OS: any[]
-  RTS: any[]
-  E: number
-  PC: number
-  currentThread: number
-  currentThreadName: string
+  state: VMState
 
   constructor(instrs: Instruction[], memory: Memory) {
     this.threadCount = 1
@@ -50,7 +69,7 @@ export class GoVM implements VirtualMachine {
     const context = {
       OS: [],
       RTS: [],
-      E: this.memory.create_new_environment(threadId),
+      E: this.memory.create_new_environment(),
       PC: 0
     }
 
@@ -59,124 +78,169 @@ export class GoVM implements VirtualMachine {
 
   switch(task: Task) {
     let go = task as Goroutine
-
-    this.OS = go.context.OS
-    this.RTS = go.context.RTS
-    this.E = go.context.E
-    this.PC = go.context.PC
-    this.currentThread = go.id
-    this.currentThreadName = go.name
-  }
-
-  save(go: Goroutine) {
-    go.context.OS = this.OS
-    go.context.RTS = this.RTS
-    go.context.E = this.E
-    go.context.PC = this.PC
-  }
-
-  run = (scheduler: Scheduler) => {
-    this.scheduler = scheduler
-    while (!(this.instrs[this.PC].tag === 'DONE') && this.scheduler.checkCondition()) {
-      console.log(this.PC, this.instrs[this.PC], this.OS, this.currentThreadName)
-      const instr = this.instrs[this.PC++]
-      this.microcode[instr.tag](instr)
-      this.scheduler.postLoopUpdate()
+    this.state = {
+      OS: go.context.OS,
+      RTS: go.context.RTS,
+      E: go.context.E,
+      PC: go.context.PC,
+      state: go.state,
+      currentThread: go.id,
+      currentThreadName: go.name
     }
   }
 
+  save(go: Goroutine) {
+    go.context.OS = this.state.OS
+    go.context.RTS = this.state.RTS
+    go.context.E = this.state.E
+    go.context.PC = this.state.PC
+    if (this.state.state === GoroutineState.BLOCKED) {
+      go.state = GoroutineState.BLOCKED
+    } else {
+      go.state = GoroutineState.RUNNABLE
+    }
+  }
+
+  async run(control: IControlInstruction) {
+    this.lease = control.lease
+    this.spawnBehavior = control.spawnBehavior
+    this.goBlockBehavior = control.goBlockBehavior
+
+    start_lease(this.lease)
+    // console.log('running', this.state.currentThreadName)
+    while (this.should_continue()) {
+      this.state.state = GoroutineState.RUNNING
+      const instr = this.instrs[this.state.PC++]
+      // console.log(this.state.currentThreadName, 'running ', this.state.PC, instr.tag)
+      await this.microcode[instr.tag](instr)
+      lease_per_loop_update(this.lease)
+    }
+  }
+
+  should_continue = () => {
+    return (
+      this.instrs[this.state.PC].tag !== 'DONE' &&
+      this.instrs[this.state.PC].tag !== 'GO_DONE' &&
+      check_lease(this.lease) &&
+      this.state.state !== GoroutineState.BLOCKED
+    )
+  }
+
   microcode: { [type: string]: (instr: Instruction) => void } = {
-    LDC: (instr: Ldc) =>
-      this.OS.push(this.memory.JS_value_to_address(this.currentThread, instr.val)),
+    LDC: (instr: Ldc) => this.state.OS.push(this.memory.JS_value_to_address(instr.val)),
+    UNOP: async (instr: Unop) => await this.apply_unop(instr.sym),
     BINOP: (instr: Binop) =>
-      this.OS.push(this.apply_binop(instr.sym, this.OS.pop(), this.OS.pop())),
-    POP: (instr: Pop) => this.OS.pop(),
-    GOTO: (instr: Goto) => (this.PC = instr.addr),
+      this.state.OS.push(this.apply_binop(instr.sym, this.state.OS.pop(), this.state.OS.pop())),
+    POP: (instr: Pop) => this.state.OS.pop(),
+    GOTO: (instr: Goto) => (this.state.PC = instr.addr),
     ENTER_SCOPE: (instr: EnterScope) => {
-      const block = this.memory.get_block(this.currentThread)
-      this.RTS.push(this.memory.mem_allocate_Blockframe(block, this.E))
-      const frame_address = this.memory.mem_allocate_Frame(block, instr.syms.length)
-      this.E = this.memory.mem_Environment_extend(block, frame_address, this.E)
+      this.state.RTS.push(this.memory.mem_allocate_Blockframe(this.state.E))
+      const frame_address = this.memory.mem_allocate_Frame(instr.syms.length)
+      this.state.E = this.memory.mem_Environment_extend(frame_address, this.state.E)
       const locals = instr.syms
       for (let i = 0; i < locals.length; i++) {
         this.memory.mem_set_child(frame_address, i, this.memory.Unassigned)
       }
     },
     EXIT_SCOPE: (instr: ExitScope) =>
-      (this.E = this.memory.mem_get_Blockframe_environment(this.RTS.pop())),
+      (this.state.E = this.memory.mem_get_Blockframe_environment(this.state.RTS.pop())),
     LD: (instr: Ld) => {
-      const val = this.memory.mem_get_Environment_value(this.E, instr.pos)
-      if (this.memory.is_Unassigned(val)) console.error('access of unassigned variable')
-      this.OS.push(val)
+      const load = (position: [number, number]) => {
+        const val = this.memory.mem_get_Environment_value(this.state.E, position)
+        if (this.memory.is_Unassigned(val)) console.error('access of unassigned variable')
+        this.state.OS.push(val)
+      }
+
+      if (instr.sel) {
+        load(instr.sel)
+      }
+      load(instr.pos)
     },
-    ASSIGN: (instr: Assign) =>
-      this.memory.mem_set_Environment_value(this.E, instr.pos, this.OS[this.OS.length - 1]),
+    ASSIGN: (instr: Assign) => {
+      return this.memory.mem_set_Environment_value(
+        this.state.E,
+        instr.pos,
+        this.state.OS[this.state.OS.length - 1]
+      )
+    },
     LDF: (instr: Ldf) => {
       const arity = instr.prms.length
-      const block = this.memory.get_block(this.currentThread)
-      const closure_address = this.memory.mem_allocate_Closure(block, arity, instr.addr, this.E)
-      this.OS.push(closure_address)
+      const closure_address = this.memory.mem_allocate_Closure(arity, instr.addr, this.state.E)
+      this.state.OS.push(closure_address)
     },
-    CALL: (instr: Call) => {
+    CALL: async (instr: Call) => {
       const arity = instr.arity
-      const fun = this.OS[this.OS.length - 1 - arity]
+      const fun = this.state.OS[this.state.OS.length - 1 - arity]
       if (this.memory.is_Builtin(fun)) {
-        return this.apply_builtin(this.memory.mem_get_Builtin_id(fun))
+        return await this.apply_builtin(this.memory.mem_get_Builtin_id(fun))
       }
-      const block = this.memory.get_block(this.currentThread)
-      const frame_address = this.memory.mem_allocate_Frame(block, arity)
+      const frame_address = this.memory.mem_allocate_Frame(arity)
       for (let i = arity - 1; i >= 0; i--) {
-        this.memory.mem_set_child(frame_address, i, this.OS.pop())
+        this.memory.mem_set_child(frame_address, i, this.state.OS.pop())
       }
-      this.OS.pop() // pop fun
-      this.RTS.push(this.memory.mem_allocate_Callframe(block, this.E, this.PC))
-      this.E = this.memory.mem_Environment_extend(
-        block,
+      this.state.OS.pop() // pop fun
+      this.state.RTS.push(this.memory.mem_allocate_Callframe(this.state.E, this.state.PC))
+      this.state.E = this.memory.mem_Environment_extend(
         frame_address,
         this.memory.mem_get_Closure_environment(fun)
       )
-      this.PC = this.memory.mem_get_Closure_pc(fun)
+      this.state.PC = this.memory.mem_get_Closure_pc(fun)
     },
     GO: (instr: Call) => {
       const spawned = this.spawn_goroutine()
-      this.scheduler.add(spawned)
+      if (this.spawnBehavior.type === 'ManualAdd') {
+        const scheduler = (this.spawnBehavior as ManualAdd).scheduler
+        scheduler.add(spawned)
+      } else if (this.spawnBehavior.type === 'AsyncCommunication') {
+        postMessage({ type: 'go_spawn', goroutine: spawned } as GoSpawn)
+      } else {
+        console.log('Spawn Behavior', this.spawnBehavior.type, 'not supported')
+      }
     },
     RESET: (instr: Reset) => {
       // keep popping...
-      const top_frame = this.RTS.pop()
+      const top_frame = this.state.RTS.pop()
       if (this.memory.is_Callframe(top_frame)) {
         // ...until top frame is a call frame
-        this.PC = this.memory.mem_get_Callframe_pc(top_frame)
-        this.E = this.memory.mem_get_Callframe_environment(top_frame)
+        this.state.PC = this.memory.mem_get_Callframe_pc(top_frame)
+        this.state.E = this.memory.mem_get_Callframe_environment(top_frame)
       } else {
-        this.PC--
+        this.state.PC--
       }
+    },
+    SEND: async (instr: Send) => {
+      await this.memory.channel_send(this.state, this.goBlockBehavior)
     }
   }
 
   spawn_goroutine = () => {
-    // TODO: need to deep copy the memory instead
-    // const threadId = this.threadCount++
-    return new Goroutine(this.currentThread, 'worker ' + String(this.threadCount++), {
+    const threadId = this.threadCount++
+    return new Goroutine(threadId, 'worker ' + String(threadId), {
       OS: [],
-      RTS: [...this.RTS],
-      E: this.E,
-      PC: this.PC + 1 // + 1 to skip the GOTO instruction
+      RTS: [],
+      E: this.state.E,
+      PC: this.state.PC + 1 // + 1 to skip the GOTO instruction
     })
+  }
+
+  async apply_unop(op: string) {
+    const v = this.state.OS.pop()
+    const addr = await this.memory.unop_microcode[op](v, this.state, this.goBlockBehavior)
+    this.state.OS.push(addr)
   }
 
   apply_binop = (op: string, v2: number, v1: number) =>
     this.memory.JS_value_to_address(
-      this.currentThread,
       this.memory.binop_microcode[op](
         this.memory.address_to_JS_value(v1),
         this.memory.address_to_JS_value(v2)
       )
     )
 
-  apply_builtin = (builtin_id: number) => {
-    const result = this.memory.builtin_array[builtin_id](this.OS)
-    this.OS.pop() // pop fun
-    this.OS.push(result)
+  async apply_builtin(builtin_id: number) {
+    const result = await this.memory.builtin_array[builtin_id](this.state, this.goBlockBehavior)
+
+    this.state.OS.pop() // pop fun
+    this.state.OS.push(result)
   }
 }
