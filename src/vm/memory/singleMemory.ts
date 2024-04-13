@@ -88,7 +88,7 @@ export class SingleMemory extends Memory {
     return address
   }
 
-  unlock(state: VMState, goBlockBehavior: IGoBlockBehavior): number {
+  async unlock(state: VMState, goBlockBehavior: IGoBlockBehavior): Promise<number> {
     // pop the second last element
     const address = state.OS[state.OS.length - 2]
 
@@ -166,13 +166,13 @@ export class SingleMemory extends Memory {
     return address
   }
 
-  channel_send(state: VMState, goBlockBehavior: IGoBlockBehavior): void {
+  channel_send(state: VMState, goBlockBehavior: IGoBlockBehavior): Promise<number> {
     const in_addr = state.OS.pop()
     const chan_addr = state.OS.pop()
 
     if (!this.is_Channel(chan_addr)) {
       console.error('send: not a channel')
-      return
+      return chan_addr
     }
 
     // reserve a memory location for the value
@@ -218,9 +218,15 @@ export class SingleMemory extends Memory {
 
       state.OS.pop()
     }
+
+    return chan_addr
   }
 
-  channel_receive(chan_addr: number, state: VMState, goBlockBehavior: IGoBlockBehavior): number {
+  channel_receive(
+    chan_addr: number,
+    state: VMState,
+    goBlockBehavior: IGoBlockBehavior
+  ): Promise<number> {
     // reserve memory location for the dummy value (only integer supproted now)
     const val_addr = this.JS_value_to_address({ tag: GoTag.Int, val: 0 })
 

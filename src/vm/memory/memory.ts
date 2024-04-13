@@ -102,7 +102,7 @@ export abstract class Memory {
 
   abstract lock(state: VMState, goBlockBehavior: IGoBlockBehavior): number
 
-  abstract unlock(state: VMState, goBlockBehavior: IGoBlockBehavior): number
+  abstract unlock(state: VMState, goBlockBehavior: IGoBlockBehavior): Promise<number>
 
   abstract wg_add(state: VMState, goBlockBehavior: IGoBlockBehavior): number
 
@@ -110,13 +110,13 @@ export abstract class Memory {
 
   abstract wg_wait(state: VMState, goBlockBehavior: IGoBlockBehavior): number
 
-  abstract channel_send(state: VMState, goBlockBehavior: IGoBlockBehavior): void
+  abstract channel_send(state: VMState, goBlockBehavior: IGoBlockBehavior): Promise<number>
 
   abstract channel_receive(
     chan_addr: number,
     state: VMState,
     goBlockBehavior: IGoBlockBehavior
-  ): number
+  ): Promise<number>
 
   constructor(state?: MemoryState) {
     if (state) {
@@ -469,14 +469,14 @@ export abstract class Memory {
     this.is_Buffered_Channel(address) || this.is_Unbuffered_Channel(address)
 
   unop_microcode: {
-    [key: string]: (x: number, state: VMState, goBlockBehavior: IGoBlockBehavior) => number
+    [key: string]: (x: number, state: VMState, goBlockBehavior: IGoBlockBehavior) => Promise<number>
   } = {
-    '<-': (chan_addr: number, state: VMState, goBlockBehavior) => {
+    '<-': async (chan_addr: number, state: VMState, goBlockBehavior) => {
       if (!this.is_Channel(chan_addr)) {
         throw new Error('unop: not a channel')
       }
 
-      return this.channel_receive(chan_addr, state, goBlockBehavior)
+      return await this.channel_receive(chan_addr, state, goBlockBehavior)
     }
   }
 
@@ -575,8 +575,8 @@ export abstract class Memory {
     Lock: (state, goBlockBehavior) => {
       return this.lock(state, goBlockBehavior)
     },
-    Unlock: (state, goBlockBehavior) => {
-      return this.unlock(state, goBlockBehavior)
+    Unlock: async (state, goBlockBehavior) => {
+      return await this.unlock(state, goBlockBehavior)
     },
     Add: (state, goBlockBehavior) => {
       return this.wg_add(state, goBlockBehavior)

@@ -139,8 +139,8 @@ export class ParallelScheduler implements Scheduler {
     const goroutine = park.goroutine
     const hash = park.hash
 
-    if (park.addr) {
-      this.add_channel_blocked(park.addr, goroutine, hash)
+    if (park.val_addr) {
+      this.add_channel_blocked(hash, goroutine, park.val_addr)
     } else {
       this.add_blocked(hash, goroutine)
     }
@@ -152,14 +152,14 @@ export class ParallelScheduler implements Scheduler {
     const ready = event.data as GoReady
     const hash = ready.hash
 
-    if (ready.addr) {
-      const chan = this.remove_channel_blocked(ready.addr)
+    if (ready.is_chan) {
+      const chan = this.remove_channel_blocked(hash)
       const message: GoReadyReply = chan
         ? {
             type: 'go_ready_reply',
             hash,
             goroutine: chan.goroutine,
-            addr: ready.addr,
+            val_addr: chan.addr,
             success: true
           }
         : { type: 'go_ready_reply', hash, success: false }
@@ -227,7 +227,6 @@ export class ParallelScheduler implements Scheduler {
 
     const buffer = this.channelBlocked[addr].values().next().value
     buffer.goroutine.state = GoroutineState.RUNNABLE
-    this.globalRunQueue.push(buffer.goroutine)
     this.channelBlocked[addr].delete(buffer)
     return buffer
   }

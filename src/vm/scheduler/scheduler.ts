@@ -34,7 +34,7 @@ export class TimeSliceGoScheduler implements Scheduler {
     this.vm = vm
   }
 
-  run() {
+  async run() {
     const main = this.vm.main()
     this.queue.push(main)
 
@@ -46,7 +46,7 @@ export class TimeSliceGoScheduler implements Scheduler {
       const go = this.queue.shift() as Goroutine
       this.vm.switch(go)
 
-      this.vm.run(this.create_control_instruction())
+      await this.vm.run(this.create_control_instruction())
 
       this.vm.save(go)
       if (!go.isComplete(this.vm) && go.state == GoroutineState.RUNNABLE) {

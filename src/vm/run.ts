@@ -3,9 +3,9 @@ import { ParallelScheduler } from './scheduler/parallelScheduler'
 import { TimeSliceGoScheduler } from './scheduler/scheduler'
 import { GoVM } from './vm'
 
-export const run = (instrs: Instruction[]) => {
+export async function run(instrs: Instruction[]) {
   const scheduler = new TimeSliceGoScheduler(instrs)
-  scheduler.run()
+  await scheduler.run()
 }
 
 export async function run_parallel(instrs: Instruction[]) {

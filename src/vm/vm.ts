@@ -100,7 +100,7 @@ export class GoVM implements VirtualMachine {
     }
   }
 
-  run = (control: IControlInstruction): void => {
+  async run(control: IControlInstruction) {
     this.lease = control.lease
     this.spawnBehavior = control.spawnBehavior
     this.goBlockBehavior = control.goBlockBehavior
@@ -111,7 +111,7 @@ export class GoVM implements VirtualMachine {
       this.state.state = GoroutineState.RUNNING
       const instr = this.instrs[this.state.PC++]
       // console.log(this.state.currentThreadName, 'running ', this.state.PC, instr.tag)
-      this.microcode[instr.tag](instr)
+      await this.microcode[instr.tag](instr)
       this.post_loop_update()
     }
   }
@@ -176,7 +176,7 @@ export class GoVM implements VirtualMachine {
 
   microcode: { [type: string]: (instr: Instruction) => void } = {
     LDC: (instr: Ldc) => this.state.OS.push(this.memory.JS_value_to_address(instr.val)),
-    UNOP: (instr: Unop) => this.apply_unop(instr.sym),
+    UNOP: async (instr: Unop) => await this.apply_unop(instr.sym),
     BINOP: (instr: Binop) =>
       this.state.OS.push(this.apply_binop(instr.sym, this.state.OS.pop(), this.state.OS.pop())),
     POP: (instr: Pop) => this.state.OS.pop(),
@@ -204,22 +204,23 @@ export class GoVM implements VirtualMachine {
       }
       load(instr.pos)
     },
-    ASSIGN: (instr: Assign) =>
-      this.memory.mem_set_Environment_value(
+    ASSIGN: (instr: Assign) => {
+      return this.memory.mem_set_Environment_value(
         this.state.E,
         instr.pos,
         this.state.OS[this.state.OS.length - 1]
-      ),
+      )
+    },
     LDF: (instr: Ldf) => {
       const arity = instr.prms.length
       const closure_address = this.memory.mem_allocate_Closure(arity, instr.addr, this.state.E)
       this.state.OS.push(closure_address)
     },
-    CALL: (instr: Call) => {
+    CALL: async (instr: Call) => {
       const arity = instr.arity
       const fun = this.state.OS[this.state.OS.length - 1 - arity]
       if (this.memory.is_Builtin(fun)) {
-        return this.apply_builtin(this.memory.mem_get_Builtin_id(fun))
+        return await this.apply_builtin(this.memory.mem_get_Builtin_id(fun))
       }
       const frame_address = this.memory.mem_allocate_Frame(arity)
       for (let i = arity - 1; i >= 0; i--) {
@@ -255,8 +256,8 @@ export class GoVM implements VirtualMachine {
         this.state.PC--
       }
     },
-    SEND: (instr: Send) => {
-      this.memory.channel_send(this.state, this.goBlockBehavior)
+    SEND: async (instr: Send) => {
+      await this.memory.channel_send(this.state, this.goBlockBehavior)
     }
   }
 
@@ -270,9 +271,9 @@ export class GoVM implements VirtualMachine {
     })
   }
 
-  apply_unop = (op: string) => {
+  async apply_unop(op: string) {
     const v = this.state.OS.pop()
-    const addr = this.memory.unop_microcode[op](v, this.state, this.goBlockBehavior)
+    const addr = await this.memory.unop_microcode[op](v, this.state, this.goBlockBehavior)
     this.state.OS.push(addr)
   }
 
@@ -284,8 +285,8 @@ export class GoVM implements VirtualMachine {
       )
     )
 
-  apply_builtin = (builtin_id: number) => {
-    const result = this.memory.builtin_array[builtin_id](this.state, this.goBlockBehavior)
+  async apply_builtin(builtin_id: number) {
+    const result = await this.memory.builtin_array[builtin_id](this.state, this.goBlockBehavior)
 
     this.state.OS.pop() // pop fun
     this.state.OS.push(result)

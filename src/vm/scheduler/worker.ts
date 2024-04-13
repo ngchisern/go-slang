@@ -49,21 +49,21 @@ export class GoPark implements MessageData {
   type: 'go_park'
   hash: number
   goroutine: Goroutine
-  addr?: number
+  val_addr?: number
 }
 
 export class GoReady implements MessageData {
   type: 'go_ready'
   hash: number
   all: boolean
-  addr?: number
+  is_chan?: boolean
 }
 
 export class GoReadyReply implements MessageData {
   type: 'go_ready_reply'
   hash: number
   goroutine?: Goroutine
-  addr?: number
+  val_addr?: number
   success: boolean
 }
 
@@ -81,11 +81,11 @@ const initialize_vm = (state: MemoryState, instrs: Instruction[]) => {
   local_run_queue = []
 }
 
-const run = (goroutine: Goroutine) => {
+async function run(goroutine: Goroutine) {
   vm.switch(goroutine)
 
   const controlInstruction = prepare_control_instruction()
-  vm.run(controlInstruction)
+  await vm.run(controlInstruction)
   vm.save(goroutine)
 }
 
@@ -147,10 +147,10 @@ console.log = (...args) => {
   originalConsoleLog.apply(console, args)
 }
 
-function main(resolve: Function) {
+async function main(resolve: Function) {
   const goroutine = local_run_queue?.shift()
   if (goroutine) {
-    run(goroutine)
+    await run(goroutine)
     if (post_run(goroutine)) {
       postMessage({ type: 'main_done' } as MainDone)
     }
