@@ -9,7 +9,9 @@ import {
   ILease,
   InstructionBatch
 } from '../types'
-import { GoVM } from '../vm'
+import { exceed_lease } from '../utils'
+import { GoVM, VMState } from '../vm'
+import { WorkerState } from './parallelScheduler'
 
 export interface MessageData {
   type: string
@@ -38,6 +40,7 @@ export class GoAllocate implements MessageData {
 
 export class GoRequest implements MessageData {
   type: 'go_request'
+  state: WorkerState
 }
 
 export class GoSpawn implements MessageData {
@@ -130,10 +133,20 @@ const handle_main_message = (e: MessageEvent) => {
 const post_run = (goroutine: Goroutine): boolean => {
   const isComplete = goroutine.isComplete(vm)
 
-  if (!isComplete && goroutine.state == GoroutineState.RUNNABLE) {
-    local_run_queue.push(goroutine)
-  } else if (goroutine.name == 'main' && goroutine.isComplete(vm)) {
+  if (goroutine.name == 'main' && goroutine.isComplete(vm)) {
     return true
+  }
+
+  if (isComplete || goroutine.state == GoroutineState.BLOCKED) {
+    return false
+  }
+
+  if (exceed_lease(vm.lease)) {
+    // post to main
+    const goSpawn = { type: 'go_spawn', goroutine } as GoSpawn
+    postMessage(goSpawn)
+  } else {
+    local_run_queue.push(goroutine)
   }
 
   return false
@@ -147,15 +160,27 @@ console.log = (...args) => {
   originalConsoleLog.apply(console, args)
 }
 
+/**
+ * Poll 1/61 time from the global queue
+ * to ensure fairness
+ */
+const GRQ_POLL_INTERVAL = 61
+let nextTick = 0
+
 async function main(resolve: Function) {
   const goroutine = local_run_queue?.shift()
+
+  if (!goroutine || nextTick % GRQ_POLL_INTERVAL === 0) {
+    const state = goroutine ? WorkerState.RUNNING : WorkerState.IDLE
+    const goRequest = { type: 'go_request', state } as GoRequest
+    postMessage(goRequest)
+  }
+
   if (goroutine) {
     await run(goroutine)
     if (post_run(goroutine)) {
       postMessage({ type: 'main_done' } as MainDone)
     }
-  } else {
-    postMessage({ type: 'go_request' } as GoRequest)
   }
 
   setTimeout(() => main(resolve), local_run_queue.length ? 0 : 10)

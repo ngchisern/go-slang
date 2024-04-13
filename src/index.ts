@@ -17,22 +17,22 @@ import "fmt"
 
 // counter with mutex
 var counter int = 0
-// var mu sync.Mutex
+var mu sync.Mutex
 var wg sync.WaitGroup
 // var channel chan int
 
 func simple(x int) {
-  // mu.Lock();
+  mu.Lock();
   counter = counter + x;
   fmt.Println(counter);
-  // wg.Done();
-  // mu.Unlock();
+  wg.Done();
+  mu.Unlock();
 }
 
 func main() {
   ch := make(chan int, 2)
   // var wg sync.waitGroup
-  // wg.Add(2)
+  wg.Add(2)
   // go minus(c, wg)
   // c <- 21
   // close(c)
@@ -47,15 +47,15 @@ func main() {
   x := 42;
   a := <-ch
   b := <-ch
-  // x = x - 21;
+  x = x - 21;
   
-  // go simple(x);
-  // go simple(x);
+  go simple(x);
+  go simple(x);
   // // x = x - 3;
   // simple(a);
   fmt.Println(a)
   fmt.Println(b)
-  // wg.Wait()
+  wg.Wait()
 }
 `
 
@@ -64,11 +64,11 @@ export async function compileAndRunGoCode(code: string, parallel = false) {
     const ast = parseGoCode(code)
     const instrs = compileGoCode(ast)
     // instrs.forEach((v, i) => console.log(`${i}:`, v));
-    parallel ? await run_parallel(instrs) : run(instrs)
+    parallel ? await run_parallel(instrs) : await run(instrs)
     return { status: 'finished' }
   } catch (e) {
     return { status: 'error', message: e }
   }
 }
 
-// console.log(compileAndRunGoCode(code, false))
+// compileAndRunGoCode(code, false)

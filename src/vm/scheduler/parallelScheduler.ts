@@ -4,14 +4,24 @@ import { SharedMemory } from '../memory/sharedMemory'
 import { GoChannelBuffer, InstructionBatch } from '../types'
 import { GoVM } from '../vm'
 import { Scheduler } from './scheduler'
-import { Log, GoAllocate, SetUp, SetUpDone, GoSpawn, GoPark, GoReady, GoReadyReply } from './worker'
+import {
+  Log,
+  GoAllocate,
+  SetUp,
+  SetUpDone,
+  GoSpawn,
+  GoPark,
+  GoReady,
+  GoReadyReply,
+  GoRequest
+} from './worker'
 
 export const isNode =
   typeof process !== 'undefined' && process.versions != null && process.versions.node != null
 
 const worker_path = '/externalLibs/web/bundle.js'
 
-enum WorkerState {
+export enum WorkerState {
   IDLE,
   RUNNING
 }
@@ -237,7 +247,9 @@ export class ParallelScheduler implements Scheduler {
   handleRequest(event: MessageEvent): void {
     const worker = event.target as Worker
     const workerIndex = this.workers.indexOf(worker)
-    this.workerState[workerIndex] = WorkerState.IDLE
+
+    const { state } = event.data as GoRequest
+    this.workerState[workerIndex] = state
 
     if (this.globalRunQueue.length > 0) {
       const goroutines = this.globalRunQueue.splice(0, 1)

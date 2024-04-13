@@ -27,6 +27,7 @@ import {
   TimeAllocation
 } from './types'
 import { GoSpawn } from './scheduler/worker'
+import { check_lease, lease_per_loop_update, start_lease } from './utils'
 
 export interface VirtualMachine {
   instrs: Instruction[]
@@ -105,14 +106,14 @@ export class GoVM implements VirtualMachine {
     this.spawnBehavior = control.spawnBehavior
     this.goBlockBehavior = control.goBlockBehavior
 
-    this.start_lease()
+    start_lease(this.lease)
     // console.log('running', this.state.currentThreadName)
     while (this.should_continue()) {
       this.state.state = GoroutineState.RUNNING
       const instr = this.instrs[this.state.PC++]
       // console.log(this.state.currentThreadName, 'running ', this.state.PC, instr.tag)
       await this.microcode[instr.tag](instr)
-      this.post_loop_update()
+      lease_per_loop_update(this.lease)
     }
   }
 
@@ -120,58 +121,9 @@ export class GoVM implements VirtualMachine {
     return (
       this.instrs[this.state.PC].tag !== 'DONE' &&
       this.instrs[this.state.PC].tag !== 'GO_DONE' &&
-      this.check_lease() &&
+      check_lease(this.lease) &&
       this.state.state !== GoroutineState.BLOCKED
     )
-  }
-
-  start_lease = () => {
-    if (!this.lease) {
-      return
-    }
-
-    if (this.lease.type === 'InstructionBatch') {
-      // DO NOTHING
-    } else if (this.lease.type === 'TimeAllocation') {
-      const timeAllocation = this.lease as TimeAllocation
-      timeAllocation.start = Date.now()
-    } else {
-      console.log('other lease type is not supported')
-    }
-  }
-
-  check_lease = (): boolean => {
-    if (!this.lease) {
-      return true
-    }
-
-    if (this.lease.type === 'InstructionBatch') {
-      const instructionBatch = this.lease as InstructionBatch
-      return instructionBatch.instructionCount > 0
-    } else if (this.lease.type === 'TimeAllocation') {
-      const timeAllocation = this.lease as TimeAllocation
-      const elapsedTime = Date.now() - timeAllocation.start
-      return elapsedTime < timeAllocation.duration
-    } else {
-      console.log('other lease type is not supported')
-      return true
-    }
-  }
-
-  post_loop_update = () => {
-    if (!this.lease) {
-      return
-    }
-
-    if (this.lease.type === 'InstructionBatch') {
-      const instructionBatch = this.lease as InstructionBatch
-      instructionBatch.instructionCount--
-    } else if (this.lease.type === 'TimeAllocation') {
-      const timeAllocation = this.lease as TimeAllocation
-      // TODO
-    } else {
-      console.log('other lease type is not supported')
-    }
   }
 
   microcode: { [type: string]: (instr: Instruction) => void } = {

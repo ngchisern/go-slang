@@ -1,4 +1,5 @@
 import { Builtin, Memory } from './memory/memory'
+import { ILease, InstructionBatch, TimeAllocation } from './types'
 
 export const False_tag = 0
 export const True_tag = 1
@@ -67,3 +68,59 @@ export const tail = (x: any) => x[1]
 export const sendq = 0
 
 export const recvq = 1
+
+/**
+ * Lease Util
+ */
+
+export const start_lease = (lease: ILease) => {
+  if (lease.type === 'InstructionBatch') {
+    // DO NOTHING
+  } else if (lease.type === 'TimeAllocation') {
+    const timeAllocation = lease as TimeAllocation
+    timeAllocation.start = Date.now()
+  } else {
+    console.log('other lease type is not supported')
+  }
+}
+
+export const check_lease = (lease: ILease): boolean => {
+  if (lease.type === 'InstructionBatch') {
+    const instructionBatch = lease as InstructionBatch
+    return instructionBatch.instructionCount > 0
+  } else if (lease.type === 'TimeAllocation') {
+    const timeAllocation = lease as TimeAllocation
+    const elapsedTime = Date.now() - timeAllocation.start
+    return elapsedTime < timeAllocation.duration
+  } else {
+    console.log('other lease type is not supported')
+    return true
+  }
+}
+
+export const lease_per_loop_update = (lease: ILease) => {
+  if (lease.type === 'InstructionBatch') {
+    const instructionBatch = lease as InstructionBatch
+    instructionBatch.instructionCount--
+  } else if (lease.type === 'TimeAllocation') {
+    const timeAllocation = lease as TimeAllocation
+    // DO NOTHING
+  } else {
+    console.log('other lease type is not supported')
+  }
+}
+
+export const exceed_lease = (lease: ILease): boolean => {
+  if (lease.type === 'InstructionBatch') {
+    const instructionBatch = lease as InstructionBatch
+    return instructionBatch.instructionCount <= 0
+  } else if (lease.type === 'TimeAllocation') {
+    const timeAllocation = lease as TimeAllocation
+    const buffer = 100
+    const elapsedTime = Date.now() - timeAllocation.start
+    return elapsedTime > timeAllocation.duration + buffer
+  } else {
+    console.log('other lease type is not supported')
+    return true
+  }
+}
