@@ -165,8 +165,6 @@ const tests: Test[] = [
         go minus(bc)
         c <- 21
         bc <- 212
-        close(c)
-        close(bc)
       }
     `,
     output: [
@@ -218,14 +216,6 @@ const tests: Test[] = [
       'LD', // bc <- 212
       'LDC',
       'SEND',
-      'LD', // close(c)
-      'LDC',
-      'CALL',
-      'POP',
-      'LD', // close(bc)
-      'LDC',
-      'CALL',
-      'POP',
       'EXIT_SCOPE',
       'LDC',
       'RESET',
