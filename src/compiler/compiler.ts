@@ -26,6 +26,7 @@ import { Instruction, Goto, Call, Ldc, Ld } from '../common/instruction'
 import { compile_time_environment_position, is_boolean, is_number } from '../vm/utils'
 import { GoLit, GoTag } from '../common/types'
 import { SingleMemory } from '../vm/memory/singleMemory'
+import * as node from './nodeCreator'
 
 // compile-time frames only need synbols (keys), no values
 const global_compile_frame = Object.keys(new SingleMemory().primitive_object)
@@ -40,10 +41,16 @@ let instrs: Instruction[]
 
 const scan = (comp: AstNode): string[] =>
   comp.tag === 'seq'
-    ? (comp as Sequence).stmts.reduce((acc, x) => acc.concat(scan(x)), [] as string[])
+    ? (comp as Sequence).stmts.flatMap(stmt => scan(stmt))
     : comp.tag === 'shortVarDecl'
-      ? [(comp as ShortVarDecl).syms[0]]
-      : []
+      ? (comp as ShortVarDecl).syms
+      : comp.tag === 'varDecl'
+        ? (comp as VariableDeclaration).specs.flatMap(spec => spec.syms)
+        : comp.tag === 'src'
+          ? [...(comp as SourceFile).decls.flatMap(decl => scan(decl))]
+          : comp.tag === 'func'
+            ? [(comp as FunctionDeclaration).sym]
+            : []
 
 export const compileGoCode = (ast: AstNode) => {
   wc = 0
@@ -61,49 +68,25 @@ const compile = (comp: AstNode, ce: string[][]) => {
 
 const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } = {
   src: (comp: SourceFile, ce: string[][]) => {
-    const names: string[] = []
-    comp.imports.forEach(name => names.push(name.substring(1, name.length - 1)))
+    // Transform imports to decls.
+    const imToVarDecls = comp.imports.map(im => node.varDeclImNode(im))
+    comp.decls.unshift(...imToVarDecls)
 
-    comp.decls.forEach(decl => {
-      if (decl.tag === 'func') {
-        names.push((decl as FunctionDeclaration).sym)
-      } else {
-        ;(decl as VariableDeclaration).specs.forEach(spec => {
-          names.push(...spec.syms)
-        })
-      }
-    })
+    // Extend env with imports and decls.
+    const names: string[] = scan(comp)
     const new_env = compile_time_environment_extend(names, ce)
 
-    // ENTER SCOPE first
+    // Enter scope.
     instrs[wc++] = { tag: 'ENTER_SCOPE', syms: names }
-
-    comp.imports.forEach(name => {
-      const val = name.substring(1, name.length - 1)
-      instrs[wc++] = { tag: 'LDC', val: { tag: GoTag.Boolean, val: true } } // TODO: string is not supported: dunmy value
-      instrs[wc++] = { tag: 'ASSIGN', pos: compile_time_environment_position(new_env, val) }
-    })
-
+    // Compile decls.
     comp.decls.map(decl => compile(decl, new_env))
-    compile(
-      {
-        tag: 'expStmt',
-        exp: {
-          tag: 'primArg',
-          expr: {
-            tag: 'meth',
-            ident: 'main'
-          } as MethodExpression,
-          args: []
-        } as PrimaryExprArgument
-      } as ExpressionStatement,
-      new_env
-    )
+    // Compile main mtd invocation.
+    compile(node.mainMtdExprStmtNode(), new_env)
+    // Exit scope.
     instrs[wc++] = { tag: 'EXIT_SCOPE' }
   },
 
   block: (comp: Block, ce: string[][]) => {
-    // TODO not sure if Go scans declarations as per JS
     const locals = scan(comp.body)
     instrs[wc++] = { tag: 'ENTER_SCOPE', syms: locals }
 
@@ -175,24 +158,7 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
 
   func: (comp: FunctionDeclaration, ce: string[][]) => {
     // Transform FunctionDeclaration to ShortVarDecl.
-    compile(
-      {
-        tag: 'shortVarDecl',
-        syms: [comp.sym],
-        exprs: [
-          {
-            tag: 'funcLit',
-            sig: {
-              tag: 'sig',
-              parameters: comp.sig.parameters,
-              result: comp.sig.result
-            },
-            body: comp.body
-          }
-        ]
-      } as ShortVarDecl,
-      ce
-    )
+    compile(node.shortVarDeclFuncLitNode(comp), ce)
   },
 
   primArg: (comp: PrimaryExprArgument, ce: string[][]) => {

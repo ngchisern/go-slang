@@ -97,19 +97,21 @@ export class CustomVisitor extends GoParserVisitor<AstNode> {
         imp.importSpec_list().map(spec => {
           const ctx = spec.importPath().string_()
           const path = (ctx.RAW_STRING_LIT() || ctx.INTERPRETED_STRING_LIT()).symbol.text
-          return path
+          // Somehow quotes around the imported pkg is returned so need to be removed.
+          return path.substring(1, path.length - 1)
         })
       )
       .flat()
 
-    const funcDecls = ctx.functionDecl_list().map(decl => this.visitFunctionDecl(decl))
     const varDecls = ctx.varDecl_list().map(decl => this.visitVarDecl(decl))
+    const funcDecls = ctx.functionDecl_list().map(decl => this.visitFunctionDecl(decl))
 
     return {
       tag: 'src',
       package: pkg,
       imports: imports,
-      decls: [...funcDecls, ...varDecls]
+      // Typical program order of varDecls followed by funcDecls.
+      decls: [...varDecls, ...funcDecls]
     }
   }
 

@@ -12,6 +12,9 @@ const tests: Test[] = [
     `,
     output: [
       'ENTER_SCOPE',
+      'LDC', // import "fmt"
+      'ASSIGN',
+      'POP',
       'LDF', // main
       'GOTO',
       'ENTER_SCOPE',
@@ -46,6 +49,9 @@ const tests: Test[] = [
     `,
     output: [
       'ENTER_SCOPE',
+      'LDC', // import "fmt"
+      'ASSIGN',
+      'POP',
       'LDF', // minus
       'GOTO',
       'ENTER_SCOPE',
@@ -99,6 +105,9 @@ const tests: Test[] = [
     `,
     output: [
       'ENTER_SCOPE',
+      'LDC', // import "fmt"
+      'ASSIGN',
+      'POP',
       'LDF', // print
       'GOTO',
       'ENTER_SCOPE',
@@ -162,6 +171,9 @@ const tests: Test[] = [
     `,
     output: [
       'ENTER_SCOPE',
+      'LDC', // import "fmt"
+      'ASSIGN',
+      'POP',
       'LDF', // minus
       'GOTO',
       'ENTER_SCOPE',
@@ -244,6 +256,9 @@ const tests: Test[] = [
     `,
     output: [
       'ENTER_SCOPE',
+      'LDC', // import "fmt"
+      'ASSIGN',
+      'POP',
       'LDF', // print
       'GOTO',
       'ENTER_SCOPE',
@@ -310,6 +325,9 @@ const tests: Test[] = [
     `,
     output: [
       'ENTER_SCOPE',
+      'LDC', // import "fmt"
+      'ASSIGN',
+      'POP',
       'LD', // var counter int = 0
       'LDC',
       'ASSIGN',
