@@ -193,20 +193,24 @@ const tests: Test[] = [
       'ENTER_SCOPE',
       'LD', // c := make(chan int)
       'TYPE',
+      'CALL',
       'ASSIGN',
       'POP',
       'LD', // bc := make(chan int, 1)
       'TYPE',
       'LDC',
+      'CALL',
       'ASSIGN',
       'POP',
       'GO', // go minus(c)
       'GOTO',
       'LD',
+      'LD',
       'CALL',
       'GO_DONE',
       'GO', // go minus(bc)
       'GOTO',
+      'LD',
       'LD',
       'CALL',
       'GO_DONE',
@@ -229,16 +233,16 @@ const tests: Test[] = [
     ]
   },
   {
-    name: 'Compile waitGroup correctly',
+    name: 'Compile WaitGroup correctly',
     input: `
       package main
       import "fmt"
-      func print(wg sync.waitGroup) {
+      func print(wg sync.WaitGroup) {
         fmt.Println(100)
         wg.Done()
       }
       func main() {
-        var wg sync.waitGroup
+        var wg sync.WaitGroup
         wg.Add(1)
         go print(wg)
         wg.Wait()
@@ -267,8 +271,7 @@ const tests: Test[] = [
       'LDF', // main
       'GOTO',
       'ENTER_SCOPE',
-      'LD', // var wg sync.waitGroup
-      'LDC',
+      'LDC', // var wg sync.waitGroup
       'ASSIGN',
       'POP',
       'LD', // wg.Add(1)
@@ -318,12 +321,10 @@ const tests: Test[] = [
       'LDC', // import "fmt"
       'ASSIGN',
       'POP',
-      'LD', // var counter int = 0
-      'LDC',
+      'LDC', // var counter int = 0
       'ASSIGN',
       'POP',
-      'LD', // var mu sync.Mutex
-      'LDC',
+      'LDC', // var mu sync.Mutex
       'ASSIGN',
       'POP',
       'LDF', // increment
@@ -333,7 +334,7 @@ const tests: Test[] = [
       'CALL',
       'POP',
       'LD', // counter = counter + x
-      'LDC',
+      'LD',
       'BINOP',
       'ASSIGN',
       'POP',
@@ -351,13 +352,13 @@ const tests: Test[] = [
       'GO', // go increment(10)
       'GOTO',
       'LD',
-      'LD',
+      'LDC',
       'CALL',
       'GO_DONE',
       'GO', // go increment(2))
       'GOTO',
       'LD',
-      'LD',
+      'LDC',
       'CALL',
       'GO_DONE',
       'EXIT_SCOPE',
