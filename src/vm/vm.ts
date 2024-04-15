@@ -145,16 +145,9 @@ export class GoVM implements VirtualMachine {
     EXIT_SCOPE: (instr: ExitScope) =>
       (this.state.E = this.memory.mem_get_Blockframe_environment(this.state.RTS.pop())),
     LD: (instr: Ld) => {
-      const load = (position: [number, number]) => {
-        const val = this.memory.mem_get_Environment_value(this.state.E, position)
-        if (this.memory.is_Unassigned(val)) console.error('access of unassigned variable')
-        this.state.OS.push(val)
-      }
-
-      if (instr.sel) {
-        load(instr.sel)
-      }
-      load(instr.pos)
+      const val = this.memory.mem_get_Environment_value(this.state.E, instr.pos)
+      if (this.memory.is_Unassigned(val)) console.error('access of unassigned variable')
+      this.state.OS.push(val)
     },
     ASSIGN: (instr: Assign) => {
       return this.memory.mem_set_Environment_value(

@@ -19,6 +19,7 @@ const tests: Test[] = [
       'GOTO',
       'ENTER_SCOPE',
       'LD', // fmt.Println(1)
+      'LD',
       'LDC',
       'CALL',
       'POP',
@@ -63,6 +64,7 @@ const tests: Test[] = [
       'ASSIGN',
       'POP',
       'LD', // fmt.Println(y)
+      'LD',
       'LD',
       'CALL',
       'POP',
@@ -112,6 +114,7 @@ const tests: Test[] = [
       'GOTO',
       'ENTER_SCOPE',
       'LD', // fmt.Println(x)
+      'LD',
       'LD',
       'CALL',
       'POP',
@@ -180,6 +183,7 @@ const tests: Test[] = [
       'ASSIGN',
       'POP',
       'LD', // fmt.Println(x)
+      'LD',
       'LD',
       'CALL',
       'POP',
@@ -257,10 +261,12 @@ const tests: Test[] = [
       'GOTO',
       'ENTER_SCOPE',
       'LD', // fmt.Println(100)
+      'LD',
       'LDC',
       'CALL',
       'POP',
       'LD', // wg.Done()
+      'LD',
       'CALL',
       'POP',
       'EXIT_SCOPE',
@@ -275,6 +281,7 @@ const tests: Test[] = [
       'ASSIGN',
       'POP',
       'LD', // wg.Add(1)
+      'LD',
       'LDC',
       'CALL',
       'POP',
@@ -285,6 +292,7 @@ const tests: Test[] = [
       'CALL',
       'GO_DONE',
       'LD', // wg.Wait()
+      'LD',
       'CALL',
       'POP',
       'EXIT_SCOPE',
@@ -331,6 +339,7 @@ const tests: Test[] = [
       'GOTO',
       'ENTER_SCOPE',
       'LD', // mu.Lock()
+      'LD',
       'CALL',
       'POP',
       'LD', // counter = counter + x
@@ -339,6 +348,7 @@ const tests: Test[] = [
       'ASSIGN',
       'POP',
       'LD', // mu.Unlock()
+      'LD',
       'CALL',
       'POP',
       'EXIT_SCOPE',

@@ -179,28 +179,22 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
     goto.addr = wc
   },
 
-  meth: (comp: MethodExpression, ce: string[][]) => {
-    instrs[wc++] = {
-      tag: 'LD',
-      sel: undefined,
-      pos: compile_time_environment_position(ce, comp.ident)
-    }
-  },
-
+  // Qualified mtd names, e.g., fmt.Println(), wg.Wait().
   primSel: (comp: PrimaryExprSelector, ce: string[][]) => {
-    // TODO better way to get sel?
-    const sel = comp.sel.tag === 'ident' ? comp.sel.name : (comp.sel as MethodExpression).ident
     instrs[wc++] = {
       tag: 'LD',
-      sel: compile_time_environment_position(ce, sel),
+      pos: compile_time_environment_position(ce, (comp.sel as Identifier).name),
+    }
+    instrs[wc++] = {
+      tag: 'LD',
       pos: compile_time_environment_position(ce, comp.ident)
     }
   },
 
+  // Simple mtd/var names, e.g., minus(42), x.
   ident: (comp: Identifier, ce: string[][]) => {
     instrs[wc++] = {
       tag: 'LD',
-      sel: undefined,
       pos: compile_time_environment_position(ce, comp.name)
     }
   },

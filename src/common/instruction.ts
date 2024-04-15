@@ -87,7 +87,6 @@ export interface Go extends InstructionBase {
 
 export interface Ld extends InstructionBase {
   tag: 'LD'
-  sel: [number, number] | undefined
   pos: [number, number]
 }
 
