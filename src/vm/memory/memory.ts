@@ -570,6 +570,7 @@ export abstract class Memory {
     Println: state => {
       const address = state.OS.pop()
       console.log(this.address_to_JS_value(address))
+      state.OS.pop()
       return address
     },
     Lock: (state, goBlockBehavior) => {
