@@ -36,15 +36,12 @@ export const varDeclImNode = (im: string): VariableDeclaration => ({
   specs: [{
     tag: 'varSpec',
     syms: [im],
-    exprs: [{
-      tag: 'literal',
-      value: true // TODO hardcode dummy value
-    }],
+    exprs: [],
     type: {
       tag: 'type',
       type: {
         tag: 'typeName',
-        name: 'boolean' // TODO hardcode dummy value
+        name: 'bool' // TODO hardcode dummy value
       }
     },
   }]

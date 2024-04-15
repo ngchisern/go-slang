@@ -68,16 +68,16 @@ const compile = (comp: AstNode, ce: string[][]) => {
 
 const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } = {
   src: (comp: SourceFile, ce: string[][]) => {
-    // Transform imports to decls.
+    // Transform imports to varDecl with empty exprs.
     const imToVarDecls = comp.imports.map(im => node.varDeclImNode(im))
     comp.decls.unshift(...imToVarDecls)
 
-    // Extend env with imports and decls.
-    const names: string[] = scan(comp)
-    const new_env = compile_time_environment_extend(names, ce)
+    // Extend env with global names.
+    const globals: string[] = scan(comp)
+    const new_env = compile_time_environment_extend(globals, ce)
 
     // Enter scope.
-    instrs[wc++] = { tag: 'ENTER_SCOPE', syms: names }
+    instrs[wc++] = { tag: 'ENTER_SCOPE', syms: globals }
     // Compile decls.
     comp.decls.map(decl => compile(decl, new_env))
     // Compile main mtd invocation.
@@ -87,10 +87,15 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
   },
 
   block: (comp: Block, ce: string[][]) => {
+    // Extend env with local names.
     const locals = scan(comp.body)
-    instrs[wc++] = { tag: 'ENTER_SCOPE', syms: locals }
+    const new_env = compile_time_environment_extend(locals, ce)
 
-    compile(comp.body, compile_time_environment_extend(locals, ce))
+    // Enter scope.
+    instrs[wc++] = { tag: 'ENTER_SCOPE', syms: locals }
+    // Compile body.
+    compile(comp.body, new_env)
+    // Exit scope.
     instrs[wc++] = { tag: 'EXIT_SCOPE' }
   },
 
@@ -101,14 +106,10 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
 
   varDecl: (comp: VariableDeclaration, ce: string[][]) => {
     comp.specs.forEach(spec => {
-      // TODO spec.type should be stored and needed somewhere.
       for (let i = 0; i < spec.syms.length; i++) {
-        // varDecl without expr has undefined as expr.
-        spec.exprs[i]
-          ? compile(spec.exprs[i], ce)
-          : spec.type
-            ? compile(spec.type, ce)
-            : (instrs[wc++] = { tag: 'LDC', val: undefined })
+        // var is initialized to initializer if present, else default value,
+        // both with encoded type info in GoLit.
+        spec.exprs[i] ? compile(spec.exprs[i], ce) : compile(spec.type, ce)
         instrs[wc++] = { tag: 'ASSIGN', pos: compile_time_environment_position(ce, spec.syms[i]) }
         instrs[wc++] = { tag: 'POP' }
       }
@@ -116,12 +117,14 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
   },
 
   shortVarDecl: (comp: ShortVarDecl, ce: string[][]) => {
+    // TODO only 1 expr is supported
     compile(comp.exprs[0], ce)
     instrs[wc++] = { tag: 'ASSIGN', pos: compile_time_environment_position(ce, comp.syms[0]) }
     instrs[wc++] = { tag: 'POP' }
   },
 
   assmt: (comp: Assignment, ce: string[][]) => {
+    // TODO only 1 expr is supported
     compile(comp.exprs[0], ce)
     instrs[wc++] = { tag: 'ASSIGN', pos: compile_time_environment_position(ce, comp.syms[0].name) }
     instrs[wc++] = { tag: 'POP' }
@@ -134,12 +137,12 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
   },
 
   literal: (comp: BasicLiteral, ce: string[][]) => {
+    // Type inference.
     const val: GoLit = is_boolean(comp.value)
       ? { tag: GoTag.Boolean, val: comp.value as boolean }
       : is_number(comp.value)
         ? { tag: GoTag.Int, val: comp.value as number }
         : { tag: GoTag.String, val: comp.value as string }
-
     instrs[wc++] = { tag: 'LDC', val: val }
   },
 
@@ -219,28 +222,28 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
   },
 
   type: (comp: Type, ce: string[][]) => {
-    let instr: GoLit
+    let val: GoLit
 
     if (comp.type.tag === 'chanType') {
       compile(comp.type.elem, ce)
       const prev = instrs.pop() as Ldc
       wc--
-      instr = { tag: GoTag.Channel, type: prev.val?.tag as GoTag }
+      val = { tag: GoTag.Channel, type: prev.val?.tag as GoTag }
     } else if (comp.type.name == 'int') {
-      instr = { tag: GoTag.Int }
+      val = { tag: GoTag.Int }
     } else if (comp.type.name == 'sync.Mutex') {
-      instr = { tag: GoTag.Mutex }
+      val = { tag: GoTag.Mutex }
     } else if (comp.type.name == 'sync.WaitGroup') {
-      instr = { tag: GoTag.WaitGroup }
+      val = { tag: GoTag.WaitGroup }
     } else if (comp.type.name == 'bool') {
-      instr = { tag: GoTag.Boolean }
+      val = { tag: GoTag.Boolean }
     } else if (comp.type.name === 'string') {
-      instr = { tag: GoTag.String }
+      val = { tag: GoTag.String }
     } else {
       console.log('unknown type')
-      instr = { tag: GoTag.Int } // dummy value
+      val = { tag: GoTag.Int } // dummy value
     }
 
-    instrs[wc++] = { tag: 'LDC', val: instr }
+    instrs[wc++] = { tag: 'LDC', val: val }
   }
 }
