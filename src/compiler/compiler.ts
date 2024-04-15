@@ -216,6 +216,10 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
   },
 
   type: (comp: Type, ce: string[][]) => {
+    const checkSyncPkgImported = () => {
+      compile_time_environment_position(ce, "sync")
+    }
+
     let val: GoLit
 
     if (comp.type.tag === 'chanType') {
@@ -226,8 +230,10 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
     } else if (comp.type.name == 'int') {
       val = { tag: GoTag.Int }
     } else if (comp.type.name == 'sync.Mutex') {
+      checkSyncPkgImported()
       val = { tag: GoTag.Mutex }
     } else if (comp.type.name == 'sync.WaitGroup') {
+      checkSyncPkgImported()
       val = { tag: GoTag.WaitGroup }
     } else if (comp.type.name == 'bool') {
       val = { tag: GoTag.Boolean }

@@ -5,16 +5,22 @@ import { compileGoCode } from "../../compiler";
 export interface Test {
   name: string
   input: string
-  output: any
+  output?: any
+  error?: string
 }
 
 export const testDriver = (tests: Test[]) => {
-  tests.forEach(({ name: name, input: programStr, output: expectedInstrTags }: Test) => {
+  tests.forEach(({ name: name, input: programStr, output: expectedInstrTags, error: error }: Test) => {
     it(name, () => {
       const parsedCode = parseGoCode(programStr)
       expect(parsedCode).toBeTruthy()
-      const instrs = compileGoCode(parsedCode)
-      checkInstrs(instrs, expectedInstrTags)
+
+      if (expectedInstrTags) {
+        const instrs = compileGoCode(parsedCode)
+        checkInstrs(instrs, expectedInstrTags)
+      } else {
+        expect(() => compileGoCode(parsedCode)).toThrow(error)
+      }
     })
   })
 }

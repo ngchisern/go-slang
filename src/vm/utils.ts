@@ -32,7 +32,8 @@ export const Unbuffered_Channel_tag = 16
 // TODO: Change the type of x to string
 export const compile_time_environment_position = (env: string[][], x: string): [number, number] => {
   let frame_index = env.length
-  while (value_index(env[--frame_index], x) === -1) {}
+  while (frame_index > 0 && value_index(env[--frame_index], x) === -1) {}
+  if (value_index(env[frame_index], x) === -1) throw new Error(`Name ${x} not found`)
   return [frame_index, value_index(env[frame_index], x)]
 }
 

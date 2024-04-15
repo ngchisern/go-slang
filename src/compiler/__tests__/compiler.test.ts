@@ -240,13 +240,16 @@ const tests: Test[] = [
     name: 'Compile WaitGroup correctly',
     input: `
       package main
-      import "fmt"
+      import (
+        "fmt"
+        "sync"
+      )
+      var wg sync.WaitGroup
       func print(wg sync.WaitGroup) {
         fmt.Println(100)
         wg.Done()
       }
       func main() {
-        var wg sync.WaitGroup
         wg.Add(1)
         go print(wg)
         wg.Wait()
@@ -255,6 +258,12 @@ const tests: Test[] = [
     output: [
       'ENTER_SCOPE',
       'LDC', // import "fmt"
+      'ASSIGN',
+      'POP',
+      'LDC', // import "sync"
+      'ASSIGN',
+      'POP',
+      'LDC', // var wg sync.WaitGroup
       'ASSIGN',
       'POP',
       'LDF', // print
@@ -277,9 +286,6 @@ const tests: Test[] = [
       'LDF', // main
       'GOTO',
       'ENTER_SCOPE',
-      'LDC', // var wg sync.waitGroup
-      'ASSIGN',
-      'POP',
       'LD', // wg.Add(1)
       'LD',
       'LDC',
@@ -311,7 +317,7 @@ const tests: Test[] = [
     name: 'Compile mutex correctly',
     input: `
       package main
-      import "fmt"
+      import "sync"
       var counter int = 0
       var mu sync.Mutex
       func increment(x int) {
@@ -382,7 +388,36 @@ const tests: Test[] = [
       'EXIT_SCOPE',
       'DONE'
     ]
-  }
+  },
+  {
+    name: 'Throw var x not found err',
+    input: `
+      package main
+      import "fmt"
+      func main() {
+        fmt.Println(x);
+      }
+    `,
+    error: 'Name x not found'
+  },
+  {
+    name: 'Throw sync pkg not found err',
+    input: `
+      package main
+      import "fmt"
+      var wg sync.WaitGroup
+      func print(wg sync.WaitGroup) {
+        fmt.Println(100)
+        wg.Done()
+      }
+      func main() {
+        wg.Add(1)
+        go print(wg)
+        wg.Wait()
+      }
+    `,
+    error: 'Name sync not found'
+  },
 ]
 
 describe("test compiler", () => {
