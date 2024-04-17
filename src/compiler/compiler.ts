@@ -56,6 +56,7 @@ export const compileGoCode = (ast: AstNode) => {
   wc = 0
   instrs = []
   compile(ast, global_compile_environment)
+  instrs[wc] = { tag: 'DONE' }
   return instrs
 }
 
@@ -63,7 +64,6 @@ const compile = (comp: AstNode, ce: string[][]) => {
   // For debugging.
   // console.log("compiling", comp.tag)
   compile_comp[comp.tag](comp, ce)
-  instrs[wc] = { tag: 'DONE' }
 }
 
 const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } = {
