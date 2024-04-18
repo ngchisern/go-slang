@@ -1,6 +1,6 @@
+import { Instruction } from "../../../common/instruction"
 import { compileGoCode } from "../../../compiler/compiler"
 import { parseGoCode } from "../../../parser/parser"
-import { run } from '../../run'
 
 export interface Test {
   name: string
@@ -9,7 +9,7 @@ export interface Test {
   error?: string
 }
 
-export const testDriver = (tests: Test[]) => {
+export const testDriver = (tests: Test[], runMtdToTest: (instrs: Instruction[]) => Promise<void>) => {
   tests.forEach(({ name: name, input: programStr, output: expectedLogs, error: error }: Test) => {
     it(name, async () => {
       const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation()
@@ -24,13 +24,12 @@ export const testDriver = (tests: Test[]) => {
       const instrs = compileGoCode(parsedCode)
       expect(instrs.length).toBeGreaterThan(0)
 
-      // TODO somehow check content of OS?
       if (expectedLogs) {
-        await run(instrs)
+        await runMtdToTest(instrs)
         expect(consoleErrorMock).not.toHaveBeenCalled()
         expect(logs).toEqual(expectedLogs)
       } else {
-        expect(() => compileGoCode(parsedCode)).toThrow(error)
+        await expect(runMtdToTest(instrs)).rejects.toThrow(error)
       }
       
       consoleErrorMock.mockRestore()

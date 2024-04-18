@@ -55,6 +55,7 @@ const scan = (comp: AstNode): string[] =>
 export const compileGoCode = (ast: AstNode) => {
   wc = 0
   instrs = []
+  // May throw err here.
   compile(ast, global_compile_environment)
   instrs[wc] = { tag: 'DONE' }
   return instrs

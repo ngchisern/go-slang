@@ -1,4 +1,5 @@
 import { Test, testDriver } from './__utils__/utils'
+import { run, run_parallel } from '../run'
 
 const tests: Test[] = [
   {
@@ -123,9 +124,101 @@ const tests: Test[] = [
       }
     `,
     output: new Set([12])
+  },
+  {
+    name: 'Throw deadlock err',
+    input: `
+      package main
+      import "sync"
+      func main() {
+        var mu sync.Mutex
+        mu.Lock()
+        mu.Lock()
+      }
+    `,
+    error: 'All goroutines are asleep - deadlock!'
+  },
+  {
+    name: 'Throw deadlock err',
+    input: `
+      package main
+      import "sync"
+      func main() {
+        var mu sync.Mutex
+        mu.Lock()
+        mu.Lock()
+      }
+    `,
+    error: 'All goroutines are asleep - deadlock!'
+  },
+  {
+    name: 'Throw not a WaitGroup err',
+    input: `
+      package main
+      import "sync"
+      func main() {
+        var mu sync.Mutex
+        mu.Add(1)
+      }
+    `,
+    error: 'not a WaitGroup'
+  },
+  {
+    name: 'Throw not a mutex err',
+    input: `
+      package main
+      import "sync"
+      func main() {
+        var wg sync.WaitGroup
+        wg.Lock()
+      }
+    `,
+    error: 'not a mutex'
+  },
+  {
+    name: 'Throw not a channel err when writing',
+    input: `
+      package main
+      import "sync"
+      func main() {
+        var wg sync.WaitGroup
+        wg <- 1
+      }
+    `,
+    error: 'unop: not a channel'
+  },
+  {
+    name: 'Throw not a channel err when reading',
+    input: `
+      package main
+      import "sync"
+      func main() {
+        var wg sync.WaitGroup
+        x := <-wg
+      }
+    `,
+    error: 'unop: not a channel'
+  },
+  {
+    name: 'Throw unlock unlocked mutex err',
+    input: `
+      package main
+      import "sync"
+      func main() {
+        var mu sync.Mutex
+        mu.Unlock()
+      }
+    `,
+    error: 'sync: unlock of unlocked mutex'
   }
 ]
 
 describe("test VM", () => {
-  testDriver(tests)
+  describe('test run()', () => {
+    testDriver(tests, run)
+  })
+
+  // describe('test run_parallel()', () => {
+  //   testDriver(tests, run_parallel)
+  // })
 })

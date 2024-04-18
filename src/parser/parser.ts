@@ -15,6 +15,7 @@ export function parseGoCode(source: string): SourceFile {
   parser.removeErrorListeners()
   parser.addErrorListener(new CustomErrorListener())
 
+  // May throw err here.
   const tree = parser.sourceFile()
 
   const visitor = new CustomVisitor()
