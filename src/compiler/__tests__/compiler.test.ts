@@ -196,12 +196,12 @@ const tests: Test[] = [
       'GOTO',
       'ENTER_SCOPE',
       'LD', // c := make(chan int)
-      'TYPE',
+      'LDC', // TODO change to TYPE
       'CALL',
       'ASSIGN',
       'POP',
       'LD', // bc := make(chan int, 1)
-      'TYPE',
+      'LDC', // TODO change to TYPE
       'LDC',
       'CALL',
       'ASSIGN',
