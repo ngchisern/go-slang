@@ -92,7 +92,7 @@ const tests: Test[] = [
       }
       func main() {
         wg.Add(1)
-        go print(wg)
+        go print()
         wg.Wait()
       }
     `,
@@ -218,6 +218,7 @@ describe("test VM", () => {
     testDriver(tests, run)
   })
 
+  // TODO need to mock worker to avoid test timeout
   // describe('test run_parallel()', () => {
   //   testDriver(tests, run_parallel)
   // })

@@ -251,7 +251,7 @@ const tests: Test[] = [
       }
       func main() {
         wg.Add(1)
-        go print(wg)
+        go print()
         wg.Wait()
       }
     `,
@@ -291,7 +291,7 @@ const tests: Test[] = [
       'LDC',
       'CALL',
       'POP',
-      'GO', // go print(wg)
+      'GO', // go print()
       'GOTO',
       'LD',
       'LD',
@@ -412,7 +412,7 @@ const tests: Test[] = [
       }
       func main() {
         wg.Add(1)
-        go print(wg)
+        go print()
         wg.Wait()
       }
     `,
