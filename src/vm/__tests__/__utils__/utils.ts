@@ -12,7 +12,9 @@ export interface Test {
 export const testDriver = (tests: Test[], runMtdToTest: (instrs: Instruction[]) => Promise<void>) => {
   tests.forEach(({ name: name, input: programStr, output: expectedLogs, error: error }: Test) => {
     it(name, async () => {
-      const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation()
+      const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(msg => {
+        throw new Error(msg)
+      })
       const logs = new Set()
       const consoleLogMock = jest.spyOn(console, 'log').mockImplementation(log => {
         logs.add(log)

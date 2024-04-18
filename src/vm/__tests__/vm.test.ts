@@ -185,7 +185,7 @@ const tests: Test[] = [
         wg <- 1
       }
     `,
-    error: 'unop: not a channel'
+    error: 'send: not a channel'
   },
   {
     name: 'Throw not a channel err when reading',
