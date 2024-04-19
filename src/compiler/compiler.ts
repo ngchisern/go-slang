@@ -26,6 +26,7 @@ import { Instruction, Goto, Call, Ldc, Ld } from '../common/instruction'
 import { compile_time_environment_position, is_boolean, is_number } from '../vm/utils'
 import { GoLit, GoTag } from '../common/types'
 import { SingleMemory } from '../vm/memory/singleMemory'
+import * as node from './nodeCreator'
 
 // compile-time frames only need synbols (keys), no values
 const global_compile_frame = Object.keys(new SingleMemory().primitive_object)
@@ -40,15 +41,23 @@ let instrs: Instruction[]
 
 const scan = (comp: AstNode): string[] =>
   comp.tag === 'seq'
-    ? (comp as Sequence).stmts.reduce((acc, x) => acc.concat(scan(x)), [] as string[])
+    ? (comp as Sequence).stmts.flatMap(stmt => scan(stmt))
     : comp.tag === 'shortVarDecl'
-      ? [(comp as ShortVarDecl).syms[0]]
-      : []
+      ? (comp as ShortVarDecl).syms
+      : comp.tag === 'varDecl'
+        ? (comp as VariableDeclaration).specs.flatMap(spec => spec.syms)
+        : comp.tag === 'src'
+          ? [...(comp as SourceFile).decls.flatMap(decl => scan(decl))]
+          : comp.tag === 'func'
+            ? [(comp as FunctionDeclaration).sym]
+            : []
 
 export const compileGoCode = (ast: AstNode) => {
   wc = 0
   instrs = []
+  // May throw err here.
   compile(ast, global_compile_environment)
+  instrs[wc] = { tag: 'DONE' }
   return instrs
 }
 
@@ -56,58 +65,38 @@ const compile = (comp: AstNode, ce: string[][]) => {
   // For debugging.
   // console.log("compiling", comp.tag)
   compile_comp[comp.tag](comp, ce)
-  instrs[wc] = { tag: 'DONE' }
 }
 
 const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } = {
   src: (comp: SourceFile, ce: string[][]) => {
-    const names: string[] = []
-    comp.imports.forEach(name => names.push(name.substring(1, name.length - 1)))
+    // Transform imports to varDecl with empty exprs.
+    const imToVarDecls = comp.imports.map(im => node.varDeclImNode(im))
+    comp.decls.unshift(...imToVarDecls)
 
-    comp.decls.forEach(decl => {
-      if (decl.tag === 'func') {
-        names.push((decl as FunctionDeclaration).sym)
-      } else {
-        ;(decl as VariableDeclaration).specs.forEach(spec => {
-          names.push(...spec.syms)
-        })
-      }
-    })
-    const new_env = compile_time_environment_extend(names, ce)
+    // Extend env with global names.
+    const globals: string[] = scan(comp)
+    const new_env = compile_time_environment_extend(globals, ce)
 
-    // ENTER SCOPE first
-    instrs[wc++] = { tag: 'ENTER_SCOPE', syms: names }
-
-    comp.imports.forEach(name => {
-      const val = name.substring(1, name.length - 1)
-      instrs[wc++] = { tag: 'LDC', val: { tag: GoTag.Boolean, val: true } } // TODO: string is not supported: dunmy value
-      instrs[wc++] = { tag: 'ASSIGN', pos: compile_time_environment_position(new_env, val) }
-    })
-
+    // Enter scope.
+    instrs[wc++] = { tag: 'ENTER_SCOPE', syms: globals }
+    // Compile decls.
     comp.decls.map(decl => compile(decl, new_env))
-    compile(
-      {
-        tag: 'expStmt',
-        exp: {
-          tag: 'primArg',
-          expr: {
-            tag: 'meth',
-            ident: 'main'
-          } as MethodExpression,
-          args: []
-        } as PrimaryExprArgument
-      } as ExpressionStatement,
-      new_env
-    )
+    // Compile main mtd invocation.
+    compile(node.mainMtdExprStmtNode(), new_env)
+    // Exit scope.
     instrs[wc++] = { tag: 'EXIT_SCOPE' }
   },
 
   block: (comp: Block, ce: string[][]) => {
-    // TODO not sure if Go scans declarations as per JS
+    // Extend env with local names.
     const locals = scan(comp.body)
-    instrs[wc++] = { tag: 'ENTER_SCOPE', syms: locals }
+    const new_env = compile_time_environment_extend(locals, ce)
 
-    compile(comp.body, compile_time_environment_extend(locals, ce))
+    // Enter scope.
+    instrs[wc++] = { tag: 'ENTER_SCOPE', syms: locals }
+    // Compile body.
+    compile(comp.body, new_env)
+    // Exit scope.
     instrs[wc++] = { tag: 'EXIT_SCOPE' }
   },
 
@@ -118,14 +107,10 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
 
   varDecl: (comp: VariableDeclaration, ce: string[][]) => {
     comp.specs.forEach(spec => {
-      // TODO spec.type should be stored and needed somewhere.
       for (let i = 0; i < spec.syms.length; i++) {
-        // varDecl without expr has undefined as expr.
-        spec.exprs[i]
-          ? compile(spec.exprs[i], ce)
-          : spec.type
-            ? compile(spec.type, ce)
-            : (instrs[wc++] = { tag: 'LDC', val: undefined })
+        // var is initialized to initializer if present, else default value,
+        // both with encoded type info in GoLit.
+        spec.exprs[i] ? compile(spec.exprs[i], ce) : compile(spec.type, ce)
         instrs[wc++] = { tag: 'ASSIGN', pos: compile_time_environment_position(ce, spec.syms[i]) }
         instrs[wc++] = { tag: 'POP' }
       }
@@ -133,12 +118,14 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
   },
 
   shortVarDecl: (comp: ShortVarDecl, ce: string[][]) => {
+    // TODO only 1 expr is supported
     compile(comp.exprs[0], ce)
     instrs[wc++] = { tag: 'ASSIGN', pos: compile_time_environment_position(ce, comp.syms[0]) }
     instrs[wc++] = { tag: 'POP' }
   },
 
   assmt: (comp: Assignment, ce: string[][]) => {
+    // TODO only 1 expr is supported
     compile(comp.exprs[0], ce)
     instrs[wc++] = { tag: 'ASSIGN', pos: compile_time_environment_position(ce, comp.syms[0].name) }
     instrs[wc++] = { tag: 'POP' }
@@ -151,12 +138,12 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
   },
 
   literal: (comp: BasicLiteral, ce: string[][]) => {
+    // Type inference.
     const val: GoLit = is_boolean(comp.value)
       ? { tag: GoTag.Boolean, val: comp.value as boolean }
       : is_number(comp.value)
         ? { tag: GoTag.Int, val: comp.value as number }
         : { tag: GoTag.String, val: comp.value as string }
-
     instrs[wc++] = { tag: 'LDC', val: val }
   },
 
@@ -175,24 +162,7 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
 
   func: (comp: FunctionDeclaration, ce: string[][]) => {
     // Transform FunctionDeclaration to ShortVarDecl.
-    compile(
-      {
-        tag: 'shortVarDecl',
-        syms: [comp.sym],
-        exprs: [
-          {
-            tag: 'funcLit',
-            sig: {
-              tag: 'sig',
-              parameters: comp.sig.parameters,
-              result: comp.sig.result
-            },
-            body: comp.body
-          }
-        ]
-      } as ShortVarDecl,
-      ce
-    )
+    compile(node.shortVarDeclFuncLitNode(comp), ce)
   },
 
   primArg: (comp: PrimaryExprArgument, ce: string[][]) => {
@@ -210,28 +180,22 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
     goto.addr = wc
   },
 
-  meth: (comp: MethodExpression, ce: string[][]) => {
-    instrs[wc++] = {
-      tag: 'LD',
-      sel: undefined,
-      pos: compile_time_environment_position(ce, comp.ident)
-    }
-  },
-
+  // Qualified mtd names, e.g., fmt.Println(), wg.Wait().
   primSel: (comp: PrimaryExprSelector, ce: string[][]) => {
-    // TODO better way to get sel?
-    const sel = comp.sel.tag === 'ident' ? comp.sel.name : (comp.sel as MethodExpression).ident
     instrs[wc++] = {
       tag: 'LD',
-      sel: compile_time_environment_position(ce, sel),
+      pos: compile_time_environment_position(ce, (comp.sel as Identifier).name),
+    }
+    instrs[wc++] = {
+      tag: 'LD',
       pos: compile_time_environment_position(ce, comp.ident)
     }
   },
 
+  // Simple mtd/var names, e.g., minus(42), x.
   ident: (comp: Identifier, ce: string[][]) => {
     instrs[wc++] = {
       tag: 'LD',
-      sel: undefined,
       pos: compile_time_environment_position(ce, comp.name)
     }
   },
@@ -253,28 +217,34 @@ const compile_comp: { [type: string]: (comp: AstNode, ce: string[][]) => void } 
   },
 
   type: (comp: Type, ce: string[][]) => {
-    let instr: GoLit
+    const checkSyncPkgImported = () => {
+      compile_time_environment_position(ce, "sync")
+    }
+
+    let val: GoLit
 
     if (comp.type.tag === 'chanType') {
       compile(comp.type.elem, ce)
       const prev = instrs.pop() as Ldc
       wc--
-      instr = { tag: GoTag.Channel, type: prev.val?.tag as GoTag }
+      val = { tag: GoTag.Channel, type: prev.val?.tag as GoTag }
     } else if (comp.type.name == 'int') {
-      instr = { tag: GoTag.Int }
+      val = { tag: GoTag.Int }
     } else if (comp.type.name == 'sync.Mutex') {
-      instr = { tag: GoTag.Mutex }
+      checkSyncPkgImported()
+      val = { tag: GoTag.Mutex }
     } else if (comp.type.name == 'sync.WaitGroup') {
-      instr = { tag: GoTag.WaitGroup }
+      checkSyncPkgImported()
+      val = { tag: GoTag.WaitGroup }
     } else if (comp.type.name == 'bool') {
-      instr = { tag: GoTag.Boolean }
+      val = { tag: GoTag.Boolean }
     } else if (comp.type.name === 'string') {
-      instr = { tag: GoTag.String }
+      val = { tag: GoTag.String }
     } else {
       console.log('unknown type')
-      instr = { tag: GoTag.Int } // dummy value
+      val = { tag: GoTag.Int } // dummy value
     }
 
-    instrs[wc++] = { tag: 'LDC', val: instr }
+    instrs[wc++] = { tag: 'LDC', val: val }
   }
 }

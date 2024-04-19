@@ -15,13 +15,8 @@ export function parseGoCode(source: string): SourceFile {
   parser.removeErrorListeners()
   parser.addErrorListener(new CustomErrorListener())
 
-  let tree
-  try {
-    tree = parser.sourceFile()
-  } catch (e) {
-    console.error(e.message)
-    process.exit(1)
-  }
+  // May throw err here.
+  const tree = parser.sourceFile()
 
   const visitor = new CustomVisitor()
   const program = visitor.visitSourceFile(tree)
